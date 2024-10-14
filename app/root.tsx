@@ -6,7 +6,7 @@ import {
   ScrollRestoration,
 } from "@remix-run/react";
 import type { LinksFunction } from "@remix-run/node";
-
+import { ColorSchemeProvider } from './context/ColorScheme'
 import "./tailwind.css";
 
 export const links: LinksFunction = () => [
@@ -30,9 +30,12 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <Meta />
         <Links />
+        <script/>
       </head>
       <body>
+        <ColorSchemeProvider>
         {children}
+        </ColorSchemeProvider>
         <ScrollRestoration />
         <Scripts />
       </body>
