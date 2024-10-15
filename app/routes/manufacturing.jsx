@@ -1,4 +1,4 @@
-import { CaretDown, CaretUp, List, Moon, Sun} from "@phosphor-icons/react";
+import { CaretDown, CaretUp, List, Moon, Sun } from "@phosphor-icons/react";
 import { Outlet, NavLink, useLocation } from "@remix-run/react";
 import { useState, useEffect } from "react";
 import { useColorScheme } from "../context/ColorScheme";
@@ -13,7 +13,7 @@ export const meta = () => {
 export default function Layout() {
   const [showNav, setShowNav] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
-  const { toggleColorScheme, colorScheme } = useColorScheme();
+  const { theme, toggleTheme } = useColorScheme();
   const location = useLocation();
 
   function toggleNav() {
@@ -73,14 +73,10 @@ export default function Layout() {
 
             <div className="flex items-center gap-2">
               <button
-                onClick={toggleColorScheme}
+                onClick={toggleTheme}
                 className="inline-flex items-center rounded-lg justify-center p-2 hover:bg-gray-100 dark:hover:bg-gray-700 text-sm font-medium leading-none text-gray-900 dark:text-white"
               >
-                {colorScheme === "dark" ? (
-                  <Sun size={20} />
-                ) : (
-                  <Moon size={20} />
-                )}
+                {theme === "dark" ? <Sun size={20} /> : <Moon size={20} />}
               </button>
 
               {/* <button

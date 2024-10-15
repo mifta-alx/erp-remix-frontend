@@ -4,10 +4,17 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
+  useLoaderData,
 } from "@remix-run/react";
-import type { LinksFunction } from "@remix-run/node";
-import { ColorSchemeProvider } from './context/ColorScheme'
+import type { LinksFunction, LoaderFunction } from "@remix-run/node";
+import { json } from "@remix-run/node";
+import { ColorSchemeProvider } from './context/ColorScheme';
+import { getThemeFromRequest } from "./utils/theme.server";
 import "./tailwind.css";
+
+type LoaderData = {
+  theme: string;
+};
 
 export const links: LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -22,19 +29,27 @@ export const links: LinksFunction = () => [
   },
 ];
 
+export const loader: LoaderFunction = async ({ request }) => {
+  const theme = await getThemeFromRequest(request) || 'light';
+  return json<LoaderData>({ theme });
+};
+
 export function Layout({ children }: { children: React.ReactNode }) {
+  const data = useLoaderData<LoaderData>();
+
+  const currentTheme = data?.theme || 'light';
+
   return (
-    <html lang="en">
+    <html lang="en" className={currentTheme === "dark" ? "dark" : ""}>
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <Meta />
         <Links />
-        <script/>
       </head>
       <body>
-        <ColorSchemeProvider>
-        {children}
+        <ColorSchemeProvider initialTheme={currentTheme}>
+          {children}
         </ColorSchemeProvider>
         <ScrollRestoration />
         <Scripts />

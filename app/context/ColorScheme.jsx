@@ -1,25 +1,22 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
 
 const ColorSchemeContext = createContext();
 
-export const ColorSchemeProvider = ({ children }) => {
-  const [colorScheme, setColorScheme] = useState("light");
+export const ColorSchemeProvider = ({ children, initialTheme }) => {
+  const [theme, setTheme] = useState(initialTheme || "light");
 
   useEffect(() => {
-    const savedColorScheme = localStorage.getItem("colorScheme") || "light";
-    setColorScheme(savedColorScheme);
-    document.body.classList.toggle("dark", savedColorScheme === "dark");
-  }, []);
+    document.documentElement.classList.toggle("dark", theme === "dark");
 
-  const toggleColorScheme = () => {
-    const newColorScheme = colorScheme === "dark" ? "light" : "dark";
-    setColorScheme(newColorScheme);
-    localStorage.setItem("colorScheme", newColorScheme);
-    document.body.classList.toggle("dark", newColorScheme === "dark");
+    document.cookie = `theme=${theme};path=/;max-age=31536000`;
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme((prev) => (prev === "dark" ? "light" : "dark"));
   };
 
   return (
-    <ColorSchemeContext.Provider value={{ colorScheme, toggleColorScheme }}>
+    <ColorSchemeContext.Provider value={{ theme, toggleTheme }}>
       {children}
     </ColorSchemeContext.Provider>
   );

@@ -1,11 +1,12 @@
 import type { Config } from "tailwindcss";
 import colors from "tailwindcss/colors";
 export default {
+  darkMode: "class",
   content: ["./app/**/{**,.client,.server}/**/*.{js,jsx,ts,tsx}"],
   theme: {
     extend: {
       colors: {
-        primary: colors.blue
+        primary: colors.blue,
       },
       fontFamily: {
         sans: [
@@ -21,6 +22,5 @@ export default {
       },
     },
   },
-  darkMode: "class",
   plugins: [],
 } satisfies Config;
