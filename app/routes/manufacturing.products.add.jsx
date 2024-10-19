@@ -346,6 +346,7 @@ export default function AddProduct() {
                         type="text"
                         name="product_name"
                         id="product_name"
+                        autoComplete="off"
                         className={`bg-gray-50 border ${
                           actionData?.errors?.product_name
                             ? "border-red-500 dark:border-red-500"
@@ -411,6 +412,7 @@ export default function AddProduct() {
                         type="text"
                         name="sales_price"
                         id="price"
+                        autoComplete="off"
                         className={`bg-gray-50 border ${
                           actionData?.errors?.sales_price
                             ? "border-red-500 dark:border-red-500"
@@ -437,6 +439,7 @@ export default function AddProduct() {
                         type="text"
                         name="cost"
                         id="cost"
+                        autoComplete="off"
                         className={`bg-gray-50 border ${
                           actionData?.errors?.cost
                             ? "border-red-500 dark:border-red-500"
@@ -464,6 +467,7 @@ export default function AddProduct() {
                         type="text"
                         name="barcode"
                         id="barcode"
+                        autoComplete="off"
                         className={`bg-gray-50 border ${
                           actionData?.errors?.barcode
                             ? "border-red-500 dark:border-red-500"
@@ -490,6 +494,7 @@ export default function AddProduct() {
                         type="text"
                         name="internal_reference"
                         id="internal_reference"
+                        autoComplete="off"
                         className={`bg-gray-50 border ${
                           actionData?.errors?.internal_reference
                             ? "border-red-500 dark:border-red-500"
