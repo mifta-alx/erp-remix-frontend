@@ -26,15 +26,22 @@ export const loader = async () => {
     if (!categoriesResponse.ok || !tagResponse.ok) {
       let errorMessage = "An error occurred.";
       let errorDescription = "Something went wrong while fetching products.";
-      let status = categoriesResponse.ok
-        ? tagResponse.status
-        : categoriesResponse.status;
+      let status;
+      if (!categoriesResponse.ok) {
+        status = categoriesResponse.status;
+        if (status === 404) {
+          errorMessage = "Categories Not Found";
+          errorDescription = "The categories you're looking for do not exist.";
+        }
+      } else if (!tagResponse.ok) {
+        status = tagResponse.status;
+        if (status === 404) {
+          errorMessage = "Tags Not Found";
+          errorDescription = "The tags you're looking for do not exist.";
+        }
+      }
 
-      if (status === 404) {
-        errorMessage = "Products Not Found";
-        errorDescription =
-          "The product you're looking for does not exist or may have been removed.";
-      } else if (status === 500) {
+      if (status === 500) {
         errorMessage = "Internal Server Error";
         errorDescription =
           "There is an issue on our server. Our team is working to resolve it.";
