@@ -97,8 +97,6 @@ export default function AddProduct() {
   });
 
   const handleImageChange = async (event) => {
-    console.log(event.target.files[0]);
-    
     const file = event.target.files[0];
     if (file) {
       const apiData = new FormData();

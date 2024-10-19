@@ -131,7 +131,7 @@ export default function Products() {
                         <ul className="mt-2 flex items-center gap-4">
                           <li className="flex items-center gap-2">
                             <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                              [{product.internal_reference}]
+                              {product.internal_reference && `[${product.internal_reference}]`}
                             </p>
                           </li>
                         </ul>
