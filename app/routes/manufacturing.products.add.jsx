@@ -239,8 +239,7 @@ export default function AddProduct() {
           internal_reference: formData.internal_reference,
           notes: formData.notes,
           image_uuid: image,
-          image_url:
-            "http://localhost:8000/storage/images/5hpx6bpEJzu2Gu7Xil1Mj0alXtBg1QrefIZZbc8p.png",
+          image_url : preview,
           tags: selectedTags.map((tag) => tag.id),
         }),
       });
