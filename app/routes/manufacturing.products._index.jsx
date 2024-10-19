@@ -1,7 +1,9 @@
 import { Plus, CaretRight, Package, House } from "@phosphor-icons/react";
 import { Link, useLoaderData } from "@remix-run/react";
+import { formatPrice } from "../utils/formatPrice";
 
 export const loader = async () => {
+  let storageEndpoint = process.env.STORAGE_URL;
   try {
     const response = await fetch(`${process.env.API_URL}/products`);
 
@@ -26,7 +28,7 @@ export const loader = async () => {
       };
     }
     const data = await response.json();
-    return { error: false, data };
+    return { error: false, data, STORAGE_URL: storageEndpoint };
   } catch (error) {
     return {
       error: true,
@@ -39,7 +41,8 @@ export const loader = async () => {
 };
 
 export default function Products() {
-  const { error, data, message, description, status } = useLoaderData();
+  const { error, data, message, description, status, STORAGE_URL } =
+    useLoaderData();
   const products = data?.data || [];
 
   return (
@@ -84,7 +87,7 @@ export default function Products() {
           )}
         </div>
         {error ? (
-          <div className="py-8 px-4 mx-auto max-w-screen-xl lg:py-24 lg:px-6">
+          <div className="py-48  px-4 mx-auto max-w-screen-xl lg:py-24 lg:px-6">
             <div className="mx-auto max-w-screen-sm text-center">
               <h1 className="mb-4 text-7xl tracking-tight font-extrabold lg:text-9xl text-primary-600 dark:text-primary-500">
                 {status}
@@ -106,35 +109,37 @@ export default function Products() {
                     key={index}
                     className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800 hover:bg-gray-100 hover:dark:bg-gray-700"
                   >
-                    <Link
-                      to={`/manufacturing/products/edit/${product.product_id}`}
-                    >
+                    <Link to={`/manufacturing/products/edit/${product.id}`}>
                       <div className="h-56 w-full">
                         <img
                           className="mx-auto w-full h-full object-cover rounded-md"
-                          src={product.image}
-                          alt={product.product_name}
+                          src={product.image_url}
+                          alt={product.name}
                         />
                       </div>
                       <div className="pt-6">
-                        <p
-                          href="#"
-                          className="text-lg font-semibold leading-tight text-gray-900 dark:text-white"
-                        >
-                          {product.product_name}
+                        <div className="mb-4 flex items-center gap-2">
+                          {product.tags.map((tag) => (
+                            <span className="rounded bg-primary-100 px-2.5 py-0.5 text-xs font-medium text-primary-800 dark:bg-primary-900 dark:text-primary-300" key={tag.id}>
+                              {tag.name}
+                            </span>
+                          ))}
+                        </div>
+                        <p className="text-lg font-semibold leading-tight text-gray-900 dark:text-white">
+                          {product.name}
                         </p>
 
                         <ul className="mt-2 flex items-center gap-4">
                           <li className="flex items-center gap-2">
                             <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                              {product.internal_reference}
+                              [{product.internal_reference}]
                             </p>
                           </li>
                         </ul>
 
                         <div className="mt-4 flex items-center justify-between gap-4">
                           <p className="text-2xl font-extrabold leading-tight text-gray-900 dark:text-white">
-                            Rp. {product.sales_price}
+                            {formatPrice(product.sales_price)}
                           </p>
                         </div>
                       </div>
