@@ -3,7 +3,6 @@ import { Link, useLoaderData } from "@remix-run/react";
 import { formatPrice } from "../utils/formatPrice";
 
 export const loader = async () => {
-  let storageEndpoint = process.env.STORAGE_URL;
   try {
     const response = await fetch(`${process.env.API_URL}/products`);
 
@@ -28,7 +27,7 @@ export const loader = async () => {
       };
     }
     const data = await response.json();
-    return { error: false, data, STORAGE_URL: storageEndpoint };
+    return { error: false, data };
   } catch (error) {
     return {
       error: true,
@@ -41,7 +40,7 @@ export const loader = async () => {
 };
 
 export default function Products() {
-  const { error, data, message, description, status, STORAGE_URL } =
+  const { error, data, message, description, status } =
     useLoaderData();
   const products = data?.data || [];
 
@@ -109,7 +108,7 @@ export default function Products() {
                     key={index}
                     className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800 hover:bg-gray-100 hover:dark:bg-gray-700"
                   >
-                    <Link to={`/manufacturing/products/edit/${product.id}`}>
+                    <Link to={`/manufacturing/products/edit/${product.product_id}`}>
                       <div className="h-56 w-full">
                         <img
                           className="mx-auto w-full h-full object-cover rounded-md"
@@ -126,7 +125,7 @@ export default function Products() {
                           ))}
                         </div>
                         <p className="text-lg font-semibold leading-tight text-gray-900 dark:text-white">
-                          {product.name}
+                          {product.product_name}
                         </p>
 
                         <ul className="mt-2 flex items-center gap-4">
