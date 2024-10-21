@@ -41,7 +41,7 @@ export const loader = async () => {
 
 export default function Materials() {
 
-  const { error, data, message, description, status} = useLoaderData();
+  const { error, data, message, description, status } = useLoaderData();
   const materials = data?.data || [];
   return (
     <section>
@@ -55,7 +55,7 @@ export default function Materials() {
                     to={"/"}
                     className="inline-flex items-center text-sm font-medium text-gray-700 hover:text-primary-600 dark:text-gray-400 dark:hover:text-white"
                   >
-                    Home
+                    <House weight="fill" />
                   </Link>
                 </li>
                 <li aria-current="page">
@@ -68,14 +68,14 @@ export default function Materials() {
                 </li>
               </ol>
             </nav>
-            <h2 className="mt-3 text-xl font-semibold text-gray-900 dark:text-white sm:text-2xl">
+            <h2 className="m t-3 text-xl font-semibold text-gray-900 dark:text-white sm:text-2xl">
               Materials
             </h2>
           </div>
           {materials.length > 0 && (
             <div className="flex items-center space-x-4">
               <Link
-                to={"/"}
+                to={"/manufacturing/materials/add"}
                 className="text-gray-900 bg-white gap-2 w-full md:w-fit hover:bg-gray-100 border border-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center justify-center dark:focus:ring-gray-600 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:bg-gray-700 me-2 mb-2"
               >
                 <Plus size={16} weight="bold" />
@@ -133,7 +133,7 @@ export default function Materials() {
                           <ul className="mt-2 flex items-center gap-4">
                             <li className="flex items-center gap-2">
                               <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                                [{material.internal_reference}]
+                                {material.internal_reference && `[${material.internal_reference}]`}
                               </p>
                             </li>
                           </ul>
