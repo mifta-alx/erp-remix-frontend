@@ -5,7 +5,7 @@ import { formatPrice } from "../utils/formatPrice";
 export const meta = () => {
   return [
     { title: "ERP-Products" },
-    { name: "description", content: "Management Product" },
+    { name: "description", content: "Management Products" },
   ];
 };
 

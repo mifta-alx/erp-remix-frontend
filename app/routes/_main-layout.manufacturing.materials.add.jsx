@@ -18,8 +18,8 @@ import useDebounce from "../hooks/useDebounce";
 
 export const meta = () => {
     return [
-        { title: "ERP-Materials" },
-        { name: "description", content: "Add Materials" },
+        { title: "ERP-Add Material" },
+        { name: "description", content: "Add Material" },
     ];
 };
 

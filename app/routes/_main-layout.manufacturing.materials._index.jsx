@@ -75,7 +75,7 @@ export default function Materials() {
                 </li>
               </ol>
             </nav>
-            <h2 className="m t-3 text-xl font-semibold text-gray-900 dark:text-white sm:text-2xl">
+            <h2 className="mt-3 text-xl font-semibold text-gray-900 dark:text-white sm:text-2xl">
               Materials
             </h2>
           </div>

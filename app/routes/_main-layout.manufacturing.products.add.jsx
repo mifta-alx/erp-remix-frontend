@@ -18,7 +18,7 @@ import useDebounce from "../hooks/useDebounce";
 
 export const meta = () => {
   return [
-    { title: "ERP-Add Products" },
+    { title: "ERP-Add Product" },
     { name: "description", content: "Add Product" },
   ];
 };
