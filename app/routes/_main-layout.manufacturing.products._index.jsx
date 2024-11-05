@@ -2,6 +2,13 @@ import { Plus, CaretRight, Package, House } from "@phosphor-icons/react";
 import { Link, useLoaderData } from "@remix-run/react";
 import { formatPrice } from "../utils/formatPrice";
 
+export const meta = () => {
+  return [
+    { title: "ERP-Products" },
+    { name: "description", content: "Management Product" },
+  ];
+};
+
 export const loader = async () => {
   try {
     const response = await fetch(`${process.env.API_URL}/products`);
@@ -80,7 +87,7 @@ export default function Products() {
                 className="text-gray-900 bg-white gap-2 w-full md:w-fit hover:bg-gray-100 border border-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center justify-center dark:focus:ring-gray-600 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:bg-gray-700 me-2 mb-2"
               >
                 <Plus size={16} weight="bold" />
-                Add Product
+                New
               </Link>
             </div>
           )}

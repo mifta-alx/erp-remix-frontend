@@ -16,6 +16,13 @@ import {
 import useClickOutside from "../hooks/useClickOutside";
 import useDebounce from "../hooks/useDebounce";
 
+export const meta = () => {
+    return [
+        { title: "ERP-Materials" },
+        { name: "description", content: "Add Materials" },
+    ];
+};
+
 export const loader = async () => {
     let apiEndpoint = process.env.API_URL;
     try {

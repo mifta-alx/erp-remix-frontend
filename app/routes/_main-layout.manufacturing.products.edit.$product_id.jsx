@@ -10,20 +10,30 @@ import {
   Form,
   Link,
   useLoaderData,
+  useParams,
   useNavigate,
   useFetcher,
 } from "@remix-run/react";
 import useClickOutside from "../hooks/useClickOutside";
 import useDebounce from "../hooks/useDebounce";
 
-export const loader = async () => {
+export const meta = () => {
+  return [
+    { title: "ERP-Edit Products" },
+    { name: "description", content: "Edit Product" },
+  ];
+};
+
+export const loader = async ({ params }) => {
   let apiEndpoint = process.env.API_URL;
   try {
-    const [categoriesResponse, tagResponse] = await Promise.all([
-      fetch(`${process.env.API_URL}/categories`),
-      fetch(`${process.env.API_URL}/tags`),
-    ]);
-    if (!categoriesResponse.ok || !tagResponse.ok) {
+    const [categoriesResponse, tagResponse, productResponse] =
+      await Promise.all([
+        fetch(`${process.env.API_URL}/categories`),
+        fetch(`${process.env.API_URL}/tags`),
+        fetch(`${process.env.API_URL}/products/${params.product_id}`),
+      ]);
+    if (!categoriesResponse.ok || !tagResponse.ok || !productResponse.ok) {
       let errorMessage = "An error occurred.";
       let errorDescription = "Something went wrong while fetching products.";
       let status;
@@ -38,6 +48,12 @@ export const loader = async () => {
         if (status === 404) {
           errorMessage = "Tags Not Found";
           errorDescription = "The tags you're looking for do not exist.";
+        }
+      } else if (!productResponse.ok) {
+        status = productResponse.status;
+        if (status === 404) {
+          errorMessage = "Products Not Found";
+          errorDescription = "The products you're looking for do not exist.";
         }
       }
 
@@ -54,15 +70,17 @@ export const loader = async () => {
       };
     }
 
-    const [categories, tags] = await Promise.all([
+    const [categories, tags, product] = await Promise.all([
       categoriesResponse.json(),
       tagResponse.json(),
+      productResponse.json(),
     ]);
 
     return {
-      categories: categories.data,
       API_URL: apiEndpoint,
+      categories: categories.data,
       tags: tags.data,
+      product : product.data,
     };
   } catch (error) {
     return {
@@ -75,15 +93,16 @@ export const loader = async () => {
   }
 };
 
-export default function AddProduct() {
-  const { API_URL, categories, tags, error, message, description, status } =
+export default function EditProduct() {
+  const { API_URL, categories, tags, product, error, message, description, status } =
     useLoaderData();
   const fetcher = useFetcher();
+  const params = useParams();
   const navigate = useNavigate();
   const [actionData, setActionData] = useState();
   //image upload
-  const [image, setImage] = useState("");
-  const [preview, setPreview] = useState("");
+  const [image, setImage] = useState(product.image_uuid || "");
+  const [preview, setPreview] = useState(product.image_url || "");
   const [isHovered, setIsHovered] = useState(false);
   const fileInputRef = useRef(null);
 
@@ -97,6 +116,8 @@ export default function AddProduct() {
   });
 
   const handleImageChange = async (event) => {
+    console.log(event.target.files[0]);
+
     const file = event.target.files[0];
     if (file) {
       const apiData = new FormData();
@@ -157,7 +178,9 @@ export default function AddProduct() {
   useClickOutside(dropdownRef, () => setIsOpen(false));
   const [tagKeywords, setTagKeywords] = useState("");
   const debounceKeywords = useDebounce(tagKeywords, 300);
-  const [selectedTags, setSelectedTags] = useState([]);
+  const [selectedTags, setSelectedTags] = useState(
+    product.tags || []
+  );
   const tagResults = tags
     ?.filter((tag) =>
       tag.name.toLowerCase().includes(debounceKeywords.toLowerCase())
@@ -203,13 +226,13 @@ export default function AddProduct() {
   };
   //
   const [formData, setFormData] = useState({
-    product_name: "",
-    category_id: "",
-    sales_price: "",
-    cost: "",
-    barcode: "",
-    internal_reference: "",
-    notes: "",
+    product_name: product.product_name || "",
+    category_id: product.category_id || "",
+    sales_price: product.sales_price || "",
+    cost: product.cost || "",
+    barcode: product.barcode || "",
+    internal_reference: product.internal_reference || "",
+    notes: product.notes || "",
   });
 
   const handleChange = (e) => {
@@ -219,12 +242,12 @@ export default function AddProduct() {
       [name]: value,
     }));
   };
-  //submit data
-  const handleSubmit = async (e) => {
+  //update data
+  const handleUpdate = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch(`${API_URL}/products`, {
-        method: "POST",
+      const response = await fetch(`${API_URL}/products/${params.product_id}`, {
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
@@ -237,7 +260,7 @@ export default function AddProduct() {
           internal_reference: formData.internal_reference,
           notes: formData.notes,
           image_uuid: image,
-          image_url : preview,
+          image_url: preview,
           tags: selectedTags.map((tag) => tag.id),
         }),
       });
@@ -265,6 +288,25 @@ export default function AddProduct() {
       }
     } catch (error) {
       console.error(error);
+    }
+  };
+  //delete product
+  const handleDeleteProduct = async () => {
+    try {
+      const response = await fetch(`${API_URL}/products/${params.product_id}`, {
+        method: "DELETE",
+      });
+
+      if (response.ok) {
+        localStorage.removeItem("image_url");
+        localStorage.removeItem("image");
+        navigate("/manufacturing/products");
+      } else {
+        const errorData = await response.json();
+        console.error("Failed to delete product:", errorData);
+      }
+    } catch (error) {
+      console.error("Error deleting product:", error);
     }
   };
 
@@ -314,23 +356,23 @@ export default function AddProduct() {
                       <div className="flex items-center text-gray-400">
                         <CaretRight size={18} weight="bold" />
                         <span className="ms-1 text-sm font-medium text-gray-500 dark:text-gray-400 md:ms-2">
-                          Add Product
+                          Edit Product
                         </span>
                       </div>
                     </li>
                   </ol>
                 </nav>
                 <h2 className="mt-3 text-xl font-semibold text-gray-900 dark:text-white sm:text-2xl">
-                  Add a new product
+                  Edit product
                 </h2>
               </div>
             </div>
             {fetcher.state === "loading" ? (
               <p className="text-center text-gray-500">
-                Adding product, please wait...
+                Editing product, please wait...
               </p>
             ) : (
-              <Form onSubmit={handleSubmit} encType="multipart/form-data">
+              <Form onSubmit={handleUpdate} encType="multipart/form-data">
                 <div className="flex flex-col md:flex-row gap-4 sm:gap-6">
                   <div className="grid gap-4 sm:grid-cols-6 sm:gap-6 w-full order-2 md:order-1">
                     <div className="sm:col-span-6">
@@ -685,7 +727,14 @@ export default function AddProduct() {
                   type="submit"
                   className="text-gray-900 bg-white mt-4 sm:mt-6 border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"
                 >
-                  Add product
+                  Edit product
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleDeleteProduct()}
+                  className="focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900"
+                >
+                  Delete product
                 </button>
               </Form>
             )}
