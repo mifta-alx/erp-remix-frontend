@@ -3,7 +3,8 @@ import { useEffect } from "react";
 function useClickOutside(ref, handler) {
     useEffect(() => {
         const listener = (event) => {
-            if (!ref.current || ref.current.contains(event.target)) {
+            // Periksa apakah ref tidak mengandung target, dan pastikan elemen yang diklik bukan pemicu dropdown
+            if (!ref.current || ref.current.contains(event.target) || event.target.dataset.toggle === "dropdown") {
                 return;
             }
             handler();

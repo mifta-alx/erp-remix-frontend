@@ -1,4 +1,4 @@
-import { CaretDown, CaretUp, List, Moon, Sun } from "@phosphor-icons/react";
+import { CaretDown, List, Moon, Sun } from "@phosphor-icons/react";
 import { Outlet, NavLink, useLocation } from "@remix-run/react";
 import { useState, useEffect, useRef } from "react";
 import { useColorScheme } from "../context/ColorScheme";
@@ -6,7 +6,7 @@ import useClickOutside from "../hooks/useClickOutside";
 
 export default function _mainLayout() {
   const [showNav, setShowNav] = useState(false);
-  const [showDropdown, setShowDropdown] = useState(false);
+  const [showDropdown, setShowDropdown] = useState(null);
   const dropdownRef = useRef(null);
   const navRef = useRef(null);
   const { theme, toggleTheme } = useColorScheme();
@@ -14,19 +14,19 @@ export default function _mainLayout() {
 
   function toggleNav() {
     setShowNav(!showNav);
-    setShowDropdown(false);
+    setShowDropdown(null);
   }
 
-  function toggleDropdown() {
-    setShowDropdown(!showDropdown);
+  function toggleDropdown(type) {
+    setShowDropdown((prev) => (prev === type ? null : type)); // Toggle hanya untuk dropdown tertentu
   }
 
   useEffect(() => {
     setShowNav(false);
-    setShowDropdown(false);
+    setShowDropdown(null);
   }, [location]);
 
-  useClickOutside(dropdownRef, () => setShowDropdown(false));
+  useClickOutside(dropdownRef, () => setShowDropdown(null));
 
   return (
     <>
@@ -54,16 +54,24 @@ export default function _mainLayout() {
                 </li>
                 <li>
                   <button
+                      data-toggle="dropdown"
                     className={`
                     flex items-center gap-1.5 text-sm font-medium text-gray-900 hover:text-primary-700 dark:text-white dark:hover:text-primary-500`}
-                    onClick={toggleDropdown}
+                      onClick={() => toggleDropdown('manufacturing')}
                   >
                     Manufacturing
-                    {!showDropdown ? (
                       <CaretDown size={12} weight="bold" />
-                    ) : (
-                      <CaretUp size={12} weight="bold" />
-                    )}
+                  </button>
+                </li>
+                <li>
+                  <button
+                      data-toggle="dropdown"
+                    className={`
+                    flex items-center gap-1.5 text-sm font-medium text-gray-900 hover:text-primary-700 dark:text-white dark:hover:text-primary-500`}
+                      onClick={() => toggleDropdown('purchase')}
+                  >
+                    Purchase
+                      <CaretDown size={12} weight="bold" />
                   </button>
                 </li>
               </ul>
@@ -76,132 +84,8 @@ export default function _mainLayout() {
               >
                 {theme === "dark" ? <Sun size={20} /> : <Moon size={20} />}
               </button>
-
-              {/* <button
-                id="userDropdownButton1"
-                data-dropdown-toggle="userDropdown1"
-                type="button"
-                className="inline-flex items-center rounded-lg justify-center p-2 hover:bg-gray-100 dark:hover:bg-gray-700 text-sm font-medium leading-none text-gray-900 dark:text-white"
-              >
-                <svg
-                  className="w-5 h-5 me-1"
-                  aria-hidden="true"
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke="currentColor"
-                    stroke-width="2"
-                    d="M7 17v1a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1a3 3 0 0 0-3-3h-4a3 3 0 0 0-3 3Zm8-9a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
-                  />
-                </svg>
-                Account
-                <svg
-                  className="w-4 h-4 text-gray-900 dark:text-white ms-1"
-                  aria-hidden="true"
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke="currentColor"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="m19 9-7 7-7-7"
-                  />
-                </svg>
-              </button>
-
-              <div
-                id="userDropdown1"
-                className="hidden z-10 w-56 divide-y divide-gray-100 overflow-hidden overflow-y-auto rounded-lg bg-white antialiased shadow dark:divide-gray-600 dark:bg-gray-700"
-              >
-                <ul className="p-2 text-start text-sm font-medium text-gray-900 dark:text-white">
-                  <li>
-                    <a
-                      href="#"
-                      title=""
-                      className="inline-flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-600"
-                    >
-                      {" "}
-                      My Account{" "}
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href="#"
-                      title=""
-                      className="inline-flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-600"
-                    >
-                      {" "}
-                      My Orders{" "}
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href="#"
-                      title=""
-                      className="inline-flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-600"
-                    >
-                      {" "}
-                      Settings{" "}
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href="#"
-                      title=""
-                      className="inline-flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-600"
-                    >
-                      {" "}
-                      Favourites{" "}
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href="#"
-                      title=""
-                      className="inline-flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-600"
-                    >
-                      {" "}
-                      Delivery Addresses{" "}
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href="#"
-                      title=""
-                      className="inline-flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-600"
-                    >
-                      {" "}
-                      Billing Data{" "}
-                    </a>
-                  </li>
-                </ul>
-
-                <div className="p-2 text-sm font-medium text-gray-900 dark:text-white">
-                  <a
-                    href="#"
-                    title=""
-                    className="inline-flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-600"
-                  >
-                    {" "}
-                    Sign Out{" "}
-                  </a>
-                </div>
-              </div> */}
-
               <button
                 type="button"
-                data-collapse-toggle="ecommerce-navbar-menu-1"
-                aria-controls="ecommerce-navbar-menu-1"
-                aria-expanded="false"
                 onClick={toggleNav}
                 className="inline-flex lg:hidden items-center justify-center hover:bg-gray-100 rounded-md dark:hover:bg-gray-700 p-2 text-gray-900 dark:text-white"
               >
@@ -229,23 +113,31 @@ export default function _mainLayout() {
               </li>
               <li>
                 <button
+                    data-toggle="dropdown"
                   className={`
                     flex items-center gap-1.5 text-sm font-medium text-gray-900 hover:text-primary-700 dark:text-white dark:hover:text-primary-500`}
-                  onClick={toggleDropdown}
+                  onClick={() => toggleDropdown('manufacturing')}
                 >
                   Manufacturing
-                  {!showDropdown ? (
                     <CaretDown size={12} weight="bold" />
-                  ) : (
-                    <CaretUp size={12} weight="bold" />
-                  )}
+                </button>
+              </li>
+              <li>
+                <button
+                    data-toggle="dropdown"
+                  className={`
+                    flex items-center gap-1.5 text-sm font-medium text-gray-900 hover:text-primary-700 dark:text-white dark:hover:text-primary-500`}
+                  onClick={() => toggleDropdown('purchase')}
+                >
+                  Purchase
+                    <CaretDown size={12} weight="bold" />
                 </button>
               </li>
             </ul>
           </div>
         </div>
 
-        {showDropdown && (
+        {showDropdown === 'manufacturing' && (
           <div
             ref={dropdownRef}
             id="mega-menu-full-dropdown"
@@ -325,6 +217,35 @@ export default function _mainLayout() {
                   <div className="font-semibold">Manufacturing Orders</div>
                   <span className="text-sm text-gray-500 dark:text-gray-400">
                     Manage manufacturing orders.
+                  </span>
+                </NavLink>
+              </li>
+            </ul>
+          </div>
+        )}
+        {showDropdown === 'purchase' && (
+          <div
+            ref={dropdownRef}
+            id="mega-menu-full-dropdown"
+            className="mt-1 border-gray-200 shadow-sm bg-gray-50 md:bg-white border-y dark:bg-gray-900 dark:border-gray-600"
+          >
+            <ul className="grid max-w-screen-lg px-4 py-5 mx-auto text-gray-900 dark:text-white sm:grid-cols-2 md:px-6 gap-2">
+              <li>
+                <NavLink
+                  to="/purchase/vendors"
+                  className={({ isActive, isPending }) =>
+                    `block p-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 ${
+                      isPending
+                        ? "pending"
+                        : isActive
+                        ? "bg-gray-100 dark:bg-gray-700"
+                        : ""
+                    }`
+                  }
+                >
+                  <div className="font-semibold">Vendors</div>
+                  <span className="text-sm text-gray-500 dark:text-gray-400">
+                    Manage all vendors.
                   </span>
                 </NavLink>
               </li>

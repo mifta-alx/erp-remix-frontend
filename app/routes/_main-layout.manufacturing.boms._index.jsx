@@ -82,7 +82,7 @@ export default function Bom() {
           {boms?.length > 0 && (
             <div className="flex items-center space-x-4">
               <Link
-                to={"/manufacturing/boms/add"}
+                to="/manufacturing/boms/add"
                 className="text-gray-900 bg-white gap-2 w-full md:w-fit hover:bg-gray-100 border border-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center justify-center dark:focus:ring-gray-600 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:bg-gray-700 me-2 mb-2"
               >
                 <Plus size={16} weight="bold" />
