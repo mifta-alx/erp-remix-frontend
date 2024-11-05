@@ -1,4 +1,4 @@
-import { Plus, CaretRight, Package, House } from "@phosphor-icons/react";
+import { CaretRight, House, Package, Plus } from "@phosphor-icons/react";
 import { Link, useLoaderData } from "@remix-run/react";
 import { formatPrice } from "../utils/formatPrice";
 
@@ -47,8 +47,7 @@ export const loader = async () => {
 };
 
 export default function Products() {
-  const { error, data, message, description, status } =
-    useLoaderData();
+  const { error, data, message, description, status } = useLoaderData();
   const products = data?.data || [];
 
   return (
@@ -115,7 +114,9 @@ export default function Products() {
                     key={index}
                     className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800 hover:bg-gray-100 hover:dark:bg-gray-700"
                   >
-                    <Link to={`/manufacturing/products/edit/${product.product_id}`}>
+                    <Link
+                      to={`/manufacturing/products/edit/${product.product_id}`}
+                    >
                       <div className="h-56 w-full">
                         <img
                           className="mx-auto w-full h-full object-cover rounded-md"
@@ -126,7 +127,10 @@ export default function Products() {
                       <div className="pt-6">
                         <div className="mb-4 flex items-center gap-2">
                           {product.tags.map((tag) => (
-                            <span className="rounded bg-primary-100 px-2.5 py-0.5 text-xs font-medium text-primary-800 dark:bg-primary-900 dark:text-primary-300" key={tag.id}>
+                            <span
+                              className="rounded bg-primary-100 px-2.5 py-0.5 text-xs font-medium text-primary-800 dark:bg-primary-900 dark:text-primary-300"
+                              key={tag.id}
+                            >
                               {tag.name}
                             </span>
                           ))}
@@ -138,7 +142,8 @@ export default function Products() {
                         <ul className="mt-2 flex items-center gap-4">
                           <li className="flex items-center gap-2">
                             <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                              {product.internal_reference && `[${product.internal_reference}]`}
+                              {product.internal_reference &&
+                                `[${product.internal_reference}]`}
                             </p>
                           </li>
                         </ul>
@@ -163,7 +168,7 @@ export default function Products() {
                   Get started by creating a new product
                 </p>
                 <Link
-                  to={"/manufacturing/products/add"}
+                  to="/manufacturing/products/add"
                   className="text-gray-900 bg-white gap-2 mt-6 w-fit hover:bg-gray-100 border border-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center justify-center dark:focus:ring-gray-600 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:bg-gray-700 me-2 mb-2"
                 >
                   <Plus size={16} weight="bold" />
