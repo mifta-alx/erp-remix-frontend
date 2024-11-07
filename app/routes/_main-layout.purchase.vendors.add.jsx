@@ -133,7 +133,7 @@ export default function AddVendors() {
   };
 
   //vendors category
-  const [selected, setSelected] = useState(null);
+  const [selected, setSelected] = useState('Company');
   const handleCheckboxChange = (type) => {
     setSelected(selected === type ? null : type);
   };
@@ -156,6 +156,7 @@ export default function AddVendors() {
     vendor_email: "",
     image_uuid: "",
   });
+  console.log(formData);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -287,8 +288,10 @@ export default function AddVendors() {
                           id="default-radio-1"
                           type="radio"
                           value=""
+                          checked={selected === 'Individual'}
                           name="default-radio"
                           className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                          onChange={() => handleCheckboxChange('Individual')}
                         />
                         <label
                           htmlFor="default-radio-1"
@@ -299,11 +302,12 @@ export default function AddVendors() {
                       </div>
                       <div className="flex items-center">
                         <input
-                          checked
                           id="default-radio-2"
                           type="radio"
                           value=""
+                          checked={selected === 'Company'}
                           name="default-radio"
+                          onChange={() => handleCheckboxChange('Company')}
                           className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
                         />
                         <label
@@ -313,48 +317,6 @@ export default function AddVendors() {
                           Company
                         </label>
                       </div>
-                      {/*<div className="flex flex-row">*/}
-                      {/*    <div className="flex items-center pr-4">*/}
-                      {/*        <input*/}
-                      {/*            type="checkbox"*/}
-                      {/*            name="vendor_type"*/}
-                      {/*            id="individual"*/}
-                      {/*            autoComplete="off"*/}
-                      {/*            checked={selected === 'Individual'}*/}
-                      {/*            className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"*/}
-                      {/*            onChange={() => handleCheckboxChange('Individual')}*/}
-                      {/*        />*/}
-                      {/*        <label*/}
-                      {/*            htmlFor="individual"*/}
-                      {/*            className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"*/}
-                      {/*        >*/}
-                      {/*            Individual*/}
-                      {/*        </label>*/}
-                      {/*    </div>*/}
-                      {/*    <div className="flex items-center">*/}
-                      {/*        <input*/}
-                      {/*            type="checkbox"*/}
-                      {/*            name="vendor_type"*/}
-                      {/*            id="company"*/}
-                      {/*            autoComplete="off"*/}
-                      {/*            checked={selected === 'Company'}*/}
-                      {/*            className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"*/}
-                      {/*            onChange={() => handleCheckboxChange('Company')}*/}
-                      {/*        />*/}
-                      {/*        <label*/}
-                      {/*            htmlFor="company"*/}
-                      {/*            className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"*/}
-                      {/*        >*/}
-                      {/*            Company*/}
-                      {/*        </label>*/}
-                      {/*    </div>*/}
-                      {/*</div>*/}
-
-                      {/* {actionData?.errors?.material_name && (
-                                                <p className="mt-2 text-sm text-red-600">
-                                                    {actionData?.errors.material_name}
-                                                </p>
-                                            )} */}
                     </div>
                     <div className="sm:col-span-6">
                       <label
@@ -368,11 +330,10 @@ export default function AddVendors() {
                         name="vendor_name"
                         id="vendor_name"
                         autoComplete="off"
-                        className={`bg-gray-50 border ${
-                          actionData?.errors?.vendor_name
-                            ? "border-red-500 dark:border-red-500"
-                            : "border-gray-300 dark:border-gray-600"
-                        } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
+                        className={`bg-gray-50 border ${actionData?.errors?.vendor_name
+                          ? "border-red-500 dark:border-red-500"
+                          : "border-gray-300 dark:border-gray-600"
+                          } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
                         placeholder="Type vendor name"
                         value={formData.vendor_name}
                         onChange={handleChange}
@@ -395,11 +356,10 @@ export default function AddVendors() {
                         name="vendor_street"
                         id="vendor_street"
                         autoComplete="off"
-                        className={`bg-gray-50 border ${
-                          actionData?.errors?.vendor_street
-                            ? "border-red-500 dark:border-red-500"
-                            : "border-gray-300 dark:border-gray-600"
-                        } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
+                        className={`bg-gray-50 border ${actionData?.errors?.vendor_street
+                          ? "border-red-500 dark:border-red-500"
+                          : "border-gray-300 dark:border-gray-600"
+                          } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
                         placeholder=""
                         value={formData.vendor_street}
                         onChange={handleChange}
@@ -423,11 +383,10 @@ export default function AddVendors() {
                         name="vendor_city"
                         id="vendor_city"
                         autoComplete="off"
-                        className={`bg-gray-50 border ${
-                          actionData?.errors?.vendor_city
-                            ? "border-red-500 dark:border-red-500"
-                            : "border-gray-300 dark:border-gray-600"
-                        } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
+                        className={`bg-gray-50 border ${actionData?.errors?.vendor_city
+                          ? "border-red-500 dark:border-red-500"
+                          : "border-gray-300 dark:border-gray-600"
+                          } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
                         placeholder=""
                         value={formData.vendor_city}
                         onChange={handleChange}
@@ -450,11 +409,10 @@ export default function AddVendors() {
                         name="vendor_state"
                         id="vendor_state"
                         autoComplete="off"
-                        className={`bg-gray-50 border ${
-                          actionData?.errors?.vendor_state
-                            ? "border-red-500 dark:border-red-500"
-                            : "border-gray-300 dark:border-gray-600"
-                        } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
+                        className={`bg-gray-50 border ${actionData?.errors?.vendor_state
+                          ? "border-red-500 dark:border-red-500"
+                          : "border-gray-300 dark:border-gray-600"
+                          } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
                         placeholder=""
                         value={formData.vendor_state}
                         onChange={handleChange}
@@ -477,11 +435,10 @@ export default function AddVendors() {
                         name="vendor_zip"
                         id="vendor_zip"
                         autoComplete="off"
-                        className={`bg-gray-50 border ${
-                          actionData?.errors?.vendor_zip
-                            ? "border-red-500 dark:border-red-500"
-                            : "border-gray-300 dark:border-gray-600"
-                        } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
+                        className={`bg-gray-50 border ${actionData?.errors?.vendor_zip
+                          ? "border-red-500 dark:border-red-500"
+                          : "border-gray-300 dark:border-gray-600"
+                          } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
                         placeholder="12345"
                         value={formData.vendor_zip}
                         onChange={handleChange}
@@ -504,11 +461,10 @@ export default function AddVendors() {
                         name="vendor_phone"
                         id="vendor_phone"
                         autoComplete="off"
-                        className={`bg-gray-50 border ${
-                          actionData?.errors?.vendor_phone
-                            ? "border-red-500 dark:border-red-500"
-                            : "border-gray-300 dark:border-gray-600"
-                        } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
+                        className={`bg-gray-50 border ${actionData?.errors?.vendor_phone
+                          ? "border-red-500 dark:border-red-500"
+                          : "border-gray-300 dark:border-gray-600"
+                          } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
                         placeholder=""
                         value={formData.vendor_phone}
                         onChange={handleChange}
@@ -532,11 +488,10 @@ export default function AddVendors() {
                         name="vendor_mobile"
                         id="vendor_mobile"
                         autoComplete="off"
-                        className={`bg-gray-50 border ${
-                          actionData?.errors?.vendor_mobile
-                            ? "border-red-500 dark:border-red-500"
-                            : "border-gray-300 dark:border-gray-600"
-                        } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
+                        className={`bg-gray-50 border ${actionData?.errors?.vendor_mobile
+                          ? "border-red-500 dark:border-red-500"
+                          : "border-gray-300 dark:border-gray-600"
+                          } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
                         placeholder=""
                         value={formData.vendor_mobile}
                         onChange={handleChange}
@@ -559,11 +514,10 @@ export default function AddVendors() {
                         name="vendor_email"
                         id="vendor_email"
                         autoComplete="off"
-                        className={`bg-gray-50 border ${
-                          actionData?.errors?.vendor_email
-                            ? "border-red-500 dark:border-red-500"
-                            : "border-gray-300 dark:border-gray-600"
-                        } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
+                        className={`bg-gray-50 border ${actionData?.errors?.vendor_email
+                          ? "border-red-500 dark:border-red-500"
+                          : "border-gray-300 dark:border-gray-600"
+                          } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
                         placeholder="example@gmail.com"
                         value={formData.vendor_email}
                         onChange={handleChange}
@@ -603,11 +557,10 @@ export default function AddVendors() {
                       </div>
                     ) : (
                       <div
-                        className={`bg-gray-50 border ${
-                          actionData?.errors?.image_uuid
-                            ? "border-red-500 dark:border-red-500 dark:hover:border-red-400"
-                            : "border-gray-300 dark:border-gray-600 dark:hover:border-gray-500"
-                        } flex flex-col items-center justify-center h-40 md:w-40 border-2 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-700 hover:bg-gray-100`}
+                        className={`bg-gray-50 border ${actionData?.errors?.image_uuid
+                          ? "border-red-500 dark:border-red-500 dark:hover:border-red-400"
+                          : "border-gray-300 dark:border-gray-600 dark:hover:border-gray-500"
+                          } flex flex-col items-center justify-center h-40 md:w-40 border-2 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-700 hover:bg-gray-100`}
                         onClick={handleFilePickerClick}
                       >
                         <div className="flex flex-col items-center justify-center pt-5 pb-6 text-gray-300 dark:text-gray-400 text-5xl">

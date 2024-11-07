@@ -319,49 +319,41 @@ export default function EditVendor() {
                             <Form onSubmit={handleUpdate} encType="multipart/form-data">
                                 <div className="flex flex-col md:flex-row gap-4 sm:gap-6">
                                     <div className="grid gap-4 sm:grid-cols-6 sm:gap-6 w-full order-2 md:order-1">
-                                        <div className="sm:col-span-6">
-                                            <div className="flex flex-row">
-                                                <div className="flex items-center pr-4">
-                                                    <input
-                                                        type="checkbox"
-                                                        name="vendor_type"
-                                                        id="individual"
-                                                        autoComplete="off"
-                                                        checked={selected === 'Individual'}
-                                                        className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                                                        onChange={() => handleCheckboxChange('Individual')}
-                                                    />
-                                                    <label
-                                                        htmlFor="individual"
-                                                        className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-                                                    >
-                                                        Individual
-                                                    </label>
-                                                </div>
-                                                <div className="flex items-center">
-                                                    <input
-                                                        type="checkbox"
-                                                        name="vendor_type"
-                                                        id="company"
-                                                        autoComplete="off"
-                                                        checked={selected === 'Company'}
-                                                        className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                                                        onChange={() => handleCheckboxChange('Company')}
-                                                    />
-                                                    <label
-                                                        htmlFor="company"
-                                                        className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-                                                    >
-                                                        Company
-                                                    </label>
-                                                </div>
+                                        <div className="sm:col-span-6 flex flex-row gap-3">
+                                            <div className="flex items-center">
+                                                <input
+                                                    id="default-radio-1"
+                                                    type="radio"
+                                                    value=""
+                                                    checked={selected === 'Individual'}
+                                                    name="default-radio"
+                                                    className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                                                    onChange={() => handleCheckboxChange('Individual')}
+                                                />
+                                                <label
+                                                    htmlFor="default-radio-1"
+                                                    className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                                                >
+                                                    Individual
+                                                </label>
                                             </div>
-
-                                            {/* {actionData?.errors?.material_name && (
-                                                <p className="mt-2 text-sm text-red-600">
-                                                    {actionData?.errors.material_name}
-                                                </p>
-                                            )} */}
+                                            <div className="flex items-center">
+                                                <input
+                                                    id="default-radio-2"
+                                                    type="radio"
+                                                    value=""
+                                                    checked={selected === 'Company'}
+                                                    name="default-radio"
+                                                    onChange={() => handleCheckboxChange('Company')}
+                                                    className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                                                />
+                                                <label
+                                                    htmlFor="default-radio-2"
+                                                    className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                                                >
+                                                    Company
+                                                </label>
+                                            </div>
                                         </div>
                                         <div className="sm:col-span-6">
                                             <label
@@ -415,166 +407,162 @@ export default function EditVendor() {
                                                 </p>
                                             )}
                                         </div>
-                                        <div className="sm:col-span-3">
-                                            <div className="">
-                                                <label
-                                                    htmlFor="city"
-                                                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                                                >
-                                                    City
-                                                </label>
-                                                <input
-                                                    type="text"
-                                                    name="vendor_city"
-                                                    id="vendor_city"
-                                                    autoComplete="off"
-                                                    className={`bg-gray-50 border ${actionData?.errors?.vendor_city
-                                                        ? "border-red-500 dark:border-red-500"
-                                                        : "border-gray-300 dark:border-gray-600"
-                                                        } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
-                                                    placeholder=""
-                                                    value={formData.vendor_city}
-                                                    onChange={handleChange}
-                                                />
-                                                {actionData?.errors?.vendor_city && (
-                                                    <p className="mt-2 text-sm text-red-600">
-                                                        {actionData?.errors.vendor_city}
-                                                    </p>
-                                                )}
-                                            </div>
-                                            <div className="pt-3">
-                                                <label
-                                                    htmlFor="vendor_state"
-                                                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                                                >
-                                                    State
-                                                </label>
-                                                <input
-                                                    type="text"
-                                                    name="vendor_state"
-                                                    id="vendor_state"
-                                                    autoComplete="off"
-                                                    className={`bg-gray-50 border ${actionData?.errors?.vendor_state
-                                                        ? "border-red-500 dark:border-red-500"
-                                                        : "border-gray-300 dark:border-gray-600"
-                                                        } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
-                                                    placeholder=""
-                                                    value={formData.vendor_state}
-                                                    onChange={handleChange}
-                                                />
-                                                {actionData?.errors?.vendor_state && (
-                                                    <p className="mt-2 text-sm text-red-600">
-                                                        {actionData?.errors.vendor_state}
-                                                    </p>
-                                                )}
-                                            </div>
-                                            <div className="pt-3">
-                                                <label
-                                                    htmlFor="vendor_zip"
-                                                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                                                >
-                                                    Zip
-                                                </label>
-                                                <input
-                                                    type="text"
-                                                    name="vendor_zip"
-                                                    id="vendor_zip"
-                                                    autoComplete="off"
-                                                    className={`bg-gray-50 border ${actionData?.errors?.vendor_zip
-                                                        ? "border-red-500 dark:border-red-500"
-                                                        : "border-gray-300 dark:border-gray-600"
-                                                        } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
-                                                    placeholder="12345"
-                                                    value={formData.vendor_zip}
-                                                    onChange={handleChange}
-                                                />
-                                                {actionData?.errors?.vendor_zip && (
-                                                    <p className="mt-2 text-sm text-red-600 dark:text-red-500">
-                                                        {actionData.errors.vendor_zip}
-                                                    </p>
-                                                )}
-                                            </div>
-
+                                        <div className="sm:col-span-2">
+                                            <label
+                                                htmlFor="city"
+                                                className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                                            >
+                                                City
+                                            </label>
+                                            <input
+                                                type="text"
+                                                name="vendor_city"
+                                                id="vendor_city"
+                                                autoComplete="off"
+                                                className={`bg-gray-50 border ${actionData?.errors?.vendor_city
+                                                    ? "border-red-500 dark:border-red-500"
+                                                    : "border-gray-300 dark:border-gray-600"
+                                                    } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
+                                                placeholder=""
+                                                value={formData.vendor_city}
+                                                onChange={handleChange}
+                                            />
+                                            {actionData?.errors?.vendor_city && (
+                                                <p className="mt-2 text-sm text-red-600">
+                                                    {actionData?.errors.vendor_city}
+                                                </p>
+                                            )}
                                         </div>
-                                        <div className="sm:col-span-3">
-                                            <div className="">
-                                                <label
-                                                    htmlFor="vendor_phone"
-                                                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                                                >
-                                                    Phone
-                                                </label>
-                                                <input
-                                                    type="text"
-                                                    name="vendor_phone"
-                                                    id="vendor_phone"
-                                                    autoComplete="off"
-                                                    className={`bg-gray-50 border ${actionData?.errors?.vendor_phone
-                                                        ? "border-red-500 dark:border-red-500"
-                                                        : "border-gray-300 dark:border-gray-600"
-                                                        } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
-                                                    placeholder=""
-                                                    value={formData.vendor_phone}
-                                                    onChange={handleChange}
-                                                />
-                                                {actionData?.errors?.vendor_phone && (
-                                                    <p className="mt-2 text-sm text-red-600">
-                                                        {actionData?.errors.vendor_phone}
-                                                    </p>
-                                                )}
-                                            </div>
-                                            <div className="pt-3">
-                                                <label
-                                                    htmlFor="vendor_mobile"
-                                                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                                                >
-                                                    Mobile
-                                                </label>
-                                                <input
-                                                    type="text"
-                                                    name="vendor_mobile"
-                                                    id="vendor_mobile"
-                                                    autoComplete="off"
-                                                    className={`bg-gray-50 border ${actionData?.errors?.vendor_mobile
-                                                        ? "border-red-500 dark:border-red-500"
-                                                        : "border-gray-300 dark:border-gray-600"
-                                                        } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
-                                                    placeholder=""
-                                                    value={formData.vendor_mobile}
-                                                    onChange={handleChange}
-                                                />
-                                                {actionData?.errors?.vendor_mobile && (
-                                                    <p className="mt-2 text-sm text-red-600">
-                                                        {actionData?.errors.vendor_mobile}
-                                                    </p>
-                                                )}
-                                            </div>
-                                            <div className="pt-3">
-                                                <label
-                                                    htmlFor="vendor_email"
-                                                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                                                >
-                                                    Email
-                                                </label>
-                                                <input
-                                                    type="text"
-                                                    name="vendor_email"
-                                                    id="vendor_email"
-                                                    autoComplete="off"
-                                                    className={`bg-gray-50 border ${actionData?.errors?.vendor_email
-                                                        ? "border-red-500 dark:border-red-500"
-                                                        : "border-gray-300 dark:border-gray-600"
-                                                        } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
-                                                    placeholder="example@gmail.com"
-                                                    value={formData.vendor_email}
-                                                    onChange={handleChange}
-                                                />
-                                                {actionData?.errors?.vendor_email && (
-                                                    <p className="mt-2 text-sm text-red-600 dark:text-red-500">
-                                                        {actionData.errors.vendor_email}
-                                                    </p>
-                                                )}
-                                            </div>
+                                        <div className="sm:col-span-2">
+                                            <label
+                                                htmlFor="vendor_state"
+                                                className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                                            >
+                                                State
+                                            </label>
+                                            <input
+                                                type="text"
+                                                name="vendor_state"
+                                                id="vendor_state"
+                                                autoComplete="off"
+                                                className={`bg-gray-50 border ${actionData?.errors?.vendor_state
+                                                    ? "border-red-500 dark:border-red-500"
+                                                    : "border-gray-300 dark:border-gray-600"
+                                                    } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
+                                                placeholder=""
+                                                value={formData.vendor_state}
+                                                onChange={handleChange}
+                                            />
+                                            {actionData?.errors?.vendor_state && (
+                                                <p className="mt-2 text-sm text-red-600">
+                                                    {actionData?.errors.vendor_state}
+                                                </p>
+                                            )}
+                                        </div>
+                                        <div className="sm:col-span-2">
+                                            <label
+                                                htmlFor="vendor_zip"
+                                                className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                                            >
+                                                Zip
+                                            </label>
+                                            <input
+                                                type="text"
+                                                name="vendor_zip"
+                                                id="vendor_zip"
+                                                autoComplete="off"
+                                                className={`bg-gray-50 border ${actionData?.errors?.vendor_zip
+                                                    ? "border-red-500 dark:border-red-500"
+                                                    : "border-gray-300 dark:border-gray-600"
+                                                    } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
+                                                placeholder="12345"
+                                                value={formData.vendor_zip}
+                                                onChange={handleChange}
+                                            />
+                                            {actionData?.errors?.vendor_zip && (
+                                                <p className="mt-2 text-sm text-red-600 dark:text-red-500">
+                                                    {actionData.errors.vendor_zip}
+                                                </p>
+                                            )}
+                                        </div>
+                                        <div className="sm:col-span-2">
+                                            <label
+                                                htmlFor="vendor_phone"
+                                                className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                                            >
+                                                Phone
+                                            </label>
+                                            <input
+                                                type="text"
+                                                name="vendor_phone"
+                                                id="vendor_phone"
+                                                autoComplete="off"
+                                                className={`bg-gray-50 border ${actionData?.errors?.vendor_phone
+                                                    ? "border-red-500 dark:border-red-500"
+                                                    : "border-gray-300 dark:border-gray-600"
+                                                    } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
+                                                placeholder=""
+                                                value={formData.vendor_phone}
+                                                onChange={handleChange}
+                                            />
+                                            {actionData?.errors?.vendor_phone && (
+                                                <p className="mt-2 text-sm text-red-600">
+                                                    {actionData?.errors.vendor_phone}
+                                                </p>
+                                            )}
+                                        </div>
+
+                                        <div className="sm:col-span-2">
+                                            <label
+                                                htmlFor="vendor_mobile"
+                                                className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                                            >
+                                                Mobile
+                                            </label>
+                                            <input
+                                                type="text"
+                                                name="vendor_mobile"
+                                                id="vendor_mobile"
+                                                autoComplete="off"
+                                                className={`bg-gray-50 border ${actionData?.errors?.vendor_mobile
+                                                    ? "border-red-500 dark:border-red-500"
+                                                    : "border-gray-300 dark:border-gray-600"
+                                                    } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
+                                                placeholder=""
+                                                value={formData.vendor_mobile}
+                                                onChange={handleChange}
+                                            />
+                                            {actionData?.errors?.vendor_mobile && (
+                                                <p className="mt-2 text-sm text-red-600">
+                                                    {actionData?.errors.vendor_mobile}
+                                                </p>
+                                            )}
+                                        </div>
+                                        <div className="sm:col-span-2">
+                                            <label
+                                                htmlFor="vendor_email"
+                                                className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                                            >
+                                                Email
+                                            </label>
+                                            <input
+                                                type="text"
+                                                name="vendor_email"
+                                                id="vendor_email"
+                                                autoComplete="off"
+                                                className={`bg-gray-50 border ${actionData?.errors?.vendor_email
+                                                    ? "border-red-500 dark:border-red-500"
+                                                    : "border-gray-300 dark:border-gray-600"
+                                                    } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
+                                                placeholder="example@gmail.com"
+                                                value={formData.vendor_email}
+                                                onChange={handleChange}
+                                            />
+                                            {actionData?.errors?.vendor_email && (
+                                                <p className="mt-2 text-sm text-red-600 dark:text-red-500">
+                                                    {actionData.errors.vendor_email}
+                                                </p>
+                                            )}
                                         </div>
                                     </div>
 
