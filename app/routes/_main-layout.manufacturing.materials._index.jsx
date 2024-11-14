@@ -1,6 +1,7 @@
 import { Plus, CaretRight, Package, House } from "@phosphor-icons/react";
 import { Link, useLoaderData } from "@remix-run/react";
 import { formatPrice } from "../utils/formatPrice";
+import { EmptyView, ErrorView } from "@views/index.js";
 
 export const meta = () => {
   return [
@@ -10,9 +11,7 @@ export const meta = () => {
 };
 
 export const loader = async () => {
-  let storageEndPoint = process.env.STORAGE_URL;
   try {
-
     const response = await fetch(`${process.env.API_URL}/materials`)
     if (!response.ok) {
       let errorMessage = "An error occurred.";
@@ -34,7 +33,7 @@ export const loader = async () => {
       };
     }
     const data = await response.json();
-    return { error: false, data, STORAGE_URL: storageEndPoint };
+    return { error: false, data };
   } catch (error) {
     return {
       error: true,
@@ -94,19 +93,11 @@ export default function Materials() {
         </div>
         {
           error ? (
-            <div className="py-48  px-4 mx-auto max-w-screen-xl lg:py-24 lg:px-6">
-              <div className="mx-auto max-w-screen-sm text-center">
-                <h1 className="mb-4 text-7xl tracking-tight font-extrabold lg:text-9xl text-primary-600 dark:text-primary-500">
-                  {status}
-                </h1>
-                <p className="mb-4 text-3xl tracking-tight first-letter:capitalize font-bold text-gray-900 md:text-4xl dark:text-white">
-                  {message}
-                </p>
-                <p className="mb-4 text-lg font-light text-gray-500 dark:text-gray-400">
-                  {description}
-                </p>
-              </div>
-            </div>
+            <ErrorView
+              status={status}
+              message={message}
+              description={description}
+            />
           ) : (
             <>
               {materials.length > 0 ? (
@@ -125,10 +116,12 @@ export default function Materials() {
                           />
                         </div>
                         <div className="pt-6">
-
                           <div className="mb-4 flex items-center gap-2">
                             {material.tags.map((tag) => (
-                              <span className="rounded bg-primary-100 px-2.5 py-0.5 text-xs font-medium text-primary-800 dark:bg-primary-900 dark:text-primary-300" key={tag.id}>
+                              <span
+                                className="rounded bg-primary-100 px-2.5 py-0.5 text-xs font-medium text-primary-800 dark:bg-primary-900 dark:text-primary-300"
+                                key={tag.id}
+                              >
                                 {tag.name}
                               </span>
                             ))}
@@ -136,15 +129,10 @@ export default function Materials() {
                           <p className="text-lg font-semibold leading-tight text-gray-900 dark:text-white">
                             {material.material_name}
                           </p>
-
-                          <ul className="mt-2 flex items-center gap-4">
-                            <li className="flex items-center gap-2">
-                              <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                                {material.internal_reference && `[${material.internal_reference}]`}
-                              </p>
-                            </li>
-                          </ul>
-
+                          <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                            {material.internal_reference &&
+                              `[${material.internal_reference}]`}
+                          </p>
                           <div className="mt-4 flex items-center justify-between gap-4">
                             <p className="text-2xl font-extrabold leading-tight text-gray-900 dark:text-white">
                               {formatPrice(material.sales_price)}
@@ -157,22 +145,11 @@ export default function Materials() {
                   ))}
                 </div>
               ) : (
-                <div className="border-dashed border-2 text-5xl border-gray-300 dark:border-gray-500 text-gray-300 dark:text-gray-500 flex rounded-lg h-full w-full items-center flex-col py-40 md:py-32">
-                  <Package />
-                  <p className="font-semibold text-sm text-gray-600 dark:text-white mt-4">
-                    No Material
-                  </p>
-                  <p className="font-normal text-sm text-gray-400 dark:text-gray-500 mt-1">
-                    Get started by creating a new Material
-                  </p>
-                  <Link
-                    to={"/manufacturing/materials/add"}
-                    className="text-gray-900 bg-white gap-2 mt-6 w-fit hover:bg-gray-100 border border-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center justify-center dark:focus:ring-gray-600 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:bg-gray-700 me-2 mb-2"
-                  >
-                    <Plus size={16} weight="bold" />
-                    Add Material
-                  </Link>
-                </div>
+                <EmptyView
+                section="material"
+                link="/manufacturing/materials/add"
+                icon={<Package />}
+              />
               )}
             </>
           )
