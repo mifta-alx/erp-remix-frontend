@@ -89,7 +89,7 @@ export default function AddProduct() {
   const fetcher = useFetcher();
   const navigate = useNavigate();
   const [actionData, setActionData] = useState();
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   //image upload
   const [image, setImage] = useState("");
   const [preview, setPreview] = useState("");
