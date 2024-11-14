@@ -15,6 +15,7 @@ import {
 } from "@remix-run/react";
 import useClickOutside from "@hooks/useClickOutside";
 import useDebounce from "@hooks/useDebounce";
+import { ErrorView, Loading } from "@views/index.js";
 
 export const meta = () => {
   return [
@@ -88,6 +89,7 @@ export default function AddProduct() {
   const fetcher = useFetcher();
   const navigate = useNavigate();
   const [actionData, setActionData] = useState();
+  const [loading, setLoading] = useState(true);
   //image upload
   const [image, setImage] = useState("");
   const [preview, setPreview] = useState("");
@@ -229,6 +231,7 @@ export default function AddProduct() {
   //submit data
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
       const response = await fetch(`${API_URL}/products`, {
         method: "POST",
@@ -268,10 +271,13 @@ export default function AddProduct() {
           notes: "",
           image_uuid: "",
         });
+        setLoading(false);
         navigate("/manufacturing/products");
       }
     } catch (error) {
       console.error(error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -279,19 +285,11 @@ export default function AddProduct() {
     <section>
       <div className="mx-auto max-w-screen-xl px-4 2xl:px-0">
         {error ? (
-          <div className="py-48  px-4 mx-auto max-w-screen-xl lg:py-24 lg:px-6">
-            <div className="mx-auto max-w-screen-sm text-center">
-              <h1 className="mb-4 text-7xl tracking-tight font-extrabold lg:text-9xl text-primary-600 dark:text-primary-500">
-                {status}
-              </h1>
-              <p className="mb-4 text-3xl tracking-tight first-letter:capitalize font-bold text-gray-900 md:text-4xl dark:text-white">
-                {message}
-              </p>
-              <p className="mb-4 text-lg font-light text-gray-500 dark:text-gray-400">
-                {description}
-              </p>
-            </div>
-          </div>
+          <ErrorView
+            status={status}
+            message={message}
+            description={description}
+          />
         ) : (
           <>
             <div className="mb-4 items-end justify-between space-y-4 sm:flex sm:space-y-0 md:mb-8">
@@ -332,10 +330,8 @@ export default function AddProduct() {
                 </h2>
               </div>
             </div>
-            {fetcher.state === "loading" ? (
-              <p className="text-center text-gray-500">
-                Adding product, please wait...
-              </p>
+            {loading ? (
+              <Loading />
             ) : (
               <Form onSubmit={handleSubmit} encType="multipart/form-data">
                 <div className="relative bg-white border-gray-200 dark:border-gray-700 border dark:bg-gray-800 rounded-lg mb-4 p-8">
@@ -606,7 +602,6 @@ export default function AddProduct() {
                             </div>
                           )}
                         </div>
-
                         {actionData?.errors?.product_tag && (
                           <p className="mt-2 text-sm text-red-600">
                             {actionData?.errors.product_tag}
