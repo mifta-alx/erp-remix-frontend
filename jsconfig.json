@@ -1,11 +1,11 @@
 {
   "include": [
-    "**/*.ts",
-    "**/*.tsx",
-    "**/.server/**/*.ts",
-    "**/.server/**/*.tsx",
-    "**/.client/**/*.ts",
-    "**/.client/**/*.tsx"
+    "**/*.js",
+    "**/*.jsx",
+    "**/.server/**/*.js",
+    "**/.server/**/*.jsx",
+    "**/.client/**/*.js",
+    "**/.client/**/*.jsx"
   ],
   "compilerOptions": {
     "lib": [
@@ -30,20 +30,28 @@
     "forceConsistentCasingInFileNames": true,
     "baseUrl": ".",
     "paths": {
-      "~/*": [
+      "@/*": [
         "./app/*"
+      ],
+      "@components/*": [
+        "./app/components/*"
       ],
       "@context/*": [
         "./app/context/*"
       ],
-      "@utils/*": [
-        "./src/utils/*"
-      ],
       "@hooks/*": [
-        "./src/hooks/*"
+        "./app/hooks/*"
+      ],
+      "@libs/*": [
+        "./app/libs/*"
+      ],
+      "@utils/*": [
+        "./app/utils/*"
+      ],
+      "@views/*": [
+        "./app/views/*"
       ]
     },
-    // Vite takes care of building everything, not tsc.
     "noEmit": true
   }
 }
