@@ -236,8 +236,8 @@ export default function EditProduct() {
   const [formData, setFormData] = useState({
     product_name: product.product_name || "",
     category_id: product.category_id || "",
-    sales_price: product.sales_price || "",
-    cost: product.cost || "",
+    sales_price: product.sales_price || 0,
+    cost: product.cost || 0,
     barcode: product.barcode || "",
     internal_reference: product.internal_reference || "",
     notes: product.notes || "",
@@ -263,8 +263,8 @@ export default function EditProduct() {
         body: JSON.stringify({
           product_name: formData.product_name,
           category_id: formData.category_id,
-          sales_price: formData.sales_price,
-          cost: formData.cost,
+          sales_price: formData.sales_price || 0,
+          cost: formData.cost || 0,
           barcode: formData.barcode,
           internal_reference: formData.internal_reference,
           notes: formData.notes,

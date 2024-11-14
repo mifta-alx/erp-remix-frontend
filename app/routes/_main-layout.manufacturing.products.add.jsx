@@ -241,8 +241,8 @@ export default function AddProduct() {
         body: JSON.stringify({
           product_name: formData.product_name,
           category_id: formData.category_id,
-          sales_price: formData.sales_price,
-          cost: formData.cost,
+          sales_price: formData.sales_price || 0,
+          cost: formData.cost || 0,
           barcode: formData.barcode,
           internal_reference: formData.internal_reference,
           notes: formData.notes,
