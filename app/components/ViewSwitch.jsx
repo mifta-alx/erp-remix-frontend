@@ -1,6 +1,9 @@
 import { Rows, SquaresFour } from "@phosphor-icons/react";
+import { useViewContext } from "@context/ViewScheme.jsx";
 
-const ViewSwitch = ({ view, onViewChange }) => {
+const ViewSwitch = () => {
+  const { view, changeView } = useViewContext();
+
   const buttonClass = (isActive) =>
     `inline-flex items-center px-4 py-2 text-sm font-medium border focus:z-10 ${
       isActive
@@ -12,7 +15,7 @@ const ViewSwitch = ({ view, onViewChange }) => {
     <div className="inline-flex rounded-md shadow-sm" role="group">
       <button
         type="button"
-        onClick={() => onViewChange("gallery")}
+        onClick={() => changeView("gallery")}
         className={`${buttonClass(view === "gallery")} rounded-s-lg`}
       >
         <SquaresFour
@@ -22,7 +25,7 @@ const ViewSwitch = ({ view, onViewChange }) => {
       </button>
       <button
         type="button"
-        onClick={() => onViewChange("list")}
+        onClick={() => changeView("list")}
         className={`${buttonClass(view === "list")} rounded-e-lg`}
       >
         <Rows weight={view === "list" ? "fill" : "regular"} size={20} />

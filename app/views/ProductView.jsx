@@ -1,7 +1,10 @@
-import { Link } from "@remix-run/react";
+import { Link, useNavigate } from "@remix-run/react";
 import { formatPrice } from "@utils/formatPrice.js";
+import { useViewContext } from "@context/ViewScheme.jsx";
 
-const ProductView = ({ view = "gallery", products }) => {
+const ProductView = ({ products }) => {
+  const { view } = useViewContext();
+  const navigate = useNavigate();
   return view === "gallery" ? (
     <div className="mb-4 grid gap-4 sm:grid-cols-2 md:mb-8 lg:grid-cols-3 xl:grid-cols-4">
       {products?.map((product, index) => (

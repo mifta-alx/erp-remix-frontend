@@ -8,7 +8,8 @@ import {
 } from "@remix-run/react";
 import type { LinksFunction, LoaderFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
-import { ColorSchemeProvider } from './context/ColorScheme';
+import { ColorSchemeProvider } from "@context/ColorScheme.jsx";
+import { ViewProvider } from "@context/ViewScheme.jsx";
 import { getThemeFromRequest } from "./utils/theme.server";
 import "./tailwind.css";
 
@@ -30,14 +31,14 @@ export const links: LinksFunction = () => [
 ];
 
 export const loader: LoaderFunction = async ({ request }) => {
-  const theme = await getThemeFromRequest(request) || 'light';
+  const theme = (await getThemeFromRequest(request)) || "light";
   return json<LoaderData>({ theme });
 };
 
 export function Layout({ children }: { children: React.ReactNode }) {
   const data = useLoaderData<LoaderData>();
 
-  const currentTheme = data?.theme || 'light';
+  const currentTheme = data?.theme || "light";
 
   return (
     <html lang="en" className={currentTheme === "dark" ? "dark" : ""}>
@@ -49,7 +50,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
       </head>
       <body>
         <ColorSchemeProvider initialTheme={currentTheme}>
-          {children}
+          <ViewProvider>{children}</ViewProvider>
         </ColorSchemeProvider>
         <ScrollRestoration />
         <Scripts />
