@@ -260,7 +260,7 @@ export default function AddMaterial() {
     }
   };
   const handleDiscard = () => {
-    navigate("/manufacturing/products");
+    navigate("/manufacturing/materials");
   };
 
   return (
