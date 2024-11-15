@@ -1,11 +1,11 @@
 import { CaretRight, House, Package, Plus } from "@phosphor-icons/react";
 import { Link, useLoaderData } from "@remix-run/react";
-import { formatPrice } from "@utils/formatPrice.js";
-import { EmptyView, ErrorView } from "@views/index.js";
+import { EmptyView, ErrorView, ProductView } from "@views/index.js";
+import { ViewSwitch } from "@components/index.js";
 
 export const meta = () => {
   return [
-    { title: "ERP-Products" },
+    { title: "F&F - Products" },
     { name: "description", content: "Management Products" },
   ];
 };
@@ -80,17 +80,19 @@ export default function Products() {
               Products
             </h2>
           </div>
-          {products.length > 0 && (
-            <div className="flex items-center space-x-4">
+
+          <div className="flex flex-row gap-4">
+            {products.length > 0 && (
               <Link
                 to="/manufacturing/products/add"
-                className="text-gray-900 bg-white gap-2 w-full md:w-fit hover:bg-gray-100 border border-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center justify-center dark:focus:ring-gray-600 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:bg-gray-700 me-2 mb-2"
+                className="text-gray-900 bg-white gap-2 w-full md:w-fit hover:bg-gray-100 border border-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center justify-center dark:focus:ring-gray-600 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:bg-gray-700"
               >
                 <Plus size={16} weight="bold" />
                 New
               </Link>
-            </div>
-          )}
+            )}
+            <ViewSwitch />
+          </div>
         </div>
         {error ? (
           <ErrorView
@@ -101,51 +103,7 @@ export default function Products() {
         ) : (
           <>
             {products.length > 0 ? (
-              <div className="mb-4 grid gap-4 sm:grid-cols-2 md:mb-8 lg:grid-cols-3 xl:grid-cols-4">
-                {products?.map((product, index) => (
-                  <div
-                    key={index}
-                    className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800 hover:bg-gray-100 hover:dark:bg-gray-700"
-                  >
-                    <Link
-                      to={`/manufacturing/products/edit/${product.product_id}`}
-                    >
-                      <div className="h-56 w-full">
-                        <img
-                          className="mx-auto w-full h-full object-cover rounded-md"
-                          src={product.image_url}
-                          alt={product.name}
-                        />
-                      </div>
-                      <div className="pt-6">
-                        <div className="mb-4 flex items-center gap-2">
-                          {product.tags.map((tag) => (
-                            <span
-                              className="rounded bg-primary-100 px-2.5 py-0.5 text-xs font-medium text-primary-800 dark:bg-primary-900 dark:text-primary-300"
-                              key={tag.id}
-                            >
-                              {tag.name}
-                            </span>
-                          ))}
-                        </div>
-                        <p className="text-lg font-semibold leading-tight text-gray-900 dark:text-white">
-                          {product.product_name}
-                        </p>
-                        <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                          {product.internal_reference &&
-                            `[${product.internal_reference}]`}
-                        </p>
-
-                        <div className="mt-4 flex items-center justify-between gap-4">
-                          <p className="text-2xl font-extrabold leading-tight text-gray-900 dark:text-white">
-                            {formatPrice(product.sales_price)}
-                          </p>
-                        </div>
-                      </div>
-                    </Link>
-                  </div>
-                ))}
-              </div>
+              <ProductView products={products} />
             ) : (
               <EmptyView
                 section="product"
