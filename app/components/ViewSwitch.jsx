@@ -12,7 +12,7 @@ const ViewSwitch = () => {
     }`;
 
   return (
-    <div className="inline-flex rounded-md shadow-sm" role="group">
+    <div className="inline-flex" role="group">
       <button
         type="button"
         onClick={() => changeView("gallery")}

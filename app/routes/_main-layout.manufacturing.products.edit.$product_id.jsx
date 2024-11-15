@@ -1,6 +1,7 @@
 import {
   Camera,
   CaretRight,
+  Check,
   House,
   TrashSimple,
   XCircle,
@@ -9,7 +10,6 @@ import { useEffect, useRef, useState } from "react";
 import {
   Form,
   Link,
-  useFetcher,
   useLoaderData,
   useNavigate,
   useParams,
@@ -18,47 +18,40 @@ import useClickOutside from "@hooks/useClickOutside";
 import useDebounce from "@hooks/useDebounce";
 import { ErrorView, Loading } from "@views/index.js";
 
-export const meta = () => {
+export const meta = ({ data }) => {
+  const formattedName = `${
+    data.product?.internal_reference
+      ? `[${data.product.internal_reference}]`
+      : ""
+  } ${data.product?.product_name || ""}`;
   return [
-    { title: "ERP-Edit Product" },
-    { name: "description", content: "Edit Product" },
+    { title: `F&F - ${formattedName}` },
+    { name: "description", content: `${formattedName}` },
   ];
 };
 
 export const loader = async ({ params }) => {
   let apiEndpoint = process.env.API_URL;
   try {
-    const [categoriesResponse, tagResponse, productResponse] =
-      await Promise.all([
-        fetch(`${process.env.API_URL}/categories`),
-        fetch(`${process.env.API_URL}/tags`),
-        fetch(`${process.env.API_URL}/products/${params.product_id}`),
-      ]);
-    if (!categoriesResponse.ok || !tagResponse.ok || !productResponse.ok) {
+    const [initResponse, productResponse] = await Promise.all([
+      fetch(`${process.env.API_URL}/init?categories&tags`),
+      fetch(`${process.env.API_URL}/products/${params.product_id}`),
+    ]);
+    if (!initResponse.ok || !productResponse.ok) {
       let errorMessage = "An error occurred.";
       let errorDescription = "Something went wrong while fetching products.";
-      let status;
-      if (!categoriesResponse.ok) {
-        status = categoriesResponse.status;
-        if (status === 404) {
-          errorMessage = "Categories Not Found";
-          errorDescription = "The categories you're looking for do not exist.";
-        }
-      } else if (!tagResponse.ok) {
-        status = tagResponse.status;
-        if (status === 404) {
-          errorMessage = "Tags Not Found";
-          errorDescription = "The tags you're looking for do not exist.";
-        }
-      } else if (!productResponse.ok) {
-        status = productResponse.status;
-        if (status === 404) {
-          errorMessage = "Products Not Found";
-          errorDescription = "The products you're looking for do not exist.";
-        }
-      }
+      let status = !initResponse.ok
+        ? initResponse.status
+        : productResponse.status;
 
-      if (status === 500) {
+      if (status === 404) {
+        errorMessage = !initResponse.ok
+          ? "Data Not Found"
+          : "Products Not Found";
+        errorDescription = !initResponse.ok
+          ? "The data you're looking for do not exist."
+          : "The product you're looking for do not exist.";
+      } else if (status === 500) {
         errorMessage = "Internal Server Error";
         errorDescription =
           "There is an issue on our server. Our team is working to resolve it.";
@@ -71,16 +64,15 @@ export const loader = async ({ params }) => {
       };
     }
 
-    const [categories, tags, product] = await Promise.all([
-      categoriesResponse.json(),
-      tagResponse.json(),
+    const [init, product] = await Promise.all([
+      initResponse.json(),
       productResponse.json(),
     ]);
 
     return {
       API_URL: apiEndpoint,
-      categories: categories.data,
-      tags: tags.data,
+      categories: init.data.categories,
+      tags: init.data.tags,
       product: product.data,
     };
   } catch (error) {
@@ -105,11 +97,13 @@ export default function EditProduct() {
     description,
     status,
   } = useLoaderData();
-  const fetcher = useFetcher();
   const params = useParams();
   const navigate = useNavigate();
   const [actionData, setActionData] = useState();
   const [loading, setLoading] = useState(false);
+  const formattedName = `${
+    product?.internal_reference ? `[${product.internal_reference}]` : ""
+  } ${product?.product_name || ""}`;
   //image upload
   const [image, setImage] = useState(product.image_uuid || "");
   const [preview, setPreview] = useState(product.image_url || "");
@@ -126,8 +120,6 @@ export default function EditProduct() {
   });
 
   const handleImageChange = async (event) => {
-    console.log(event.target.files[0]);
-
     const file = event.target.files[0];
     if (file) {
       const apiData = new FormData();
@@ -337,42 +329,61 @@ export default function EditProduct() {
           />
         ) : (
           <>
-            <div className="mb-4 items-end justify-between space-y-4 sm:flex sm:space-y-0 md:mb-8">
-              <div>
-                <nav className="flex" aria-label="Breadcrumb">
-                  <ol className="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse">
-                    <li className="inline-flex items-center">
+            <div className="mb-4 items-start justify-between gap-3 flex flex-col md:mb-8">
+              <nav className="flex" aria-label="Breadcrumb">
+                <ol className="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse">
+                  <li className="inline-flex items-center">
+                    <Link
+                      to={"/"}
+                      className="inline-flex items-center text-sm font-medium text-gray-700 hover:text-primary-600 dark:text-gray-400 dark:hover:text-white"
+                    >
+                      <House weight="fill" />
+                    </Link>
+                  </li>
+                  <li>
+                    <div className="flex items-center text-gray-400">
+                      <CaretRight size={18} weight="bold" />
                       <Link
-                        to={"/"}
-                        className="inline-flex items-center text-sm font-medium text-gray-700 hover:text-primary-600 dark:text-gray-400 dark:hover:text-white"
+                        to="/manufacturing/products"
+                        className="ms-1 text-sm font-medium text-gray-700 hover:text-primary-600 dark:text-gray-400 dark:hover:text-white md:ms-2"
                       >
-                        <House weight="fill" />
+                        Products
                       </Link>
-                    </li>
-                    <li>
-                      <div className="flex items-center text-gray-400">
-                        <CaretRight size={18} weight="bold" />
-                        <Link
-                          to="/manufacturing/products"
-                          className="ms-1 text-sm font-medium text-gray-700 hover:text-primary-600 dark:text-gray-400 dark:hover:text-white md:ms-2"
-                        >
-                          Products
-                        </Link>
-                      </div>
-                    </li>
-                    <li aria-current="page">
-                      <div className="flex items-center text-gray-400">
-                        <CaretRight size={18} weight="bold" />
-                        <span className="ms-1 text-sm font-medium text-gray-500 dark:text-gray-400 md:ms-2">
-                          Edit Product
-                        </span>
-                      </div>
-                    </li>
-                  </ol>
-                </nav>
-                <h2 className="mt-3 text-xl font-semibold text-gray-900 dark:text-white sm:text-2xl">
+                    </div>
+                  </li>
+                  <li aria-current="page">
+                    <div className="flex items-center text-gray-400">
+                      <CaretRight size={18} weight="bold" />
+                      <span className="ms-1 text-sm font-medium text-gray-500 dark:text-gray-400 md:ms-2">
+                        {formattedName}
+                      </span>
+                    </div>
+                  </li>
+                </ol>
+              </nav>
+
+              <div className="flex flex-col sm:flex-row gap-4 justify-between items-start w-full">
+                <h2 className="text-xl font-semibold text-gray-900 dark:text-white sm:text-2xl">
                   Product
                 </h2>
+                <div className="inline-flex w-full sm:w-fit" role="group">
+                  <button
+                    type="button"
+                    onClick={handleUpdate}
+                    className="inline-flex items-center px-4 py-2 gap-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-s-lg hover:bg-gray-100 hover:text-primary-700 focus:z-10 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:text-white dark:hover:bg-gray-700"
+                  >
+                    <Check size={16} />
+                    Save
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleDeleteProduct}
+                    className="inline-flex items-center px-4 py-2 gap-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-e-lg hover:bg-gray-100 hover:text-red-600 focus:z-10 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:text-white dark:hover:bg-gray-700"
+                  >
+                    <TrashSimple size={16} />
+                    Delete
+                  </button>
+                </div>
               </div>
             </div>
             {loading ? (
@@ -730,21 +741,6 @@ export default function EditProduct() {
                       )}
                     </div>
                   </div>
-                </div>
-                <div className="flex flex-row gap-3">
-                  <button
-                    type="submit"
-                    className="text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"
-                  >
-                    Update product
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleDeleteProduct()}
-                    className="focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900"
-                  >
-                    Delete product
-                  </button>
                 </div>
               </Form>
             )}
