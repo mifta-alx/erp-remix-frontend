@@ -85,7 +85,6 @@ const SearchInput = ({
               : "border-gray-300 dark:border-gray-600"
           } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
           placeholder={placeholder}
-          // value={searchTerm}
           value={inputValue}
           onChange={handleSearchChange}
           onFocus={() => setIsDropdownVisible(true)}
@@ -125,7 +124,9 @@ const SearchInput = ({
           </div>
         )}
       </div>
-      {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
+      {error && (
+        <p className="mt-2 text-sm text-red-600 dark:text-red-500">{error}</p>
+      )}
     </div>
   );
 };
