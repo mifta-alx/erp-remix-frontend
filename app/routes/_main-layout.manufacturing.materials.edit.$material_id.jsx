@@ -1,6 +1,7 @@
 import {
   Camera,
   CaretRight,
+  Check,
   House,
   TrashSimple,
   XCircle,
@@ -18,47 +19,40 @@ import useClickOutside from "@hooks/useClickOutside";
 import useDebounce from "@hooks/useDebounce";
 import { ErrorView, Loading } from "@views/index.js";
 
-export const meta = () => {
+export const meta = ({ data }) => {
+  const formattedName = `${data.material?.internal_reference
+    ? `[${data.material.internal_reference}]`
+    : ""
+    } ${data.material?.material_name || ""}`;
   return [
-    { title: "ERP-Edit Material" },
-    { name: "description", content: "Edit Material" },
+    { title: `F&F - ${formattedName}` },
+    { name: "description", content: `${formattedName}` },
   ];
 };
 
 export const loader = async ({ params }) => {
   let apiEndpoint = process.env.API_URL;
   try {
-    const [categoriesResponse, tagResponse, materialResponse] =
+    const [initResponse, materialResponse] =
       await Promise.all([
-        fetch(`${process.env.API_URL}/categories`),
-        fetch(`${process.env.API_URL}/tags`),
+        fetch(`${process.env.API_URL}/init?categories&tags`),
         fetch(`${process.env.API_URL}/materials/${params.material_id}`),
       ]);
-    if (!categoriesResponse.ok || !tagResponse.ok || !materialResponse.ok) {
+    if (!initResponse.ok || !materialResponse.ok) {
       let errorMessage = "An error occurred.";
       let errorDescription = "Something went wrong while fetching material.";
-      let status;
-      if (!categoriesResponse.ok) {
-        status = categoriesResponse.status;
-        if (status === 404) {
-          errorMessage = "Categories Not Found";
-          errorDescription = "The categories you're looking for do not exist.";
-        }
-      } else if (!tagResponse.ok) {
-        status = tagResponse.status;
-        if (status === 404) {
-          errorMessage = "Tags Not Found";
-          errorDescription = "The tags you're looking for do not exist.";
-        }
-      } else if (!materialResponse.ok) {
-        status = materialResponse.status;
-        if (status === 404) {
-          errorMessage = "Material Not Found";
-          errorDescription = "The material you're looking for do not exist.";
-        }
-      }
+      let status = !initResponse.ok
+        ? initResponse.status
+        : materialResponse.status;
 
-      if (status === 500) {
+      if (status === 404) {
+        errorMessage = !initResponse.ok
+          ? "Data Not Found"
+          : "Materials Not Found";
+        errorDescription = !initResponse.ok
+          ? "The data you're looking for do not exist."
+          : "The Material you're looking for do not exist.";
+      } else if (status === 500) {
         errorMessage = "Internal Server Error";
         errorDescription =
           "There is an issue on our server. Our team is working to resolve it.";
@@ -71,16 +65,15 @@ export const loader = async ({ params }) => {
       };
     }
 
-    const [categories, tags, material] = await Promise.all([
-      categoriesResponse.json(),
-      tagResponse.json(),
+    const [init, material] = await Promise.all([
+      initResponse.json(),
       materialResponse.json(),
     ]);
 
     return {
       API_URL: apiEndpoint,
-      categories: categories.data,
-      tags: tags.data,
+      categories: init.data.categories,
+      tags: init.data.tags,
       material: material.data,
     };
   } catch (error) {
@@ -106,11 +99,12 @@ export default function EditMaterial() {
     status,
   } = useLoaderData();
 
-  const fetcher = useFetcher();
   const params = useParams();
   const navigate = useNavigate();
   const [actionData, setActionData] = useState();
   const [loading, setLoading] = useState(false);
+  const formattedName = `${material?.internal_reference ? `[${material.internal_reference}]` : ""
+    } ${material?.material_name || ""}`;
   //image upload
   const [image, setImage] = useState(material?.image_uuid || "");
   const [preview, setPreview] = useState(material?.image_url || "");
@@ -127,8 +121,6 @@ export default function EditMaterial() {
   });
 
   const handleImageChange = async (event) => {
-    console.log(event.target.files[0]);
-
     const file = event.target.files[0];
     if (file) {
       const apiData = new FormData();
@@ -345,42 +337,61 @@ export default function EditMaterial() {
           />
         ) : (
           <>
-            <div className="mb-4 items-end justify-between space-y-4 sm:flex sm:space-y-0 md:mb-8">
-              <div>
-                <nav className="flex" aria-label="Breadcrumb">
-                  <ol className="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse">
-                    <li className="inline-flex items-center">
+            <div className="mb-4 items-start justify-between gap-3 flex flex-col md:mb-8">
+              <nav className="flex" aria-label="Breadcrumb">
+                <ol className="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse">
+                  <li className="inline-flex items-center">
+                    <Link
+                      to={"/"}
+                      className="inline-flex items-center text-sm font-medium text-gray-700 hover:text-primary-600 dark:text-gray-400 dark:hover:text-white"
+                    >
+                      <House weight="fill" />
+                    </Link>
+                  </li>
+                  <li>
+                    <div className="flex items-center text-gray-400">
+                      <CaretRight size={18} weight="bold" />
                       <Link
-                        to={"/"}
-                        className="inline-flex items-center text-sm font-medium text-gray-700 hover:text-primary-600 dark:text-gray-400 dark:hover:text-white"
+                        to="/manufacturing/materials"
+                        className="ms-1 text-sm font-medium text-gray-700 hover:text-primary-600 dark:text-gray-400 dark:hover:text-white md:ms-2"
                       >
-                        <House weight="fill" />
+                        Materials
                       </Link>
-                    </li>
-                    <li>
-                      <div className="flex items-center text-gray-400">
-                        <CaretRight size={18} weight="bold" />
-                        <Link
-                          to="/manufacturing/materials"
-                          className="ms-1 text-sm font-medium text-gray-700 hover:text-primary-600 dark:text-gray-400 dark:hover:text-white md:ms-2"
-                        >
-                          Materials
-                        </Link>
-                      </div>
-                    </li>
-                    <li aria-current="page">
-                      <div className="flex items-center text-gray-400">
-                        <CaretRight size={18} weight="bold" />
-                        <span className="ms-1 text-sm font-medium text-gray-500 dark:text-gray-400 md:ms-2">
-                          Edit Material
-                        </span>
-                      </div>
-                    </li>
-                  </ol>
-                </nav>
-                <h2 className="mt-3 text-xl font-semibold text-gray-900 dark:text-white sm:text-2xl">
+                    </div>
+                  </li>
+                  <li aria-current="page">
+                    <div className="flex items-center text-gray-400">
+                      <CaretRight size={18} weight="bold" />
+                      <span className="ms-1 text-sm font-medium text-gray-500 dark:text-gray-400 md:ms-2">
+                        {formattedName}
+                      </span>
+                    </div>
+                  </li>
+                </ol>
+              </nav>
+
+              <div className="flex flex-col sm:flex-row gap-4 justify-between items-start w-full">
+                <h2 className="text-xl font-semibold text-gray-900 dark:text-white sm:text-2xl">
                   Material
                 </h2>
+                <div className="inline-flex w-full sm:w-fit" role="group">
+                  <button
+                    type="button"
+                    onClick={handleUpdate}
+                    className="inline-flex items-center px-4 py-2 gap-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-s-lg hover:bg-gray-100 hover:text-primary-700 focus:z-10 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:text-white dark:hover:bg-gray-700"
+                  >
+                    <Check size={16} />
+                    Save
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleDeleteMaterial}
+                    className="inline-flex items-center px-4 py-2 gap-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-e-lg hover:bg-gray-100 hover:text-red-600 focus:z-10 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:text-white dark:hover:bg-gray-700"
+                  >
+                    <TrashSimple size={16} />
+                    Delete
+                  </button>
+                </div>
               </div>
             </div>
             {loading ? (
@@ -402,11 +413,10 @@ export default function EditMaterial() {
                           name="material_name"
                           id="material_name"
                           autoComplete="off"
-                          className={`bg-gray-50 border ${
-                            actionData?.errors?.material_name
-                              ? "border-red-500 dark:border-red-500"
-                              : "border-gray-300 dark:border-gray-600"
-                          } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
+                          className={`bg-gray-50 border ${actionData?.errors?.material_name
+                            ? "border-red-500 dark:border-red-500"
+                            : "border-gray-300 dark:border-gray-600"
+                            } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
                           placeholder="Type material name"
                           value={formData.material_name}
                           onChange={handleChange}
@@ -428,11 +438,10 @@ export default function EditMaterial() {
                         <select
                           id="category"
                           name="category_id"
-                          className={`bg-gray-50 border ${
-                            actionData?.errors?.category_id
-                              ? "border-red-500 dark:border-red-500"
-                              : "border-gray-300 dark:border-gray-600"
-                          } capitalize text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
+                          className={`bg-gray-50 border ${actionData?.errors?.category_id
+                            ? "border-red-500 dark:border-red-500"
+                            : "border-gray-300 dark:border-gray-600"
+                            } capitalize text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
                           value={formData.category_id}
                           onChange={handleChange}
                         >
@@ -468,11 +477,10 @@ export default function EditMaterial() {
                           name="sales_price"
                           id="price"
                           autoComplete="off"
-                          className={`bg-gray-50 border ${
-                            actionData?.errors?.sales_price
-                              ? "border-red-500 dark:border-red-500"
-                              : "border-gray-300 dark:border-gray-600"
-                          } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
+                          className={`bg-gray-50 border ${actionData?.errors?.sales_price
+                            ? "border-red-500 dark:border-red-500"
+                            : "border-gray-300 dark:border-gray-600"
+                            } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
                           placeholder="Rp. 0"
                           value={formData.sales_price}
                           onChange={handleChange}
@@ -495,11 +503,10 @@ export default function EditMaterial() {
                           name="cost"
                           id="cost"
                           autoComplete="off"
-                          className={`bg-gray-50 border ${
-                            actionData?.errors?.cost
-                              ? "border-red-500 dark:border-red-500"
-                              : "border-gray-300 dark:border-gray-600"
-                          } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
+                          className={`bg-gray-50 border ${actionData?.errors?.cost
+                            ? "border-red-500 dark:border-red-500"
+                            : "border-gray-300 dark:border-gray-600"
+                            } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
                           placeholder="Rp. 0"
                           value={formData.cost}
                           onChange={handleChange}
@@ -523,11 +530,10 @@ export default function EditMaterial() {
                           name="barcode"
                           id="barcode"
                           autoComplete="off"
-                          className={`bg-gray-50 border ${
-                            actionData?.errors?.barcode
-                              ? "border-red-500 dark:border-red-500"
-                              : "border-gray-300 dark:border-gray-600"
-                          } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
+                          className={`bg-gray-50 border ${actionData?.errors?.barcode
+                            ? "border-red-500 dark:border-red-500"
+                            : "border-gray-300 dark:border-gray-600"
+                            } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
                           placeholder="PRO-001"
                           value={formData.barcode}
                           onChange={handleChange}
@@ -550,11 +556,10 @@ export default function EditMaterial() {
                           name="internal_reference"
                           id="internal_reference"
                           autoComplete="off"
-                          className={`bg-gray-50 border ${
-                            actionData?.errors?.internal_reference
-                              ? "border-red-500 dark:border-red-500"
-                              : "border-gray-300 dark:border-gray-600"
-                          } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
+                          className={`bg-gray-50 border ${actionData?.errors?.internal_reference
+                            ? "border-red-500 dark:border-red-500"
+                            : "border-gray-300 dark:border-gray-600"
+                            } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
                           placeholder="PRO-001"
                           value={formData.internal_reference}
                           onChange={handleChange}
@@ -574,13 +579,12 @@ export default function EditMaterial() {
                         </label>
                         <div ref={dropdownRef} className="relative">
                           <div
-                            className={`bg-gray-50 border ${
-                              isOpen
-                                ? "border-primary-600 ring-1 ring-primary-600 dark:ring-primary-500 dark:border-primary-500"
-                                : actionData?.errors?.material_tag
+                            className={`bg-gray-50 border ${isOpen
+                              ? "border-primary-600 ring-1 ring-primary-600 dark:ring-primary-500 dark:border-primary-500"
+                              : actionData?.errors?.material_tag
                                 ? "border-red-500 dark:border-red-500"
                                 : "border-gray-300 dark:border-gray-600"
-                            } text-gray-900 text-sm rounded-lg flex flex-row gap-2 flex-wrap w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white`}
+                              } text-gray-900 text-sm rounded-lg flex flex-row gap-2 flex-wrap w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white`}
                           >
                             <div className="flex flex-wrap gap-2">
                               {selectedTags.map((tag) => (
@@ -708,11 +712,10 @@ export default function EditMaterial() {
                         </div>
                       ) : (
                         <div
-                          className={`bg-gray-50 border ${
-                            actionData?.errors?.image_uuid
-                              ? "border-red-500 dark:border-red-500 dark:hover:border-red-400"
-                              : "border-gray-300 dark:border-gray-600 dark:hover:border-gray-500"
-                          } flex flex-col items-center justify-center h-40 md:w-40 border-2 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-700 hover:bg-gray-100`}
+                          className={`bg-gray-50 border ${actionData?.errors?.image_uuid
+                            ? "border-red-500 dark:border-red-500 dark:hover:border-red-400"
+                            : "border-gray-300 dark:border-gray-600 dark:hover:border-gray-500"
+                            } flex flex-col items-center justify-center h-40 md:w-40 border-2 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-700 hover:bg-gray-100`}
                           onClick={handleFilePickerClick}
                         >
                           <div className="flex flex-col items-center justify-center pt-5 pb-6 text-gray-300 dark:text-gray-400 text-5xl">
@@ -738,21 +741,6 @@ export default function EditMaterial() {
                       )}
                     </div>
                   </div>
-                </div>
-                <div className="flex flex-row gap-3">
-                  <button
-                    type="submit"
-                    className="text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"
-                  >
-                    Update material
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleDeleteMaterial()}
-                    className="focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900"
-                  >
-                    Delete material
-                  </button>
                 </div>
               </Form>
             )}
