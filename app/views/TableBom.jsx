@@ -1,6 +1,7 @@
 import { XCircle } from "@phosphor-icons/react";
 import { TableSearchInput } from "@components/index.js";
 import { useRef, useState } from "react";
+import { formatToDecimal } from "@utils/formatDecimal.js";
 
 const TableBom = ({
   actionData,
@@ -38,12 +39,11 @@ const TableBom = ({
         ...prevMaterialsArr,
         {
           material_id: "",
-          material_qty: 1,
+          material_qty: formatToDecimal(1),
           searchTerm: "",
         },
       ];
 
-      // Focus the last added row
       setTimeout(() => {
         rowInputRefs.current[updatedMaterialsArr.length - 1]?.focus();
       }, 0);
@@ -66,12 +66,20 @@ const TableBom = ({
       return updatedMaterialsArr;
     });
   };
-  // const handleQuantitMaterialChange = (index, name, value) => {
-  //   const updatedMaterials = materialsArr.map((material, i) =>
-  //     i === index ? { ...material, [name]: value } : material
-  //   );
-  //   setMaterialsArr(updatedMaterials);
-  // };
+
+  const handleFormatDecimal = (index, value) => {
+    const updatedValue =
+      value === "" ? formatToDecimal(1) : formatToDecimal(parseFloat(value));
+
+    setMaterialsArr((prevMaterialsArr) => {
+      const updatedMaterialsArr = [...prevMaterialsArr];
+      updatedMaterialsArr[index] = {
+        ...updatedMaterialsArr[index],
+        material_qty: updatedValue,
+      };
+      return updatedMaterialsArr;
+    });
+  };
 
   const getDisplayStringMaterials = (item) => {
     return item.internal_reference
@@ -129,6 +137,7 @@ const TableBom = ({
                   onChange={(e) =>
                     handleMaterialChange(index, "material_qty", e.target.value)
                   }
+                  onBlur={(e) => handleFormatDecimal(index, e.target.value)}
                   autoComplete="off"
                 />
               </td>
