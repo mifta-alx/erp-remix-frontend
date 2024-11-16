@@ -12,7 +12,7 @@ const VendorView = ({ vendors }) => {
                     key={index}
                     className=" rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800 hover:bg-gray-100 hover:dark:bg-gray-700"
                 >
-                    <Link to={`/purchase/vendors/edit/${vendor.vendor_id}`}>
+                    <Link to={`/purchase/vendors/${vendor.vendor_id}`}>
                         <div className="flex flex-row gap-4">
                             <div className="h-24 w-24">
                                 <img
@@ -71,7 +71,7 @@ const VendorView = ({ vendors }) => {
                                 className="border-b dark:border-gray-700 text-sm cursor-pointer bg-white dark:bg-gray-800 hover:bg-gray-100 hover:dark:bg-gray-600 "
                                 key={index}
                                 onClick={() =>
-                                    navigate(`/purchase/vendors/edit/${vendor.vendor_id}`)
+                                    navigate(`/purchase/vendors/${vendor.vendor_id}`)
                                 }
                             >
                                 <td
