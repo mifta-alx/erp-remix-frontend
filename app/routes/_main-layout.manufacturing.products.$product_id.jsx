@@ -16,7 +16,7 @@ import {
 } from "@remix-run/react";
 import useClickOutside from "@hooks/useClickOutside";
 import useDebounce from "@hooks/useDebounce";
-import { ErrorView, Loading } from "@views/index.js";
+import { ErrorView } from "@views/index.js";
 
 export const meta = ({ data }) => {
   const formattedName = `${
@@ -30,7 +30,9 @@ export const meta = ({ data }) => {
   ];
 };
 
-export const loader = async ({ params }) => {
+export const loader = async ({ params, request }) => {
+  const referer = request.headers.get("Referer");
+  const showActionButton = referer && referer.includes("/products");
   let apiEndpoint = process.env.API_URL;
   try {
     const [initResponse, productResponse] = await Promise.all([
@@ -74,6 +76,7 @@ export const loader = async ({ params }) => {
       categories: init.data.categories,
       tags: init.data.tags,
       product: product.data,
+      showActionButton,
     };
   } catch (error) {
     return {
@@ -96,6 +99,7 @@ export default function EditProduct() {
     message,
     description,
     status,
+    showActionButton,
   } = useLoaderData();
   const params = useParams();
   const navigate = useNavigate();
@@ -366,384 +370,404 @@ export default function EditProduct() {
                 <h2 className="text-xl font-semibold text-gray-900 dark:text-white sm:text-2xl">
                   Product
                 </h2>
-                <div className="inline-flex w-full sm:w-fit" role="group">
-                  <button
-                    type="button"
-                    onClick={handleUpdate}
-                    className="inline-flex items-center px-4 py-2 gap-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-s-lg hover:bg-gray-100 hover:text-primary-700 focus:z-10 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:text-primary-500 dark:hover:bg-gray-700"
-                  >
-                    <Check size={16} />
-                    Save
-                  </button>
-                  <button
-                    type="button"
-                    onClick={handleDeleteProduct}
-                    className="inline-flex items-center px-4 py-2 gap-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-e-lg hover:bg-gray-100 hover:text-red-600 focus:z-10 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:text-red-500 dark:hover:bg-gray-700"
-                  >
-                    <TrashSimple size={16} />
-                    Delete
-                  </button>
-                </div>
-              </div>
-            </div>
-            {loading ? (
-              <Loading />
-            ) : (
-              <Form onSubmit={handleUpdate} encType="multipart/form-data">
-                <div className="relative bg-white border-gray-200 dark:border-gray-700 border dark:bg-gray-800 rounded-lg mb-4 p-8">
-                  <div className="flex flex-col md:flex-row gap-4 sm:gap-6">
-                    <div className="grid gap-4 sm:grid-cols-6 sm:gap-6 w-full order-2 md:order-1">
-                      <div className="sm:col-span-6">
-                        <label
-                          htmlFor="product_name"
-                          className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                        >
-                          Product Name
-                        </label>
-                        <input
-                          type="text"
-                          name="product_name"
-                          id="product_name"
-                          autoComplete="off"
-                          className={`bg-gray-50 border ${
-                            actionData?.errors?.product_name
-                              ? "border-red-500 dark:border-red-500"
-                              : "border-gray-300 dark:border-gray-600"
-                          } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
-                          placeholder="Type product name"
-                          value={formData.product_name}
-                          onChange={handleChange}
-                        />
-                        {actionData?.errors?.product_name && (
-                          <p className="mt-2 text-sm text-red-600">
-                            {actionData?.errors.product_name}
-                          </p>
-                        )}
-                      </div>
-
-                      <div className="sm:col-span-2">
-                        <label
-                          htmlFor="category"
-                          className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                        >
-                          Product Category
-                        </label>
-                        <select
-                          id="category"
-                          name="category_id"
-                          className={`bg-gray-50 border ${
-                            actionData?.errors?.category_id
-                              ? "border-red-500 dark:border-red-500"
-                              : "border-gray-300 dark:border-gray-600"
-                          } capitalize text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
-                          value={formData.category_id}
-                          onChange={handleChange}
-                        >
-                          <option value="" hidden>
-                            Select category
-                          </option>
-                          {categories.length > 0 &&
-                            categories.map((category) => (
-                              <option
-                                key={category.category_id}
-                                value={category.category_id}
-                              >
-                                {category.category}
-                              </option>
-                            ))}
-                        </select>
-
-                        {actionData?.errors?.category_id && (
-                          <p className="mt-2 text-sm text-red-600">
-                            {actionData?.errors.category_id}
-                          </p>
-                        )}
-                      </div>
-                      <div className="sm:col-span-2">
-                        <label
-                          htmlFor="price"
-                          className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                        >
-                          Sales Price
-                        </label>
-                        <input
-                          type="text"
-                          name="sales_price"
-                          id="price"
-                          autoComplete="off"
-                          className={`bg-gray-50 border ${
-                            actionData?.errors?.sales_price
-                              ? "border-red-500 dark:border-red-500"
-                              : "border-gray-300 dark:border-gray-600"
-                          } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
-                          placeholder="Rp. 0"
-                          value={formData.sales_price}
-                          onChange={handleChange}
-                        />
-                        {actionData?.errors?.sales_price && (
-                          <p className="mt-2 text-sm text-red-600">
-                            {actionData?.errors.sales_price}
-                          </p>
-                        )}
-                      </div>
-                      <div className="sm:col-span-2">
-                        <label
-                          htmlFor="cost"
-                          className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                        >
-                          Cost
-                        </label>
-                        <input
-                          type="text"
-                          name="cost"
-                          id="cost"
-                          autoComplete="off"
-                          className={`bg-gray-50 border ${
-                            actionData?.errors?.cost
-                              ? "border-red-500 dark:border-red-500"
-                              : "border-gray-300 dark:border-gray-600"
-                          } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
-                          placeholder="Rp. 0"
-                          value={formData.cost}
-                          onChange={handleChange}
-                        />
-                        {actionData?.errors?.cost && (
-                          <p className="mt-2 text-sm text-red-600 dark:text-red-500">
-                            {actionData.errors.cost}
-                          </p>
-                        )}
-                      </div>
-
-                      <div className="sm:col-span-3">
-                        <label
-                          htmlFor="barcode"
-                          className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                        >
-                          Barcode
-                        </label>
-                        <input
-                          type="text"
-                          name="barcode"
-                          id="barcode"
-                          autoComplete="off"
-                          className={`bg-gray-50 border ${
-                            actionData?.errors?.barcode
-                              ? "border-red-500 dark:border-red-500"
-                              : "border-gray-300 dark:border-gray-600"
-                          } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
-                          placeholder="PRO-001"
-                          value={formData.barcode}
-                          onChange={handleChange}
-                        />
-                        {actionData?.errors?.barcode && (
-                          <p className="mt-2 text-sm text-red-600">
-                            {actionData?.errors.barcode}
-                          </p>
-                        )}
-                      </div>
-                      <div className="sm:col-span-3">
-                        <label
-                          htmlFor="internal_reference"
-                          className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                        >
-                          Internal Reference
-                        </label>
-                        <input
-                          type="text"
-                          name="internal_reference"
-                          id="internal_reference"
-                          autoComplete="off"
-                          className={`bg-gray-50 border ${
-                            actionData?.errors?.internal_reference
-                              ? "border-red-500 dark:border-red-500"
-                              : "border-gray-300 dark:border-gray-600"
-                          } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
-                          placeholder="PRO-001"
-                          value={formData.internal_reference}
-                          onChange={handleChange}
-                        />
-                        {actionData?.errors?.internal_reference && (
-                          <p className="mt-2 text-sm text-red-600">
-                            {actionData?.errors.internal_reference}
-                          </p>
-                        )}
-                      </div>
-                      <div className="sm:col-span-6">
-                        <label
-                          htmlFor="product_tag"
-                          className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                        >
-                          Product Tag
-                        </label>
-                        <div ref={dropdownRef} className="relative">
-                          <div
-                            className={`bg-gray-50 border ${
-                              isOpen
-                                ? "border-primary-600 ring-1 ring-primary-600 dark:ring-primary-500 dark:border-primary-500"
-                                : actionData?.errors?.product_tag
-                                ? "border-red-500 dark:border-red-500"
-                                : "border-gray-300 dark:border-gray-600"
-                            } text-gray-900 text-sm rounded-lg flex flex-row gap-2 flex-wrap w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white`}
+                {showActionButton && (
+                  <div className="inline-flex w-full sm:w-fit" role="group">
+                    <button
+                      type="button"
+                      onClick={handleUpdate}
+                      className="inline-flex items-center w-full sm:w-fit px-4 py-2 gap-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-s-lg hover:bg-gray-100 hover:text-primary-700 focus:z-10 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:text-primary-500 dark:hover:bg-gray-700"
+                    >
+                      {loading ? (
+                        <div role="status">
+                          <svg
+                            aria-hidden="true"
+                            className="inline w-4 h-4 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600"
+                            viewBox="0 0 100 101"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
                           >
-                            <div className="flex flex-wrap gap-2">
-                              {selectedTags.map((tag) => (
-                                <div
-                                  key={tag.id}
-                                  className="flex items-center rounded bg-primary-100 dark:bg-primary-900 px-2 py-0.5 gap-2 text-xs font-medium text-primary-800 dark:text-primary-300"
-                                >
-                                  <span>{tag.name}</span>
-                                  <button
-                                    type="button"
-                                    onClick={() => handleRemoveTag(tag.id)}
-                                    className="cursor-pointer"
-                                  >
-                                    <XCircle weight="fill" />
-                                  </button>
-                                </div>
-                              ))}
-                            </div>
-                            <input
-                              type="text"
-                              name="product_tag"
-                              id="product_tag"
-                              placeholder="Food, Clothes, etc"
-                              autoComplete="off"
-                              className="flex-grow outline-0 bg-transparent"
-                              value={tagKeywords}
-                              onFocus={() => setIsOpen(true)}
-                              onChange={(e) => setTagKeywords(e.target.value)}
+                            <path
+                              d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+                              fill="currentColor"
                             />
-                          </div>
-                          {isOpen && (
-                            <div
-                              className={
-                                "border-gray-300 dark:border-gray-600 border-[1px] absolute z-10 mt-1.5 w-full bg-gray-50 dark:bg-gray-700 rounded-lg max-h-40 overflow-y-auto space-y-1 shadow-md"
-                              }
-                            >
-                              <ul className="py-2 text-sm text-gray-700 dark:text-gray-200">
-                                {tagResults.length > 0 ? (
-                                  tagResults.map((tag, index) => (
-                                    <li key={index}>
-                                      <button
-                                        type="button"
-                                        className="inline-flex w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-600 dark:hover:text-white"
-                                        onClick={() => handleSelectTag(tag)}
-                                      >
-                                        <p>{tag.name}</p>
-                                      </button>
-                                    </li>
-                                  ))
-                                ) : tagKeywords ? (
-                                  tagAlreadySelected ? (
-                                    <li className="inline-flex w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-400">
-                                      <p>{tagKeywords} already selected</p>
-                                    </li>
-                                  ) : (
-                                    <li>
-                                      <button
-                                        className="inline-flex w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-600 dark:hover:text-white"
-                                        type="button"
-                                        onClick={() => handleAddtag()}
-                                      >
-                                        <p>Create "{tagKeywords}" tag</p>
-                                      </button>
-                                    </li>
-                                  )
-                                ) : (
-                                  <li className="inline-flex w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-400">
-                                    <p>Start Typing...</p>
-                                  </li>
-                                )}
-                              </ul>
-                            </div>
-                          )}
-                        </div>
-
-                        {actionData?.errors?.product_tag && (
-                          <p className="mt-2 text-sm text-red-600">
-                            {actionData?.errors.product_tag}
-                          </p>
-                        )}
-                      </div>
-                      <div className="sm:col-span-6">
-                        <label
-                          htmlFor="notes"
-                          className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                        >
-                          Notes
-                        </label>
-                        <textarea
-                          id="notes"
-                          rows="4"
-                          name="notes"
-                          className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                          placeholder="Your notes here"
-                          value={formData.notes}
-                          onChange={handleChange}
-                        ></textarea>
-                      </div>
-                    </div>
-
-                    <div className="md:mt-7 order-1 md:order-2">
-                      {preview ? (
-                        <div
-                          className="relative cursor-pointer h-40 md:w-40"
-                          onMouseEnter={() => setIsHovered(true)}
-                          onMouseLeave={() => setIsHovered(false)}
-                        >
-                          <img
-                            src={preview}
-                            alt="Image Preview"
-                            className="h-full w-full object-cover rounded-lg"
-                          />
-                          {isHovered && (
-                            <div className="absolute top-0 right-0 left-0 bottom-0 rounded-lg flex items-center justify-center">
-                              <div className="absolute dark:bg-gray-800 bg-gray-600 rounded-lg opacity-40 w-full h-full" />
-                              <button
-                                type="button"
-                                className="bg-white dark:bg-gray-800 z-10 hover:dark:bg-gray-900 hover:bg-gray-100 text-gray-700 dark:text-gray-400 hover:dark:text-gray-500 hover:text-gray-600 text-2xl p-4 rounded-full"
-                                onClick={() => handleDeleteImage(image)}
-                              >
-                                <TrashSimple weight="bold" />
-                              </button>
-                            </div>
-                          )}
+                            <path
+                              d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+                              fill="currentFill"
+                            />
+                          </svg>
+                          <span className="sr-only">Loading...</span>
                         </div>
                       ) : (
-                        <div
-                          className={`bg-gray-50 border ${
-                            actionData?.errors?.image_uuid
-                              ? "border-red-500 dark:border-red-500 dark:hover:border-red-400"
-                              : "border-gray-300 dark:border-gray-600 dark:hover:border-gray-500"
-                          } flex flex-col items-center justify-center h-40 md:w-40 border-2 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-700 hover:bg-gray-100`}
-                          onClick={handleFilePickerClick}
-                        >
-                          <div className="flex flex-col items-center justify-center pt-5 pb-6 text-gray-300 dark:text-gray-400 text-5xl">
-                            <Camera />
-                            <p className="text-xs text-center mt-2 text-gray-300 dark:text-gray-400">
-                              Product Image
-                            </p>
-                          </div>
-                        </div>
+                        <Check size={16} />
                       )}
+                      Save
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleDeleteProduct}
+                      className="inline-flex items-center w-full sm:w-fit px-4 py-2 gap-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-e-lg hover:bg-gray-100 hover:text-red-600 focus:z-10 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:text-red-500 dark:hover:bg-gray-700"
+                    >
+                      <TrashSimple size={16} />
+                      Delete
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+            <Form onSubmit={handleUpdate} encType="multipart/form-data">
+              <div className="relative bg-white border-gray-200 dark:border-gray-700 border dark:bg-gray-800 rounded-lg mb-4 p-8">
+                <div className="flex flex-col md:flex-row gap-4 sm:gap-6">
+                  <div className="grid gap-4 sm:grid-cols-6 sm:gap-6 w-full order-2 md:order-1">
+                    <div className="sm:col-span-6">
+                      <label
+                        htmlFor="product_name"
+                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                      >
+                        Product Name
+                      </label>
                       <input
-                        ref={fileInputRef}
-                        id="image_file"
-                        type="file"
-                        className="hidden"
-                        accept="image/*"
-                        onChange={handleImageChange}
+                        type="text"
+                        name="product_name"
+                        id="product_name"
+                        autoComplete="off"
+                        className={`bg-gray-50 border ${
+                          actionData?.errors?.product_name
+                            ? "border-red-500 dark:border-red-500"
+                            : "border-gray-300 dark:border-gray-600"
+                        } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
+                        placeholder="Type product name"
+                        value={formData.product_name}
+                        onChange={handleChange}
                       />
-                      {actionData?.errors?.image_uuid && (
+                      {actionData?.errors?.product_name && (
                         <p className="mt-2 text-sm text-red-600">
-                          {actionData?.errors.image_uuid}
+                          {actionData?.errors.product_name}
                         </p>
                       )}
                     </div>
+
+                    <div className="sm:col-span-2">
+                      <label
+                        htmlFor="category"
+                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                      >
+                        Product Category
+                      </label>
+                      <select
+                        id="category"
+                        name="category_id"
+                        className={`bg-gray-50 border ${
+                          actionData?.errors?.category_id
+                            ? "border-red-500 dark:border-red-500"
+                            : "border-gray-300 dark:border-gray-600"
+                        } capitalize text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
+                        value={formData.category_id}
+                        onChange={handleChange}
+                      >
+                        <option value="" hidden>
+                          Select category
+                        </option>
+                        {categories.length > 0 &&
+                          categories.map((category) => (
+                            <option
+                              key={category.category_id}
+                              value={category.category_id}
+                            >
+                              {category.category}
+                            </option>
+                          ))}
+                      </select>
+
+                      {actionData?.errors?.category_id && (
+                        <p className="mt-2 text-sm text-red-600">
+                          {actionData?.errors.category_id}
+                        </p>
+                      )}
+                    </div>
+                    <div className="sm:col-span-2">
+                      <label
+                        htmlFor="price"
+                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                      >
+                        Sales Price
+                      </label>
+                      <input
+                        type="text"
+                        name="sales_price"
+                        id="price"
+                        autoComplete="off"
+                        className={`bg-gray-50 border ${
+                          actionData?.errors?.sales_price
+                            ? "border-red-500 dark:border-red-500"
+                            : "border-gray-300 dark:border-gray-600"
+                        } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
+                        placeholder="Rp. 0"
+                        value={formData.sales_price}
+                        onChange={handleChange}
+                      />
+                      {actionData?.errors?.sales_price && (
+                        <p className="mt-2 text-sm text-red-600">
+                          {actionData?.errors.sales_price}
+                        </p>
+                      )}
+                    </div>
+                    <div className="sm:col-span-2">
+                      <label
+                        htmlFor="cost"
+                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                      >
+                        Cost
+                      </label>
+                      <input
+                        type="text"
+                        name="cost"
+                        id="cost"
+                        autoComplete="off"
+                        className={`bg-gray-50 border ${
+                          actionData?.errors?.cost
+                            ? "border-red-500 dark:border-red-500"
+                            : "border-gray-300 dark:border-gray-600"
+                        } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
+                        placeholder="Rp. 0"
+                        value={formData.cost}
+                        onChange={handleChange}
+                      />
+                      {actionData?.errors?.cost && (
+                        <p className="mt-2 text-sm text-red-600 dark:text-red-500">
+                          {actionData.errors.cost}
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="sm:col-span-3">
+                      <label
+                        htmlFor="barcode"
+                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                      >
+                        Barcode
+                      </label>
+                      <input
+                        type="text"
+                        name="barcode"
+                        id="barcode"
+                        autoComplete="off"
+                        className={`bg-gray-50 border ${
+                          actionData?.errors?.barcode
+                            ? "border-red-500 dark:border-red-500"
+                            : "border-gray-300 dark:border-gray-600"
+                        } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
+                        placeholder="PRO-001"
+                        value={formData.barcode}
+                        onChange={handleChange}
+                      />
+                      {actionData?.errors?.barcode && (
+                        <p className="mt-2 text-sm text-red-600">
+                          {actionData?.errors.barcode}
+                        </p>
+                      )}
+                    </div>
+                    <div className="sm:col-span-3">
+                      <label
+                        htmlFor="internal_reference"
+                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                      >
+                        Internal Reference
+                      </label>
+                      <input
+                        type="text"
+                        name="internal_reference"
+                        id="internal_reference"
+                        autoComplete="off"
+                        className={`bg-gray-50 border ${
+                          actionData?.errors?.internal_reference
+                            ? "border-red-500 dark:border-red-500"
+                            : "border-gray-300 dark:border-gray-600"
+                        } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
+                        placeholder="PRO-001"
+                        value={formData.internal_reference}
+                        onChange={handleChange}
+                      />
+                      {actionData?.errors?.internal_reference && (
+                        <p className="mt-2 text-sm text-red-600">
+                          {actionData?.errors.internal_reference}
+                        </p>
+                      )}
+                    </div>
+                    <div className="sm:col-span-6">
+                      <label
+                        htmlFor="product_tag"
+                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                      >
+                        Product Tag
+                      </label>
+                      <div ref={dropdownRef} className="relative">
+                        <div
+                          className={`bg-gray-50 border ${
+                            isOpen
+                              ? "border-primary-600 ring-1 ring-primary-600 dark:ring-primary-500 dark:border-primary-500"
+                              : actionData?.errors?.product_tag
+                              ? "border-red-500 dark:border-red-500"
+                              : "border-gray-300 dark:border-gray-600"
+                          } text-gray-900 text-sm rounded-lg flex flex-row gap-2 flex-wrap w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white`}
+                        >
+                          <div className="flex flex-wrap gap-2">
+                            {selectedTags.map((tag) => (
+                              <div
+                                key={tag.id}
+                                className="flex items-center rounded bg-primary-100 dark:bg-primary-900 px-2 py-0.5 gap-2 text-xs font-medium text-primary-800 dark:text-primary-300"
+                              >
+                                <span>{tag.name}</span>
+                                <button
+                                  type="button"
+                                  onClick={() => handleRemoveTag(tag.id)}
+                                  className="cursor-pointer"
+                                >
+                                  <XCircle weight="fill" />
+                                </button>
+                              </div>
+                            ))}
+                          </div>
+                          <input
+                            type="text"
+                            name="product_tag"
+                            id="product_tag"
+                            placeholder="Food, Clothes, etc"
+                            autoComplete="off"
+                            className="flex-grow outline-0 bg-transparent"
+                            value={tagKeywords}
+                            onFocus={() => setIsOpen(true)}
+                            onChange={(e) => setTagKeywords(e.target.value)}
+                          />
+                        </div>
+                        {isOpen && (
+                          <div
+                            className={
+                              "border-gray-300 dark:border-gray-600 border-[1px] absolute z-10 mt-1.5 w-full bg-gray-50 dark:bg-gray-700 rounded-lg max-h-40 overflow-y-auto space-y-1 shadow-md"
+                            }
+                          >
+                            <ul className="py-2 text-sm text-gray-700 dark:text-gray-200">
+                              {tagResults.length > 0 ? (
+                                tagResults.map((tag, index) => (
+                                  <li key={index}>
+                                    <button
+                                      type="button"
+                                      className="inline-flex w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-600 dark:hover:text-white"
+                                      onClick={() => handleSelectTag(tag)}
+                                    >
+                                      <p>{tag.name}</p>
+                                    </button>
+                                  </li>
+                                ))
+                              ) : tagKeywords ? (
+                                tagAlreadySelected ? (
+                                  <li className="inline-flex w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-400">
+                                    <p>{tagKeywords} already selected</p>
+                                  </li>
+                                ) : (
+                                  <li>
+                                    <button
+                                      className="inline-flex w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-600 dark:hover:text-white"
+                                      type="button"
+                                      onClick={() => handleAddtag()}
+                                    >
+                                      <p>Create "{tagKeywords}" tag</p>
+                                    </button>
+                                  </li>
+                                )
+                              ) : (
+                                <li className="inline-flex w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-400">
+                                  <p>Start Typing...</p>
+                                </li>
+                              )}
+                            </ul>
+                          </div>
+                        )}
+                      </div>
+
+                      {actionData?.errors?.product_tag && (
+                        <p className="mt-2 text-sm text-red-600">
+                          {actionData?.errors.product_tag}
+                        </p>
+                      )}
+                    </div>
+                    <div className="sm:col-span-6">
+                      <label
+                        htmlFor="notes"
+                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                      >
+                        Notes
+                      </label>
+                      <textarea
+                        id="notes"
+                        rows="4"
+                        name="notes"
+                        className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                        placeholder="Your notes here"
+                        value={formData.notes}
+                        onChange={handleChange}
+                      ></textarea>
+                    </div>
+                  </div>
+
+                  <div className="md:mt-7 order-1 md:order-2">
+                    {preview ? (
+                      <div
+                        className="relative cursor-pointer h-40 md:w-40"
+                        onMouseEnter={() => setIsHovered(true)}
+                        onMouseLeave={() => setIsHovered(false)}
+                      >
+                        <img
+                          src={preview}
+                          alt="Image Preview"
+                          className="h-full w-full object-cover rounded-lg"
+                        />
+                        {isHovered && (
+                          <div className="absolute top-0 right-0 left-0 bottom-0 rounded-lg flex items-center justify-center">
+                            <div className="absolute dark:bg-gray-800 bg-gray-600 rounded-lg opacity-40 w-full h-full" />
+                            <button
+                              type="button"
+                              className="bg-white dark:bg-gray-800 z-10 hover:dark:bg-gray-900 hover:bg-gray-100 text-gray-700 dark:text-gray-400 hover:dark:text-gray-500 hover:text-gray-600 text-2xl p-4 rounded-full"
+                              onClick={() => handleDeleteImage(image)}
+                            >
+                              <TrashSimple weight="bold" />
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <div
+                        className={`bg-gray-50 border ${
+                          actionData?.errors?.image_uuid
+                            ? "border-red-500 dark:border-red-500 dark:hover:border-red-400"
+                            : "border-gray-300 dark:border-gray-600 dark:hover:border-gray-500"
+                        } flex flex-col items-center justify-center h-40 md:w-40 border-2 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-700 hover:bg-gray-100`}
+                        onClick={handleFilePickerClick}
+                      >
+                        <div className="flex flex-col items-center justify-center pt-5 pb-6 text-gray-300 dark:text-gray-400 text-5xl">
+                          <Camera />
+                          <p className="text-xs text-center mt-2 text-gray-300 dark:text-gray-400">
+                            Product Image
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                    <input
+                      ref={fileInputRef}
+                      id="image_file"
+                      type="file"
+                      className="hidden"
+                      accept="image/*"
+                      onChange={handleImageChange}
+                    />
+                    {actionData?.errors?.image_uuid && (
+                      <p className="mt-2 text-sm text-red-600">
+                        {actionData?.errors.image_uuid}
+                      </p>
+                    )}
                   </div>
                 </div>
-              </Form>
-            )}
+              </div>
+            </Form>
           </>
         )}
       </div>
