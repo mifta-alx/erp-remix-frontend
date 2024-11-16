@@ -12,7 +12,7 @@ const ProductView = ({ products }) => {
           key={index}
           className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800 hover:bg-gray-100 hover:dark:bg-gray-700"
         >
-          <Link to={`/manufacturing/products/edit/${product.product_id}`}>
+          <Link to={`/manufacturing/products/${product.product_id}`}>
             <div className="flex flex-row gap-4">
               <div className="h-24 w-24">
                 <img
@@ -67,7 +67,7 @@ const ProductView = ({ products }) => {
                 className="border-b dark:border-gray-700 text-sm cursor-pointer bg-white dark:bg-gray-800 hover:bg-gray-100 hover:dark:bg-gray-600 "
                 key={index}
                 onClick={() =>
-                  navigate(`/manufacturing/products/edit/${product.product_id}`)
+                  navigate(`/manufacturing/products/${product.product_id}`)
                 }
               >
                 <td
