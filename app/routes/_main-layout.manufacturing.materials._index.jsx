@@ -74,6 +74,7 @@ export default function Materials() {
               </li>
             </ol>
           </nav>
+
           <div className="flex flex-col sm:flex-row gap-4 justify-between items-start w-full">
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white sm:text-2xl">
               Materials
@@ -81,8 +82,8 @@ export default function Materials() {
             <div className="flex flex-row gap-4 w-full sm:w-fit">
               {materials.length > 0 && (
                 <Link
-                  to={"/manufacturing/materials/add"}
-                  className="text-gray-900 bg-white gap-2 w-full md:w-fit hover:bg-gray-100 border border-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2 text-center inline-flex items-center justify-center dark:focus:ring-gray-600 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:bg-gray-700 me-2 mb-2"
+                  to="/manufacturing/materials/add"
+                  className="text-gray-900 bg-white gap-2 w-full md:w-fit hover:bg-gray-100 border border-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2 text-center inline-flex items-center justify-center dark:focus:ring-gray-600 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:bg-gray-700"
                 >
                   <Plus size={16} weight="bold" />
                   New
