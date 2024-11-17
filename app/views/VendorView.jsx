@@ -1,5 +1,4 @@
 import { Link, useNavigate } from "@remix-run/react";
-import { formatPrice } from "@utils/formatPrice.js";
 import { useViewContext } from "@context/ViewScheme.jsx";
 
 const VendorView = ({ vendors }) => {

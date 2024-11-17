@@ -12,7 +12,7 @@ import { ErrorView } from "@views/index.js";
 
 export const meta = () => {
   return [
-    { title: "ERP - New Vendors" },
+    { title: "F&F - New Vendors" },
     { name: "description", content: "New Vendors" },
   ];
 };
@@ -134,7 +134,7 @@ export default function AddVendors() {
   };
 
   //vendors company
-  const [selected, setSelected] = useState("Company");
+  const [selected, setSelected] = useState("Individual");
   const handleCheckboxChange = (type) => {
     setSelected(selected === type ? null : type);
   };
@@ -157,7 +157,6 @@ export default function AddVendors() {
     vendor_email: "",
     image_uuid: "",
   });
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
@@ -165,6 +164,7 @@ export default function AddVendors() {
       [name]: value,
     }));
   };
+
   //submit data
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -188,7 +188,6 @@ export default function AddVendors() {
           image_url: preview,
         }),
       });
-      console.log(response);
       if (!response.ok) {
         const result = await response.json();
         setActionData({ errors: result.errors || {} });
@@ -265,7 +264,7 @@ export default function AddVendors() {
               </nav>
               <div className="flex flex-col sm:flex-row gap-4 justify-between items-start w-full">
                 <h2 className="text-xl font-semibold text-gray-900 dark:text-white sm:text-2xl">
-                  Product
+                  Vendors
                 </h2>
                 <div className="inline-flex w-full sm:w-fit" role="group">
                   <button
@@ -359,11 +358,10 @@ export default function AddVendors() {
                         name="vendor_name"
                         id="vendor_name"
                         autoComplete="off"
-                        className={`bg-gray-50 border ${
-                          actionData?.errors?.vendor_name
-                            ? "border-red-500 dark:border-red-500"
-                            : "border-gray-300 dark:border-gray-600"
-                        } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
+                        className={`bg-gray-50 border ${actionData?.errors?.vendor_name
+                          ? "border-red-500 dark:border-red-500"
+                          : "border-gray-300 dark:border-gray-600"
+                          } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
                         placeholder="Type vendor name"
                         value={formData.vendor_name}
                         onChange={handleChange}
@@ -376,22 +374,21 @@ export default function AddVendors() {
                     </div>
                     <div className="sm:col-span-6">
                       <label
-                        htmlFor="street"
+                        htmlFor="vendor_street"
                         className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                       >
-                        Street
+                        Vendor Street
                       </label>
                       <input
                         type="text"
                         name="vendor_street"
                         id="vendor_street"
                         autoComplete="off"
-                        className={`bg-gray-50 border ${
-                          actionData?.errors?.vendor_street
-                            ? "border-red-500 dark:border-red-500"
-                            : "border-gray-300 dark:border-gray-600"
-                        } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
-                        placeholder=""
+                        className={`bg-gray-50 border ${actionData?.errors?.vendor_street
+                          ? "border-red-500 dark:border-red-500"
+                          : "border-gray-300 dark:border-gray-600"
+                          } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
+                        placeholder="Type street name"
                         value={formData.vendor_street}
                         onChange={handleChange}
                       />
@@ -401,10 +398,9 @@ export default function AddVendors() {
                         </p>
                       )}
                     </div>
-
                     <div className="sm:col-span-2">
                       <label
-                        htmlFor="city"
+                        htmlFor="vendor_city"
                         className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                       >
                         City
@@ -414,12 +410,11 @@ export default function AddVendors() {
                         name="vendor_city"
                         id="vendor_city"
                         autoComplete="off"
-                        className={`bg-gray-50 border ${
-                          actionData?.errors?.vendor_city
-                            ? "border-red-500 dark:border-red-500"
-                            : "border-gray-300 dark:border-gray-600"
-                        } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
-                        placeholder=""
+                        className={`bg-gray-50 border ${actionData?.errors?.vendor_city
+                          ? "border-red-500 dark:border-red-500"
+                          : "border-gray-300 dark:border-gray-600"
+                          } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
+                        placeholder="Type street name"
                         value={formData.vendor_city}
                         onChange={handleChange}
                       />
@@ -441,18 +436,17 @@ export default function AddVendors() {
                         name="vendor_state"
                         id="vendor_state"
                         autoComplete="off"
-                        className={`bg-gray-50 border ${
-                          actionData?.errors?.vendor_state
-                            ? "border-red-500 dark:border-red-500"
-                            : "border-gray-300 dark:border-gray-600"
-                        } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
+                        className={`bg-gray-50 border ${actionData?.errors?.vendor_state
+                          ? "border-red-500 dark:border-red-500"
+                          : "border-gray-300 dark:border-gray-600"
+                          } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
                         placeholder=""
                         value={formData.vendor_state}
                         onChange={handleChange}
                       />
-                      {actionData?.errors?.vendor_state && (
+                      {actionData?.errors?.vendor_name && (
                         <p className="mt-2 text-sm text-red-600">
-                          {actionData?.errors.vendor_state}
+                          {actionData?.errors.vendor_name}
                         </p>
                       )}
                     </div>
@@ -468,18 +462,17 @@ export default function AddVendors() {
                         name="vendor_zip"
                         id="vendor_zip"
                         autoComplete="off"
-                        className={`bg-gray-50 border ${
-                          actionData?.errors?.vendor_zip
-                            ? "border-red-500 dark:border-red-500"
-                            : "border-gray-300 dark:border-gray-600"
-                        } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
+                        className={`bg-gray-50 border ${actionData?.errors?.vendor_zip
+                          ? "border-red-500 dark:border-red-500"
+                          : "border-gray-300 dark:border-gray-600"
+                          } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
                         placeholder="12345"
                         value={formData.vendor_zip}
                         onChange={handleChange}
                       />
                       {actionData?.errors?.vendor_zip && (
-                        <p className="mt-2 text-sm text-red-600 dark:text-red-500">
-                          {actionData.errors.vendor_zip}
+                        <p className="mt-2 text-sm text-red-600">
+                          {actionData?.errors.vendor_zip}
                         </p>
                       )}
                     </div>
@@ -495,11 +488,10 @@ export default function AddVendors() {
                         name="vendor_phone"
                         id="vendor_phone"
                         autoComplete="off"
-                        className={`bg-gray-50 border ${
-                          actionData?.errors?.vendor_phone
-                            ? "border-red-500 dark:border-red-500"
-                            : "border-gray-300 dark:border-gray-600"
-                        } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
+                        className={`bg-gray-50 border ${actionData?.errors?.vendor_phone
+                          ? "border-red-500 dark:border-red-500"
+                          : "border-gray-300 dark:border-gray-600"
+                          } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
                         placeholder=""
                         value={formData.vendor_phone}
                         onChange={handleChange}
@@ -523,11 +515,10 @@ export default function AddVendors() {
                         name="vendor_mobile"
                         id="vendor_mobile"
                         autoComplete="off"
-                        className={`bg-gray-50 border ${
-                          actionData?.errors?.vendor_mobile
-                            ? "border-red-500 dark:border-red-500"
-                            : "border-gray-300 dark:border-gray-600"
-                        } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
+                        className={`bg-gray-50 border ${actionData?.errors?.vendor_mobile
+                          ? "border-red-500 dark:border-red-500"
+                          : "border-gray-300 dark:border-gray-600"
+                          } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
                         placeholder=""
                         value={formData.vendor_mobile}
                         onChange={handleChange}
@@ -550,11 +541,10 @@ export default function AddVendors() {
                         name="vendor_email"
                         id="vendor_email"
                         autoComplete="off"
-                        className={`bg-gray-50 border ${
-                          actionData?.errors?.vendor_email
-                            ? "border-red-500 dark:border-red-500"
-                            : "border-gray-300 dark:border-gray-600"
-                        } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
+                        className={`bg-gray-50 border ${actionData?.errors?.vendor_email
+                          ? "border-red-500 dark:border-red-500"
+                          : "border-gray-300 dark:border-gray-600"
+                          } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
                         placeholder="example@gmail.com"
                         value={formData.vendor_email}
                         onChange={handleChange}
@@ -594,11 +584,10 @@ export default function AddVendors() {
                       </div>
                     ) : (
                       <div
-                        className={`bg-gray-50 border ${
-                          actionData?.errors?.image_uuid
-                            ? "border-red-500 dark:border-red-500 dark:hover:border-red-400"
-                            : "border-gray-300 dark:border-gray-600 dark:hover:border-gray-500"
-                        } flex flex-col items-center justify-center h-40 md:w-40 border-2 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-700 hover:bg-gray-100`}
+                        className={`bg-gray-50 border ${actionData?.errors?.image_uuid
+                          ? "border-red-500 dark:border-red-500 dark:hover:border-red-400"
+                          : "border-gray-300 dark:border-gray-600 dark:hover:border-gray-500"
+                          } flex flex-col items-center justify-center h-40 md:w-40 border-2 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-700 hover:bg-gray-100`}
                         onClick={handleFilePickerClick}
                       >
                         <div className="flex flex-col items-center justify-center pt-5 pb-6 text-gray-300 dark:text-gray-400 text-5xl">

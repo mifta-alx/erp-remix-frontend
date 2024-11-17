@@ -16,9 +16,8 @@ import {
 import { ErrorView } from "@views/index.js";
 
 export const meta = ({ data }) => {
-  const formattedName = `${
-    data.vendor?.internal_reference ? `[${data.vendor.internal_reference}]` : ""
-  } ${data.vendor?.vendor_name || ""}`;
+  const formattedName = `${data.vendor?.internal_reference ? `[${data.vendor.internal_reference}]` : ""
+    } ${data.vendor?.vendor_name || ""}`;
   return [
     { title: `F&F - ${formattedName}` },
     { name: "description", content: `${formattedName}` },
@@ -28,9 +27,7 @@ export const meta = ({ data }) => {
 export const loader = async ({ params }) => {
   let apiEndpoint = process.env.API_URL;
   try {
-    const [vendorResponse] = await Promise.all([
-      fetch(`${process.env.API_URL}/vendors/${params.vendor_id}`),
-    ]);
+    const vendorResponse = await fetch(`${process.env.API_URL}/vendors/${params.vendor_id}`);
     if (!vendorResponse.ok) {
       let errorMessage = "An error occurred.";
       let errorDescription = "Something went wrong while fetching vendors.";
@@ -56,7 +53,7 @@ export const loader = async ({ params }) => {
       };
     }
 
-    const [vendor] = await Promise.all([vendorResponse.json()]);
+    const vendor = await vendorResponse.json();
 
     return {
       API_URL: apiEndpoint,
@@ -80,9 +77,8 @@ export default function EditVendor() {
   const navigate = useNavigate();
   const [actionData, setActionData] = useState();
   const [loading, setLoading] = useState(false);
-  const formattedName = `${
-    vendor?.internal_reference ? `[${vendor.internal_reference}]` : ""
-  } ${vendor?.vendor_name || ""}`;
+  const formattedName = `${vendor?.internal_reference ? `[${vendor.internal_reference}]` : ""
+    } ${vendor?.vendor_name || ""}`;
   //image upload
   const [image, setImage] = useState(vendor.image_uuid || "");
   const [preview, setPreview] = useState(vendor.image_url || "");
@@ -398,11 +394,10 @@ export default function EditVendor() {
                         name="vendor_name"
                         id="vendor_name"
                         autoComplete="off"
-                        className={`bg-gray-50 border ${
-                          actionData?.errors?.vendor_name
+                        className={`bg-gray-50 border ${actionData?.errors?.vendor_name
                             ? "border-red-500 dark:border-red-500"
                             : "border-gray-300 dark:border-gray-600"
-                        } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
+                          } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
                         placeholder="Type vendor name"
                         value={formData.vendor_name}
                         onChange={handleChange}
@@ -425,11 +420,10 @@ export default function EditVendor() {
                         name="vendor_street"
                         id="vendor_street"
                         autoComplete="off"
-                        className={`bg-gray-50 border ${
-                          actionData?.errors?.vendor_street
+                        className={`bg-gray-50 border ${actionData?.errors?.vendor_street
                             ? "border-red-500 dark:border-red-500"
                             : "border-gray-300 dark:border-gray-600"
-                        } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
+                          } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
                         placeholder=""
                         value={formData.vendor_street}
                         onChange={handleChange}
@@ -452,11 +446,10 @@ export default function EditVendor() {
                         name="vendor_city"
                         id="vendor_city"
                         autoComplete="off"
-                        className={`bg-gray-50 border ${
-                          actionData?.errors?.vendor_city
+                        className={`bg-gray-50 border ${actionData?.errors?.vendor_city
                             ? "border-red-500 dark:border-red-500"
                             : "border-gray-300 dark:border-gray-600"
-                        } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
+                          } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
                         placeholder=""
                         value={formData.vendor_city}
                         onChange={handleChange}
@@ -479,11 +472,10 @@ export default function EditVendor() {
                         name="vendor_state"
                         id="vendor_state"
                         autoComplete="off"
-                        className={`bg-gray-50 border ${
-                          actionData?.errors?.vendor_state
+                        className={`bg-gray-50 border ${actionData?.errors?.vendor_state
                             ? "border-red-500 dark:border-red-500"
                             : "border-gray-300 dark:border-gray-600"
-                        } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
+                          } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
                         placeholder=""
                         value={formData.vendor_state}
                         onChange={handleChange}
@@ -506,11 +498,10 @@ export default function EditVendor() {
                         name="vendor_zip"
                         id="vendor_zip"
                         autoComplete="off"
-                        className={`bg-gray-50 border ${
-                          actionData?.errors?.vendor_zip
+                        className={`bg-gray-50 border ${actionData?.errors?.vendor_zip
                             ? "border-red-500 dark:border-red-500"
                             : "border-gray-300 dark:border-gray-600"
-                        } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
+                          } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
                         placeholder="12345"
                         value={formData.vendor_zip}
                         onChange={handleChange}
@@ -533,11 +524,10 @@ export default function EditVendor() {
                         name="vendor_phone"
                         id="vendor_phone"
                         autoComplete="off"
-                        className={`bg-gray-50 border ${
-                          actionData?.errors?.vendor_phone
+                        className={`bg-gray-50 border ${actionData?.errors?.vendor_phone
                             ? "border-red-500 dark:border-red-500"
                             : "border-gray-300 dark:border-gray-600"
-                        } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
+                          } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
                         placeholder=""
                         value={formData.vendor_phone}
                         onChange={handleChange}
@@ -561,11 +551,10 @@ export default function EditVendor() {
                         name="vendor_mobile"
                         id="vendor_mobile"
                         autoComplete="off"
-                        className={`bg-gray-50 border ${
-                          actionData?.errors?.vendor_mobile
+                        className={`bg-gray-50 border ${actionData?.errors?.vendor_mobile
                             ? "border-red-500 dark:border-red-500"
                             : "border-gray-300 dark:border-gray-600"
-                        } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
+                          } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
                         placeholder=""
                         value={formData.vendor_mobile}
                         onChange={handleChange}
@@ -588,11 +577,10 @@ export default function EditVendor() {
                         name="vendor_email"
                         id="vendor_email"
                         autoComplete="off"
-                        className={`bg-gray-50 border ${
-                          actionData?.errors?.vendor_email
+                        className={`bg-gray-50 border ${actionData?.errors?.vendor_email
                             ? "border-red-500 dark:border-red-500"
                             : "border-gray-300 dark:border-gray-600"
-                        } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
+                          } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
                         placeholder="example@gmail.com"
                         value={formData.vendor_email}
                         onChange={handleChange}
@@ -632,11 +620,10 @@ export default function EditVendor() {
                       </div>
                     ) : (
                       <div
-                        className={`bg-gray-50 border ${
-                          actionData?.errors?.image_uuid
+                        className={`bg-gray-50 border ${actionData?.errors?.image_uuid
                             ? "border-red-500 dark:border-red-500 dark:hover:border-red-400"
                             : "border-gray-300 dark:border-gray-600 dark:hover:border-gray-500"
-                        } flex flex-col items-center justify-center h-40 md:w-40 border-2 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-700 hover:bg-gray-100`}
+                          } flex flex-col items-center justify-center h-40 md:w-40 border-2 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-700 hover:bg-gray-100`}
                         onClick={handleFilePickerClick}
                       >
                         <div className="flex flex-col items-center justify-center pt-5 pb-6 text-gray-300 dark:text-gray-400 text-5xl">
