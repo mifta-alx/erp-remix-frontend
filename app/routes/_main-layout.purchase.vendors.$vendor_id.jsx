@@ -248,6 +248,7 @@ export default function EditVendor() {
       if (response.ok) {
         localStorage.removeItem("image_url");
         localStorage.removeItem("image");
+        setLoading(false)
         navigate("/purchase/vendors");
       } else {
         const errorData = await response.json();
