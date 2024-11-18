@@ -22,7 +22,7 @@ const VendorView = ({ vendors }) => {
                             </div>
                             <div>
                                 <p className="text-lg font-semibold leading-tight text-gray-900 dark:text-white">
-                                    {vendor.vendor_name}
+                                    {vendor.name}
                                 </p>
                                 <div className="gap-4 flex mt-2 text-sm ">
                                     <p className="rounded-xl  flex items-center gap-2 bg-primary-100 px-3 py-1 text-xs font-semibold text-primary-800 dark:bg-primary-900 dark:text-primary-300">
@@ -30,10 +30,10 @@ const VendorView = ({ vendors }) => {
                                     </p>
                                 </div>
                                 <p className="mt-2 text-sm font-normal leading-tight text-gray-500 dark:text-gray-400 ">
-                                    {`${vendor.vendor_city}, ${vendor.vendor_state}`}
+                                    {`${vendor.city}, ${vendor.state}`}
                                 </p>
                                 <p className="mt-2 text-sm font-normal leading-tight text-gray-500 dark:text-gray-400">
-                                    {vendor.vendor_email}
+                                    {vendor.email}
                                 </p>
                             </div>
                         </div>
@@ -70,22 +70,22 @@ const VendorView = ({ vendors }) => {
                                 className="border-b dark:border-gray-700 text-sm cursor-pointer bg-white dark:bg-gray-800 hover:bg-gray-100 hover:dark:bg-gray-600 "
                                 key={index}
                                 onClick={() =>
-                                    navigate(`/purchase/vendors/${vendor.vendor_id}`)
+                                    navigate(`/purchase/vendors/${vendor.id}`)
                                 }
                             >
                                 <td
                                     scope="row"
                                     className="ps-6 pe-3 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
                                 >
-                                    {vendor.vendor_name}
+                                    {vendor.name}
                                 </td>
-                                <td className="px-3 py-4">{vendor.vendor_phone}</td>
+                                <td className="px-3 py-4">{vendor.phone}</td>
 
                                 <td className="px-3 py-4">
-                                    {vendor.vendor_email}
+                                    {vendor.email}
                                 </td>
-                                <td className="px-3 py-4">{vendor.vendor_city}</td>
-                                <td className="px-3 py-4">{vendor.vendor_state}</td>
+                                <td className="px-3 py-4">{vendor.city}</td>
+                                <td className="px-3 py-4">{vendor.state}</td>
                             </tr>
                         ))}
                     </tbody>

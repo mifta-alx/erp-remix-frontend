@@ -146,17 +146,18 @@ export default function AddVendors() {
   }, [selected]);
 
   const [formData, setFormData] = useState({
-    vendor_name: "",
+    name: "",
     vendor_type: null,
-    vendor_street: "",
-    vendor_city: "",
-    vendor_state: "",
-    vendor_zip: "",
-    vendor_phone: "",
-    vendor_mobile: "",
-    vendor_email: "",
+    street: "",
+    city: "",
+    state: "",
+    zip: "",
+    phone: "",
+    mobile: "",
+    email: "",
     image_uuid: "",
   });
+  console.log(formData)
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
@@ -168,6 +169,7 @@ export default function AddVendors() {
   //submit data
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
       const response = await fetch(`${API_URL}/vendors`, {
         method: "POST",
@@ -175,15 +177,15 @@ export default function AddVendors() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          vendor_name: formData.vendor_name,
+          name: formData.name,
           vendor_type: selected,
-          vendor_street: formData.vendor_street,
-          vendor_city: formData.vendor_city,
-          vendor_state: formData.vendor_state,
-          vendor_zip: formData.vendor_zip,
-          vendor_phone: formData.vendor_phone,
-          vendor_mobile: formData.vendor_mobile,
-          vendor_email: formData.vendor_email,
+          street: formData.street,
+          city: formData.city,
+          state: formData.state,
+          zip: formData.zip,
+          phone: formData.phone,
+          mobile: formData.mobile,
+          email: formData.email,
           image_uuid: image,
           image_url: preview,
         }),
@@ -199,21 +201,24 @@ export default function AddVendors() {
         localStorage.removeItem("image_url");
         localStorage.removeItem("image");
         setFormData({
-          vendor_name: "",
+          name: "",
           vendor_type: null,
-          vendor_street: "",
-          vendor_city: "",
-          vendor_state: "",
-          vendor_zip: "",
-          vendor_phone: "",
-          vendor_mobile: "",
-          vendor_email: "",
+          street: "",
+          city: "",
+          state: "",
+          zip: "",
+          phone: "",
+          mobile: "",
+          email: "",
           image_uuid: "",
         });
+        setLoading(false);
         navigate("/purchase/vendors");
       }
     } catch (error) {
       console.error(error);
+    } finally {
+      setLoading(false);
     }
   };
   const handleDiscard = () => {
@@ -348,210 +353,210 @@ export default function AddVendors() {
                     </div>
                     <div className="sm:col-span-6">
                       <label
-                        htmlFor="vendor_name"
+                        htmlFor="name"
                         className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                       >
                         Vendor Name
                       </label>
                       <input
                         type="text"
-                        name="vendor_name"
-                        id="vendor_name"
+                        name="name"
+                        id="name"
                         autoComplete="off"
-                        className={`bg-gray-50 border ${actionData?.errors?.vendor_name
+                        className={`bg-gray-50 border ${actionData?.errors?.name
                           ? "border-red-500 dark:border-red-500"
                           : "border-gray-300 dark:border-gray-600"
                           } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
                         placeholder="Type vendor name"
-                        value={formData.vendor_name}
+                        value={formData.name}
                         onChange={handleChange}
                       />
-                      {actionData?.errors?.vendor_name && (
+                      {actionData?.errors?.name && (
                         <p className="mt-2 text-sm text-red-600">
-                          {actionData?.errors.vendor_name}
+                          {actionData?.errors.name}
                         </p>
                       )}
                     </div>
                     <div className="sm:col-span-6">
                       <label
-                        htmlFor="vendor_street"
+                        htmlFor="street"
                         className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                       >
-                        Vendor Street
+                        Street
                       </label>
                       <input
                         type="text"
-                        name="vendor_street"
-                        id="vendor_street"
+                        name="street"
+                        id="street"
                         autoComplete="off"
-                        className={`bg-gray-50 border ${actionData?.errors?.vendor_street
+                        className={`bg-gray-50 border ${actionData?.errors?.street
                           ? "border-red-500 dark:border-red-500"
                           : "border-gray-300 dark:border-gray-600"
                           } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
                         placeholder="Type street name"
-                        value={formData.vendor_street}
+                        value={formData.street}
                         onChange={handleChange}
                       />
-                      {actionData?.errors?.vendor_street && (
+                      {actionData?.errors?.street && (
                         <p className="mt-2 text-sm text-red-600">
-                          {actionData?.errors.vendor_street}
+                          {actionData?.errors.street}
                         </p>
                       )}
                     </div>
                     <div className="sm:col-span-2">
                       <label
-                        htmlFor="vendor_city"
+                        htmlFor="city"
                         className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                       >
                         City
                       </label>
                       <input
                         type="text"
-                        name="vendor_city"
-                        id="vendor_city"
+                        name="city"
+                        id="city"
                         autoComplete="off"
-                        className={`bg-gray-50 border ${actionData?.errors?.vendor_city
+                        className={`bg-gray-50 border ${actionData?.errors?.city
                           ? "border-red-500 dark:border-red-500"
                           : "border-gray-300 dark:border-gray-600"
                           } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
                         placeholder="Type street name"
-                        value={formData.vendor_city}
+                        value={formData.city}
                         onChange={handleChange}
                       />
-                      {actionData?.errors?.vendor_city && (
+                      {actionData?.errors?.city && (
                         <p className="mt-2 text-sm text-red-600">
-                          {actionData?.errors.vendor_city}
+                          {actionData?.errors.city}
                         </p>
                       )}
                     </div>
                     <div className="sm:col-span-2">
                       <label
-                        htmlFor="vendor_state"
+                        htmlFor="state"
                         className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                       >
                         State
                       </label>
                       <input
                         type="text"
-                        name="vendor_state"
-                        id="vendor_state"
+                        name="state"
+                        id="state"
                         autoComplete="off"
-                        className={`bg-gray-50 border ${actionData?.errors?.vendor_state
+                        className={`bg-gray-50 border ${actionData?.errors?.state
                           ? "border-red-500 dark:border-red-500"
                           : "border-gray-300 dark:border-gray-600"
                           } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
                         placeholder=""
-                        value={formData.vendor_state}
+                        value={formData.state}
                         onChange={handleChange}
                       />
-                      {actionData?.errors?.vendor_name && (
+                      {actionData?.errors?.name && (
                         <p className="mt-2 text-sm text-red-600">
-                          {actionData?.errors.vendor_name}
+                          {actionData?.errors.name}
                         </p>
                       )}
                     </div>
                     <div className="sm:col-span-2">
                       <label
-                        htmlFor="vendor_zip"
+                        htmlFor="zip"
                         className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                       >
                         Zip
                       </label>
                       <input
                         type="text"
-                        name="vendor_zip"
-                        id="vendor_zip"
+                        name="zip"
+                        id="zip"
                         autoComplete="off"
-                        className={`bg-gray-50 border ${actionData?.errors?.vendor_zip
+                        className={`bg-gray-50 border ${actionData?.errors?.zip
                           ? "border-red-500 dark:border-red-500"
                           : "border-gray-300 dark:border-gray-600"
                           } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
                         placeholder="12345"
-                        value={formData.vendor_zip}
+                        value={formData.zip}
                         onChange={handleChange}
                       />
-                      {actionData?.errors?.vendor_zip && (
+                      {actionData?.errors?.zip && (
                         <p className="mt-2 text-sm text-red-600">
-                          {actionData?.errors.vendor_zip}
+                          {actionData?.errors.zip}
                         </p>
                       )}
                     </div>
                     <div className="sm:col-span-2">
                       <label
-                        htmlFor="vendor_phone"
+                        htmlFor="phone"
                         className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                       >
                         Phone
                       </label>
                       <input
                         type="text"
-                        name="vendor_phone"
-                        id="vendor_phone"
+                        name="phone"
+                        id="phone"
                         autoComplete="off"
-                        className={`bg-gray-50 border ${actionData?.errors?.vendor_phone
+                        className={`bg-gray-50 border ${actionData?.errors?.phone
                           ? "border-red-500 dark:border-red-500"
                           : "border-gray-300 dark:border-gray-600"
                           } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
                         placeholder=""
-                        value={formData.vendor_phone}
+                        value={formData.phone}
                         onChange={handleChange}
                       />
-                      {actionData?.errors?.vendor_phone && (
+                      {actionData?.errors?.phone && (
                         <p className="mt-2 text-sm text-red-600">
-                          {actionData?.errors.vendor_phone}
+                          {actionData?.errors.phone}
                         </p>
                       )}
                     </div>
 
                     <div className="sm:col-span-2">
                       <label
-                        htmlFor="vendor_mobile"
+                        htmlFor="mobile"
                         className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                       >
                         Mobile
                       </label>
                       <input
                         type="text"
-                        name="vendor_mobile"
-                        id="vendor_mobile"
+                        name="mobile"
+                        id="mobile"
                         autoComplete="off"
-                        className={`bg-gray-50 border ${actionData?.errors?.vendor_mobile
+                        className={`bg-gray-50 border ${actionData?.errors?.mobile
                           ? "border-red-500 dark:border-red-500"
                           : "border-gray-300 dark:border-gray-600"
                           } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
                         placeholder=""
-                        value={formData.vendor_mobile}
+                        value={formData.mobile}
                         onChange={handleChange}
                       />
-                      {actionData?.errors?.vendor_mobile && (
+                      {actionData?.errors?.mobile && (
                         <p className="mt-2 text-sm text-red-600">
-                          {actionData?.errors.vendor_mobile}
+                          {actionData?.errors.mobile}
                         </p>
                       )}
                     </div>
                     <div className="sm:col-span-2">
                       <label
-                        htmlFor="vendor_email"
+                        htmlFor="email"
                         className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                       >
                         Email
                       </label>
                       <input
                         type="text"
-                        name="vendor_email"
-                        id="vendor_email"
+                        name="email"
+                        id="email"
                         autoComplete="off"
-                        className={`bg-gray-50 border ${actionData?.errors?.vendor_email
+                        className={`bg-gray-50 border ${actionData?.errors?.email
                           ? "border-red-500 dark:border-red-500"
                           : "border-gray-300 dark:border-gray-600"
                           } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
                         placeholder="example@gmail.com"
-                        value={formData.vendor_email}
+                        value={formData.email}
                         onChange={handleChange}
                       />
-                      {actionData?.errors?.vendor_email && (
+                      {actionData?.errors?.email && (
                         <p className="mt-2 text-sm text-red-600 dark:text-red-500">
-                          {actionData.errors.vendor_email}
+                          {actionData.errors.email}
                         </p>
                       )}
                     </div>
