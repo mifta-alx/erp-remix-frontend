@@ -1,4 +1,4 @@
-import { Plus, CaretRight, Package, House } from "@phosphor-icons/react";
+import { CaretRight, CirclesFour, House, Plus } from "@phosphor-icons/react";
 import { Link, useLoaderData } from "@remix-run/react";
 import { EmptyView, ErrorView, MaterialView } from "@views/index.js";
 import { ViewSwitch } from "@components/index.js";
@@ -12,7 +12,7 @@ export const meta = () => {
 
 export const loader = async () => {
   try {
-    const response = await fetch(`${process.env.API_URL}/materials`)
+    const response = await fetch(`${process.env.API_URL}/materials`);
 
     if (!response.ok) {
       let errorMessage = "An error occurred.";
@@ -20,7 +20,8 @@ export const loader = async () => {
 
       if (response.status === 404) {
         errorMessage = "Material NBot Found";
-        errorDescription = "The Material you're looking for does not exist or may have been removed.";
+        errorDescription =
+          "The Material you're looking for does not exist or may have been removed.";
       } else if (response.status === 500) {
         errorMessage = "Internal Server Error";
         errorDescription =
@@ -47,7 +48,6 @@ export const loader = async () => {
 };
 
 export default function Materials() {
-
   const { error, data, message, description, status } = useLoaderData();
   const materials = data?.data || [];
   return (
@@ -93,28 +93,25 @@ export default function Materials() {
             </div>
           </div>
         </div>
-        {
-          error ? (
-            <ErrorView
-              status={status}
-              message={message}
-              description={description}
-            />
-          ) : (
-            <>
-              {materials.length > 0 ? (
-                <MaterialView materials={materials} />
-
-              ) : (
-                <EmptyView
-                  section="material"
-                  link="/manufacturing/materials/add"
-                  icon={<Package />}
-                />
-              )}
-            </>
-          )
-        }
+        {error ? (
+          <ErrorView
+            status={status}
+            message={message}
+            description={description}
+          />
+        ) : (
+          <>
+            {materials.length > 0 ? (
+              <MaterialView materials={materials} />
+            ) : (
+              <EmptyView
+                section="material"
+                link="/manufacturing/materials/add"
+                icon={<CirclesFour />}
+              />
+            )}
+          </>
+        )}
       </div>
     </section>
   );
