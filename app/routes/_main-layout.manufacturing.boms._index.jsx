@@ -1,15 +1,16 @@
 import {
-  BoxArrowDown,
   CaretRight,
   FilePdf,
   House,
   MagnifyingGlass,
   Plus,
+  Stack,
 } from "@phosphor-icons/react";
 import { Link, useLoaderData, useNavigate } from "@remix-run/react";
 import { EmptyView, ErrorView } from "@views/index.js";
 import { useEffect, useState } from "react";
 import { formatToDecimal } from "@utils/formatDecimal.js";
+import { formatProductName } from "@utils/formatName.js";
 
 export const meta = () => {
   return [
@@ -43,6 +44,7 @@ export const loader = async () => {
         description: errorDescription,
       };
     }
+
     const boms = await response.json();
     return { error: false, boms: boms.data };
   } catch (error) {
@@ -65,6 +67,7 @@ export default function Bom() {
     setFilteredData(boms);
   }, []);
   const debounceDelay = 500;
+
   useEffect(() => {
     const timer = setTimeout(() => {
       const newData = boms.filter((bom) =>
@@ -79,6 +82,7 @@ export default function Bom() {
   const handleSearch = (e) => {
     setKeyword(e.target.value);
   };
+
   return (
     <section>
       <div className="mx-auto max-w-screen-xl px-4 2xl:px-0">
@@ -108,7 +112,7 @@ export default function Bom() {
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white sm:text-2xl">
               Bills of Materials
             </h2>
-            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full sm:w-fit">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full sm:w-fit justify-end">
               <div className="relative w-full md:w-1/2">
                 <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-500 dark:text-gray-400">
                   <MagnifyingGlass size={16} weight="bold" />
@@ -185,10 +189,7 @@ export default function Bom() {
                               scope="row"
                               className="ps-6 pe-3 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white truncate ..."
                             >
-                              {bom.product.internal_reference
-                                ? `[${bom.product.internal_reference}] `
-                                : ""}
-                              {bom.product.name}
+                              {formatProductName(bom.product)}
                             </td>
                             <td className="px-3 py-4">{bom.bom_reference}</td>
                             <td className="pe-6 ps-3 py-4 text-end">
@@ -214,7 +215,7 @@ export default function Bom() {
               <EmptyView
                 section="bills of material"
                 link="/manufacturing/boms/add"
-                icon={<BoxArrowDown />}
+                icon={<Stack />}
               />
             )}
           </>

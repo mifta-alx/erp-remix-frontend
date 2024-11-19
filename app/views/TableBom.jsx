@@ -2,6 +2,7 @@ import { XCircle } from "@phosphor-icons/react";
 import { TableSearchInput } from "@components/index.js";
 import { useRef, useState } from "react";
 import { formatToDecimal } from "@utils/formatDecimal.js";
+import { formatProductName } from "@utils/formatName.js";
 
 const TableBom = ({
   actionData,
@@ -112,9 +113,9 @@ const TableBom = ({
                   ref={(el) => (rowInputRefs.current[index] = el)}
                   data={materials}
                   placeholder="Select material"
-                  valueKey="material_id"
+                  valueKey="id"
                   displayKey="material_name"
-                  getDisplayString={getDisplayStringMaterials}
+                  getDisplayString={formatProductName}
                   onChange={(value) =>
                     handleMaterialChange(index, "material_id", value)
                   }
