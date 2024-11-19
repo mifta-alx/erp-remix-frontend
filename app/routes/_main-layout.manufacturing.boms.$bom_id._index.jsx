@@ -17,6 +17,7 @@ import { ErrorView } from "@views/index.js";
 import { SearchInput } from "@components/index.js";
 import TableBom from "@views/TableBom.jsx";
 import { formatToDecimal } from "@utils/formatDecimal.js";
+import { formatBomName, formatProductName } from "@utils/formatName.js";
 
 export const meta = ({ data }) => {
   const formattedName = `${
@@ -103,14 +104,6 @@ export default function DetailedBoM() {
   const [materialsArr, setMaterialsArr] = useState([]);
   const [actionData, setActionData] = useState();
 
-  const formattedName = `${
-    boms?.bom_reference ? boms.bom_reference + ":" : ""
-  } ${
-    boms?.product?.internal_reference
-      ? `[${boms.product.internal_reference}]`
-      : ""
-  } ${boms?.product?.name || ""}`;
-
   const [formData, setFormData] = useState({
     product_id: boms.product.id || "",
     reference: boms.bom_reference || "",
@@ -123,12 +116,6 @@ export default function DetailedBoM() {
       ...prevData,
       [name]: value,
     }));
-  };
-
-  const getDisplayStringProducts = (item) => {
-    return item.internal_reference
-      ? `[${item.internal_reference}] ${item.product_name}`
-      : item.product_name;
   };
 
   const handleProductChange = (product) => {
@@ -302,7 +289,7 @@ export default function DetailedBoM() {
                     <div className="flex items-center text-gray-400">
                       <CaretRight size={18} weight="bold" />
                       <span className="ms-1 text-sm font-medium text-gray-500 dark:text-gray-400 md:ms-2">
-                        {formattedName}
+                        {formatBomName(boms)}
                       </span>
                     </div>
                   </li>
@@ -372,9 +359,9 @@ export default function DetailedBoM() {
                     data={products}
                     label="Product"
                     placeholder="Select Product"
-                    valueKey="product_id"
+                    valueKey="id"
                     displayKey="product_name"
-                    getDisplayString={getDisplayStringProducts}
+                    getDisplayString={formatProductName}
                     onChange={handleProductChange}
                     error={actionData?.errors?.product_id}
                     value={formData.product_id}
@@ -395,6 +382,7 @@ export default function DetailedBoM() {
                       placeholder="BOM-001"
                       value={formData.reference}
                       onChange={handleChange}
+                      autoComplete="off"
                     />
                   </div>
                   <div>
