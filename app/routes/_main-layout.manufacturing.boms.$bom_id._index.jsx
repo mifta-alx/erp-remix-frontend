@@ -10,6 +10,7 @@ import {
   Form,
   Link,
   useLoaderData,
+  useLocation,
   useNavigate,
   useParams,
 } from "@remix-run/react";
@@ -88,6 +89,8 @@ export const loader = async ({ params }) => {
 };
 
 export default function DetailedBoM() {
+  const location = useLocation();
+  const { state } = location;
   const navigate = useNavigate();
   const params = useParams();
   const {
@@ -274,17 +277,33 @@ export default function DetailedBoM() {
                       <House weight="fill" />
                     </Link>
                   </li>
-                  <li>
-                    <div className="flex items-center text-gray-400">
-                      <CaretRight size={18} weight="bold" />
-                      <Link
-                        to="/manufacturing/boms"
-                        className="ms-1 text-sm font-medium text-gray-700 hover:text-primary-600 dark:text-gray-400 dark:hover:text-white md:ms-2"
-                      >
-                        Bills of Materials
-                      </Link>
-                    </div>
-                  </li>
+                  {state ? (
+                    state.map((nav) => (
+                      <li>
+                        <div className="flex items-center text-gray-400">
+                          <CaretRight size={18} weight="bold" />
+                          <Link
+                            to={nav.url}
+                            className="ms-1 text-sm font-medium text-gray-700 hover:text-primary-600 dark:text-gray-400 dark:hover:text-white md:ms-2"
+                          >
+                            {nav.title}
+                          </Link>
+                        </div>
+                      </li>
+                    ))
+                  ) : (
+                    <li>
+                      <div className="flex items-center text-gray-400">
+                        <CaretRight size={18} weight="bold" />
+                        <Link
+                          to="/manufacturing/boms"
+                          className="ms-1 text-sm font-medium text-gray-700 hover:text-primary-600 dark:text-gray-400 dark:hover:text-white md:ms-2"
+                        >
+                          Bills of Materials
+                        </Link>
+                      </div>
+                    </li>
+                  )}
                   <li aria-current="page">
                     <div className="flex items-center text-gray-400">
                       <CaretRight size={18} weight="bold" />
@@ -303,6 +322,7 @@ export default function DetailedBoM() {
                 <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full sm:w-fit">
                   <Link
                     to={`/manufacturing/boms/${params.bom_id}/overview`}
+                    state={state}
                     className="text-gray-900 bg-white gap-2 w-full md:w-fit hover:bg-gray-100 border border-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2 text-center inline-flex items-center justify-center dark:focus:ring-gray-600 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:bg-gray-700"
                   >
                     <List size={16} weight="bold" />

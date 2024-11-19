@@ -1,5 +1,5 @@
 import { CaretRight, FilePdf, House, Minus, Plus } from "@phosphor-icons/react";
-import { Link, useLoaderData, useParams } from "@remix-run/react";
+import { Link, useLoaderData, useLocation, useParams } from "@remix-run/react";
 import { ErrorView } from "@views/index.js";
 import { formatToDecimal } from "@utils/formatDecimal.js";
 import { formatPrice } from "@utils/formatPrice.js";
@@ -54,6 +54,8 @@ export const loader = async ({ params }) => {
 };
 
 export default function BomOverview() {
+  const location = useLocation();
+  const { state } = location;
   const params = useParams();
   const { boms, error, message, description, status } = useLoaderData();
 
@@ -142,17 +144,33 @@ export default function BomOverview() {
                       <House weight="fill" />
                     </Link>
                   </li>
-                  <li>
-                    <div className="flex items-center text-gray-400">
-                      <CaretRight size={18} weight="bold" />
-                      <Link
-                        to="/manufacturing/boms"
-                        className="ms-1 text-sm font-medium text-gray-700 hover:text-primary-600 dark:text-gray-400 dark:hover:text-white md:ms-2"
-                      >
-                        Bills of Materials
-                      </Link>
-                    </div>
-                  </li>
+                  {state ? (
+                    state.map((nav) => (
+                      <li>
+                        <div className="flex items-center text-gray-400">
+                          <CaretRight size={18} weight="bold" />
+                          <Link
+                            to={nav.url}
+                            className="ms-1 text-sm font-medium text-gray-700 hover:text-primary-600 dark:text-gray-400 dark:hover:text-white md:ms-2"
+                          >
+                            {nav.title}
+                          </Link>
+                        </div>
+                      </li>
+                    ))
+                  ) : (
+                    <li>
+                      <div className="flex items-center text-gray-400">
+                        <CaretRight size={18} weight="bold" />
+                        <Link
+                          to="/manufacturing/boms"
+                          className="ms-1 text-sm font-medium text-gray-700 hover:text-primary-600 dark:text-gray-400 dark:hover:text-white md:ms-2"
+                        >
+                          Bills of Materials
+                        </Link>
+                      </div>
+                    </li>
+                  )}
                   <li>
                     <div className="flex items-center text-gray-400">
                       <CaretRight size={18} weight="bold" />
