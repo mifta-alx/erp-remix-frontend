@@ -1,29 +1,135 @@
-import { CaretRight, House, CaretDown, Plus, XCircle } from "@phosphor-icons/react";
-import { useRef, useState, useEffect } from "react";
-import { Link, Form } from "@remix-run/react";
+import { CaretRight, Check, House, X } from "@phosphor-icons/react";
+import { useEffect, useState } from "react";
+import { Form, Link, useLoaderData, useNavigate } from "@remix-run/react";
+import { ErrorView, StepperMO, TableMO } from "@views/index.js";
+import { SearchInput } from "@components/index.js";
+import { formatToDecimal } from "@utils/formatDecimal.js";
+import { formatBomName, formatProductName } from "@utils/formatName.js";
 
 export const meta = () => {
   return [
-    { title: "ERP-Manufacturing Orders" },
-    { name: "description", content: "Add Manufacturing Orders" },
+    { title: "F&F - Add Manufacturing Order" },
+    { name: "description", content: "Add Manufacturing Order" },
   ];
 };
 
+export const loader = async () => {
+  let apiEndpoint = process.env.API_URL;
+  try {
+    const response = await fetch(`${process.env.API_URL}/init?products&boms`);
+    if (!response.ok) {
+      let errorMessage = "An error occurred.";
+      let errorDescription = "Something went wrong while fetching data.";
+      let status = response.status;
+
+      if (response.status === 500) {
+        errorMessage = "Internal Server Error";
+        errorDescription =
+          "There is an issue on our server. Our team is working to resolve it.";
+      }
+      return {
+        error: true,
+        status,
+        message: errorMessage,
+        description: errorDescription,
+      };
+    }
+
+    const { data } = await response.json();
+
+    return {
+      API_URL: apiEndpoint,
+      products: data.products,
+      boms: data.boms,
+    };
+  } catch (error) {
+    return {
+      error: true,
+      status: 500,
+      message: "Server Connection Failed",
+      description:
+        "Failed to connect to the server. Please check your network or try again later.",
+    };
+  }
+};
+
 export default function AddMo() {
-  const dropdownRef = useRef(null);
-  const materialRefs = useRef([]);
-  const [focusedIndex, setFocusedIndex] = useState(null);
-  const [isDropdownVisible, setIsDropdownVisible] = useState(false);
+  const navigate = useNavigate();
+  const { API_URL, products, boms, error, message, description, status } =
+    useLoaderData();
+  const [loading, setLoading] = useState(false);
   const [actionData, setActionData] = useState();
-  const [searchTerm, setSearchTerm] = useState("");
-  const [materialsArr, setMaterialsArr] = useState([]);
+  const [filteredBoms, setFilteredBoms] = useState([]);
 
   const [formData, setFormData] = useState({
     product_id: "",
-    reference: "",
-    qty: 0,
-    state: 2,
+    bom_id: "",
+    qty: formatToDecimal(1),
+    state: 1,
+    status: "process",
   });
+
+  useEffect(() => {
+    const fetchFilteredBoms = async () => {
+      if (formData.product_id) {
+        try {
+          const response = await fetch(
+            `${API_URL}/boms?product_id=${formData.product_id}`
+          );
+          if (response.ok) {
+            const { data } = await response.json();
+            setFilteredBoms(data);
+
+            if (data.length > 0) {
+              setFormData((prevData) => ({
+                ...prevData,
+                bom_id: data[0].bom_id,
+              }));
+            } else {
+              setFormData((prevData) => ({
+                ...prevData,
+                bom_id: "",
+              }));
+            }
+          } else {
+            console.error(
+              "Failed to fetch filtered BoMs:",
+              response.statusText
+            );
+            setFilteredBoms([]);
+            setFormData((prevData) => ({
+              ...prevData,
+              bom_id: "",
+            }));
+          }
+        } catch (error) {
+          console.error("Error fetching filtered BoMs:", error);
+          setFilteredBoms([]);
+          setFormData((prevData) => ({
+            ...prevData,
+            bom_id: "",
+          }));
+        }
+      } else {
+        setFilteredBoms(boms);
+      }
+    };
+
+    fetchFilteredBoms();
+  }, [formData.product_id]);
+
+  const [materials, setMaterials] = useState([]);
+
+  useEffect(() => {
+    const selectedBom = filteredBoms.find(
+      (bom) => bom.bom_id === parseInt(formData.bom_id)
+    );
+    if (selectedBom) {
+      setMaterials(selectedBom.bom_components);
+    } else {
+      setMaterials([]);
+    }
+  }, [formData.bom_id, filteredBoms]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -33,553 +139,218 @@ export default function AddMo() {
     }));
   };
 
-  const stepperProcess = [
-    {
-      state: 1,
-      label: "Draft",
-    },
-    {
-      state: 2,
-      label: "Confirmed",
-    },
-    {
-      state: 3,
-      label: "Check Availablity",
-    },
-    {
-      state: 4,
-      label: "In Progress",
-    },
-    {
-      state: 5,
-      label: "Done",
-    },
-  ];
+  const handleProductChange = (product) => {
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      product_id: product,
+    }));
+  };
 
-  const data = [
-    {
-      bom_id: 1,
-      product: {
-        id: 1,
-        name: "Pentol",
-        cost: 10000,
-        sales_price: 15000,
-        barcode: "PR-001",
-        internal_reference: "PR-001",
-      },
-      bom_reference: "PPP",
-      bom_qty: 1,
-      bom_components: [
-        {
-          material: {
-            id: 1,
-            name: "Daging Ayam",
-            cost: 14000,
-            sales_price: 0,
-            barcode: "P-001",
-            internal_reference: "P-001",
-          },
-          material_qty: 10,
-          material_total_cost: 140000,
-        },
-        {
-          material: {
-            id: 1,
-            name: "Daging Ayam",
-            cost: 14000,
-            sales_price: 0,
-            barcode: "P-001",
-            internal_reference: "P-001",
-          },
-          material_qty: 10,
-          material_total_cost: 140000,
-        },
-      ],
-      bom_cost: 140000,
+  const handleBomChange = (bomId) => {
+    const selectedBom = filteredBoms.find(
+      (bom) => bom.bom_id === parseInt(bomId)
+    );
+    if (selectedBom) {
+      setFormData((prevFormData) => ({
+        ...prevFormData,
+        bom_id: bomId,
+        product_id: selectedBom.product.id,
+      }));
     }
-  ];
-  const handleSubmit = () => {};
-  useEffect(() => {
-    setMaterialsArr(data[0].bom_components)
-  }, [])
-  console.log(materialsArr)
+  };
+
+  const handleFormatDecimal = (value) => {
+    const updatedValue =
+      value === "" ? formatToDecimal(1) : formatToDecimal(parseFloat(value));
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      qty: updatedValue,
+    }));
+  };
+
+  const handleDiscard = () => {
+    navigate("/manufacturing/mo");
+  };
+
+  const handleSubmit = async (e) => {
+    console.log(formData);
+    setLoading(true);
+    e.preventDefault();
+    try {
+      const response = await fetch(`${API_URL}/manufacturing-orders`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+      if (!response.ok) {
+        const result = await response.json();
+        setActionData({ errors: result.errors || {} });
+        return;
+      }
+      setLoading(false);
+      navigate(`/manufacturing/mo`);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <section>
       <div className="mx-auto max-w-screen-xl px-4 2xl:px-0">
-        <div className="mb-4 items-end justify-between space-y-4 sm:flex sm:space-y-0 md:mb-8">
-          <div>
-            <nav className="flex" aria-label="Breadcrumb">
-              <ol className="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse">
-                <li className="inline-flex items-center">
-                  <Link
-                    to={"/"}
-                    className="inline-flex items-center text-sm font-medium text-gray-700 hover:text-primary-600 dark:text-gray-400 dark:hover:text-white"
-                  >
-                    <House weight="fill" />
-                  </Link>
-                </li>
-                <li>
-                  <div className="flex items-center text-gray-400">
-                    <CaretRight size={18} weight="bold" />
+        {error ? (
+          <ErrorView
+            status={status}
+            message={message}
+            description={description}
+          />
+        ) : (
+          <>
+            <div className="mb-4 items-start justify-between gap-3 flex flex-col md:mb-8">
+              <nav className="flex" aria-label="Breadcrumb">
+                <ol className="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse">
+                  <li className="inline-flex items-center">
                     <Link
-                      to="/manufacturing/mo"
-                      className="ms-1 text-sm font-medium text-gray-700 hover:text-primary-600 dark:text-gray-400 dark:hover:text-white md:ms-2"
+                      to={"/"}
+                      className="inline-flex items-center text-sm font-medium text-gray-700 hover:text-primary-600 dark:text-gray-400 dark:hover:text-white"
                     >
-                      Manufacturing Orders
+                      <House weight="fill" />
                     </Link>
-                  </div>
-                </li>
-                <li aria-current="page">
-                  <div className="flex items-center text-gray-400">
-                    <CaretRight size={18} weight="bold" />
-                    <span className="ms-1 text-sm font-medium text-gray-500 dark:text-gray-400 md:ms-2">
-                      Add Manufacturing Order
-                    </span>
-                  </div>
-                </li>
-              </ol>
-            </nav>
-            {/* <h2 className="mt-3 text-xl font-semibold text-gray-900 dark:text-white sm:text-2xl">
-              Add a new manufacturing order
-            </h2> */}
-          </div>
-        </div>
-        <div className="py-8">
-          <ol className="flex items-center md:w-3/4 mx-auto text-sm text-gray-500 sm:text-base">
-            {stepperProcess.map((step, index) => (
-              <li
-                key={index}
-                className={`flex relative ${
-                  index < stepperProcess.length - 1
-                    ? ` w-full after:w-full lg:after:w-7/12 xl:after:w-3/4 after:h-0.5 ${
-                        index <= formData.state - 1
-                          ? "after:bg-primary-500"
-                          : "after:bg-slate-200"
-                      } after:inline-block after:absolute lg:after:top-4 after:top-3 after:left-5 md:after:left-5 lg:after:left-[30%] xl:after:left-[20%]`
-                    : ""
-                }`}
-              >
-                <div class="block relative whitespace-nowrap z-10">
-                  {index <= formData.state ? (
-                    <span
-                      class={`custom-shadow-step w-6 h-6 bg-primary-500 rounded-full flex justify-center items-center mx-auto mb-3 text-sm lg:w-8 lg:h-8`}
-                    >
-                      <div class="w-2.5 h-2.5 bg-white rounded-full"></div>
-                    </span>
-                  ) : (
-                    <span class="w-6 h-6 bg-slate-100 border-2 border-gray-200 dark:border-gray-700 rounded-full flex justify-center items-center mx-auto mb-3 text-sm lg:w-8 lg:h-8">
-                      <div class="w-2.5 h-2.5 bg-gray-200 rounded-full"></div>
-                    </span>
-                  )}
-                  <p
-                    className={`text-xs ${
-                      index <= formData.state
-                        ? "text-primary-500 font-medium"
-                        : "text-gray-400 dark:border-gray-700 font-normal "
-                    } text-center whitespace-normal lg:whitespace-nowrap absolute left-1/2 transform -translate-x-1/2`}
-                  >
-                    {step.label}
-                  </p>
-                </div>
-              </li>
-            ))}
-          </ol>
-        </div>
-        <Form onSubmit={handleSubmit} className="mt-8">
-          <div className="grid gap-4 sm:grid-cols-3 sm:gap-6 w-full">
-            <div>
-              <label
-                htmlFor="product"
-                className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-              >
-                Product
-              </label>
-
-              <div ref={dropdownRef} className="relative w-full">
-                <div className="absolute inset-y-0 end-0 flex items-center pe-3 pointer-events-none text-gray-500 dark:text-gray-400">
-                  <CaretDown weight="bold" size={16} />
-                </div>
-                <input
-                  type="text"
-                  name="product"
-                  id="product"
-                  className={`bg-gray-50 border ${
-                    actionData?.errors?.product_id
-                      ? "border-red-500 dark:border-red-500"
-                      : "border-gray-300 dark:border-gray-600"
-                  } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
-                  placeholder="Select product"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  onFocus={() => setIsDropdownVisible(true)}
-                  autoComplete="off"
-                />
-                {isDropdownVisible && (
-                  <div
-                    id="dropdown"
-                    className="z-10 absolute bg-white divide-y divide-gray-100 rounded-lg shadow-md w-full max-h-32 overflow-y-auto mt-1 dark:bg-gray-700"
-                  >
-                    <ul
-                      className="py-2 text-sm text-gray-700 dark:text-gray-200"
-                      aria-labelledby="dropdown-button"
-                    >
-                      {filteredProducts.length > 0 ? (
-                        filteredProducts.map((product) => (
-                          <li key={product.product_id}>
-                            <button
-                              type="button"
-                              onClick={() =>
-                                handleSelectProduct(
-                                  product.product_id,
-                                  `[${product.internal_reference}] ${product.product_name}`
-                                )
-                              }
-                              className="inline-flex w-full px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                            >
-                              {product.internal_reference
-                                ? `[${product.internal_reference}] `
-                                : ""}
-                              {product.product_name}
-                            </button>
-                          </li>
-                        ))
-                      ) : (
-                        <li>
-                          <span className="inline-flex w-full px-4 py-2 text-gray-500 dark:text-gray-400">
-                            No results found
-                          </span>
-                        </li>
-                      )}
-                    </ul>
-                  </div>
-                )}
-              </div>
-              {actionData?.errors?.product_id && (
-                <p className="mt-2 text-sm text-red-600">
-                  {actionData?.errors.product_id}
-                </p>
-              )}
-            </div>
-            <div>
-              <label
-                htmlFor="product"
-                className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-              >
-                Bill of Material
-              </label>
-
-              <div ref={dropdownRef} className="relative w-full">
-                <div className="absolute inset-y-0 end-0 flex items-center pe-3 pointer-events-none text-gray-500 dark:text-gray-400">
-                  <CaretDown weight="bold" size={16} />
-                </div>
-                <input
-                  type="text"
-                  name="product"
-                  id="product"
-                  className={`bg-gray-50 border ${
-                    actionData?.errors?.product_id
-                      ? "border-red-500 dark:border-red-500"
-                      : "border-gray-300 dark:border-gray-600"
-                  } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
-                  placeholder="Select BoM"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  onFocus={() => setIsDropdownVisible(true)}
-                  autoComplete="off"
-                />
-                {isDropdownVisible && (
-                  <div
-                    id="dropdown"
-                    className="z-10 absolute bg-white divide-y divide-gray-100 rounded-lg shadow-md w-full max-h-32 overflow-y-auto mt-1 dark:bg-gray-700"
-                  >
-                    <ul
-                      className="py-2 text-sm text-gray-700 dark:text-gray-200"
-                      aria-labelledby="dropdown-button"
-                    >
-                      {filteredProducts.length > 0 ? (
-                        filteredProducts.map((product) => (
-                          <li key={product.product_id}>
-                            <button
-                              type="button"
-                              onClick={() =>
-                                handleSelectProduct(
-                                  product.product_id,
-                                  `[${product.internal_reference}] ${product.product_name}`
-                                )
-                              }
-                              className="inline-flex w-full px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                            >
-                              {product.internal_reference
-                                ? `[${product.internal_reference}] `
-                                : ""}
-                              {product.product_name}
-                            </button>
-                          </li>
-                        ))
-                      ) : (
-                        <li>
-                          <span className="inline-flex w-full px-4 py-2 text-gray-500 dark:text-gray-400">
-                            No results found
-                          </span>
-                        </li>
-                      )}
-                    </ul>
-                  </div>
-                )}
-              </div>
-              {actionData?.errors?.product_id && (
-                <p className="mt-2 text-sm text-red-600">
-                  {actionData?.errors.product_id}
-                </p>
-              )}
-            </div>
-            <div>
-              <label
-                htmlFor="qty"
-                className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-              >
-                Quantity
-              </label>
-              <input
-                type="text"
-                id="qty"
-                name="qty"
-                className={`bg-gray-50 border ${
-                  actionData?.errors?.bom_qty
-                    ? "border-red-500 dark:border-red-500"
-                    : "border-gray-300 dark:border-gray-600"
-                } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
-                placeholder="0"
-                value={formData.qty}
-                onChange={handleChange}
-              />
-              {actionData?.errors?.bom_qty && (
-                <p className="mt-2 text-sm text-red-600 dark:text-red-500">
-                  {actionData.errors.bom_qty}
-                </p>
-              )}
-            </div>
-          </div>
-
-          <div className="relative bg-white border-gray-200 dark:border-gray-700 border dark:bg-gray-800 sm:rounded-lg mt-4 p-8">
-            <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-              <thead className="text-sm text-gray-900 capitalize dark:text-gray-400 border-b border-gray-200 dark:border-gray-600">
-                <tr>
-                  <th scope="col" className="px-6 py-3 w-4/5">
-                    Product
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-center">
-                    To Consume
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-center">
-                    Quantity
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-center">
-                    Consumed
-                  </th>
-                  <th scope="col" className="px-6 py-3"></th>
-                </tr>
-              </thead>
-              <tbody>
-                {materialsArr?.map((material, index) => (
-                  <tr
-                    className="bg-white dark:bg-gray-800 border-b p-0 border-gray-300 dark:border-gray-700"
-                    key={index}
-                  >
-                    <td scope="row" className="px-6 py-4">
-                      xxxxx
-                      {/* <div
-                        ref={(el) => (materialRefs.current[index] = el)}
-                        className="relative w-1/2"
+                  </li>
+                  <li>
+                    <div className="flex items-center text-gray-400">
+                      <CaretRight size={18} weight="bold" />
+                      <Link
+                        to="/manufacturing/mo"
+                        className="ms-1 text-sm font-medium text-gray-700 hover:text-primary-600 dark:text-gray-400 dark:hover:text-white md:ms-2"
                       >
-                        <div className="absolute inset-y-0 end-0 flex items-center pe-3 pointer-events-none text-gray-500 dark:text-gray-400">
-                          {focusedIndex === index && (
-                            <CaretDown weight="bold" size={16} />
-                          )}
-                        </div>
-                        <input
-                          type="text"
-                          name="product"
-                          id="product"
-                          className={`${
-                            actionData?.errors?.[
-                              `bom_components.${index}.material_id`
-                            ]
-                              ? "border-b-2 border-red-500 dark:border-red-500"
-                              : "border-0"
-                          } text-gray-900 text-sm focus:outline-none focus:ring-0 focus:border-primary-600 block w-full p-2.5 dark:bg-transparent dark:placeholder-gray-400 dark:text-white dark:focus:border-primary-500`}
-                          placeholder="Select material"
-                          value={material.searchTerm}
-                          onChange={(e) =>
-                            handleMaterialChange(
-                              index,
-                              "searchTerm",
-                              e.target.value
-                            )
-                          }
-                          onFocus={() => {
-                            setFocusedIndex(index);
-                            toggleDropdownVisibility(index, true);
-                          }}
-                          autoComplete="off"
-                        />
-                        {material.isDropdownVisible && (
-                          <div
-                            id="dropdown"
-                            className="z-10 absolute bg-white divide-y divide-gray-100 rounded-lg border border-fade dark:border-gray-600 w-full max-h-32 overflow-y-auto dark:bg-gray-700"
-                          >
-                            <ul
-                              className="py-2 text-sm text-gray-700 dark:text-gray-200"
-                              aria-labelledby="dropdown-button"
-                            >
-                              {materials.length > 0 ? (
-                                materials.filter((mat) => {
-                                  const materialString = mat.internal_reference
-                                    ? `[${mat.internal_reference}] ${mat.material_name}`
-                                    : mat.material_name;
-                                  return materialString
-                                    .toLowerCase()
-                                    .includes(
-                                      material.searchTerm.toLowerCase()
-                                    );
-                                }).length > 0 ? (
-                                  materials
-                                    .filter((mat) => {
-                                      const materialString =
-                                        mat.internal_reference
-                                          ? `[${mat.internal_reference}] ${mat.material_name}`
-                                          : mat.material_name;
-                                      return materialString
-                                        .toLowerCase()
-                                        .includes(
-                                          material.searchTerm.toLowerCase()
-                                        );
-                                    })
-                                    .map((mat) => (
-                                      <li key={mat.material_id}>
-                                        <button
-                                          type="button"
-                                          onClick={() =>
-                                            handleSelectMaterial(
-                                              index,
-                                              mat.material_id,
-                                              mat.material_name
-                                            )
-                                          }
-                                          className="inline-flex w-full px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                                        >
-                                          {mat.internal_reference
-                                            ? `[${mat.internal_reference}] ${mat.material_name}`
-                                            : mat.material_name}
-                                        </button>
-                                      </li>
-                                    ))
-                                ) : (
-                                  <li>
-                                    <span className="inline-flex w-full px-4 py-2 text-gray-500 dark:text-gray-400">
-                                      No results "{material.searchTerm}" found
-                                    </span>
-                                  </li>
-                                )
-                              ) : (
-                                <li>
-                                  <span className="inline-flex w-full px-4 py-2 text-gray-500 dark:text-gray-400">
-                                    No materials available
-                                  </span>
-                                </li>
-                              )}
-                            </ul>
-                          </div>
-                        )}
-                      </div> */}
-                    </td>
-                    <td className="px-6 py-4 text-end">
-                      {/* <input
-                        type="text"
-                        name="quantity"
-                        id="quantity"
-                        className={`${
-                          actionData?.errors?.[
-                            `bom_components.${index}.material_qty`
-                          ]
-                            ? "border-b-2 border-red-500 dark:border-red-500"
-                            : "border-0"
-                        } text-gray-900 text-sm text-end focus:outline-none focus:ring-0 focus:border-primary-600 block w-full p-2.5 dark:bg-transparent dark:placeholder-gray-400 dark:text-white dark:focus:border-primary-500`}
-                        placeholder="0"
-                        value={material.material_qty}
-                        onChange={(e) =>
-                          handleMaterialChange(
-                            index,
-                            "material_qty",
-                            e.target.value
-                          )
-                        }
-                      /> */}
-                      xx
-                    </td>
-                    <td className="px-6 py-4 text-end">
-                      {/* <input
-                        type="text"
-                        name="quantity"
-                        id="quantity"
-                        className={`${
-                          actionData?.errors?.[
-                            `bom_components.${index}.material_qty`
-                          ]
-                            ? "border-b-2 border-red-500 dark:border-red-500"
-                            : "border-0"
-                        } text-gray-900 text-sm text-end focus:outline-none focus:ring-0 focus:border-primary-600 block w-full p-2.5 dark:bg-transparent dark:placeholder-gray-400 dark:text-white dark:focus:border-primary-500`}
-                        placeholder="0"
-                        value={material.material_qty}
-                        onChange={(e) =>
-                          handleMaterialChange(
-                            index,
-                            "material_qty",
-                            e.target.value
-                          )
-                        }
-                      /> */}
-                      xx
-                    </td>
-                    <td className="px-6 py-4">
-                      <div class="flex items-center">
-                        <input
-                          id="default-checkbox"
-                          type="checkbox"
-                          value=""
-                          class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                        />
+                        Manufacturing Orders
+                      </Link>
+                    </div>
+                  </li>
+                  <li aria-current="page">
+                    <div className="flex items-center text-gray-400">
+                      <CaretRight size={18} weight="bold" />
+                      <span className="ms-1 text-sm font-medium text-gray-500 dark:text-gray-400 md:ms-2">
+                        New Manufacturing Orders
+                      </span>
+                    </div>
+                  </li>
+                </ol>
+              </nav>
+
+              <div className="flex flex-col sm:flex-row gap-4 justify-between items-start w-full">
+                <h2 className="text-xl font-semibold text-gray-900 dark:text-white sm:text-2xl">
+                  Manufacturing Orders
+                </h2>
+                <div className="inline-flex w-full sm:w-fit" role="group">
+                  <button
+                    type="button"
+                    onClick={handleSubmit}
+                    className="inline-flex items-center w-full sm:w-fit px-4 py-2 gap-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-s-lg hover:bg-gray-100 hover:text-primary-700 focus:z-10 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:text-primary-500 dark:hover:bg-gray-700"
+                  >
+                    {loading ? (
+                      <div role="status">
+                        <svg
+                          aria-hidden="true"
+                          className="inline w-4 h-4 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600"
+                          viewBox="0 0 100 101"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+                            fill="currentColor"
+                          />
+                          <path
+                            d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+                            fill="currentFill"
+                          />
+                        </svg>
+                        <span className="sr-only">Loading...</span>
                       </div>
-                    </td>
-                    <td className="px-6 text-lg text-red-600 dark:text-red-500">
-                      <button
-                        type="button"
-                        className="items-center flex"
-                        onClick={() => removeMaterialRow(index)}
-                      >
-                        <XCircle weight="bold" />
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-          <button
-            type="submit"
-            className="text-gray-900 bg-white mt-4 sm:mt-6 border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"
-          >
-            Produce All
-          </button>
-
-          <button
-            type="button"
-            onClick={() => {}}
-            className="focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900"
-          >
-            Cancel Order
-          </button>
-        </Form>
+                    ) : (
+                      <Check size={16} />
+                    )}
+                    Save
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleDiscard}
+                    className="inline-flex items-center w-full sm:w-fit px-4 py-2 gap-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-e-lg hover:bg-gray-100 hover:text-red-600 focus:z-10 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:text-red-500 dark:hover:bg-gray-700"
+                  >
+                    <X size={16} />
+                    Discard
+                  </button>
+                </div>
+              </div>
+            </div>
+            <Form onSubmit={handleSubmit}>
+              <div className="relative bg-white border-gray-200 dark:border-gray-700 border dark:bg-gray-800 rounded-lg mb-4 p-8">
+                <div className="pt-8 pb-20">
+                  <StepperMO
+                    currentStep={formData.state}
+                    status={formData.status}
+                  />
+                </div>
+                <div className="grid gap-4 sm:grid-cols-3 sm:gap-6 w-full">
+                  <SearchInput
+                    data={products}
+                    label="Product"
+                    placeholder="Select Product"
+                    valueKey="id"
+                    displayKey="product_name"
+                    getDisplayString={formatProductName}
+                    onChange={handleProductChange}
+                    error={actionData?.errors?.product_id}
+                    value={formData.product_id}
+                  />
+                  <SearchInput
+                    data={filteredBoms}
+                    label="Bills of Materials"
+                    placeholder="Select BoM"
+                    valueKey="bom_id"
+                    getDisplayString={formatBomName}
+                    onChange={handleBomChange}
+                    error={actionData?.errors?.bom_id}
+                    value={formData.bom_id}
+                  />
+                  <div>
+                    <label
+                      htmlFor="qty"
+                      className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                    >
+                      Quantity to Produce
+                    </label>
+                    <input
+                      type="text"
+                      id="qty"
+                      name="qty"
+                      className={`bg-gray-50 border ${
+                        actionData?.errors?.bom_qty
+                          ? "border-red-500 dark:border-red-500"
+                          : "border-gray-300 dark:border-gray-600"
+                      } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
+                      placeholder="0"
+                      value={formData.qty}
+                      onChange={handleChange}
+                      onBlur={(e) => handleFormatDecimal(e.target.value)}
+                    />
+                    {actionData?.errors?.bom_qty && (
+                      <p className="mt-2 text-sm text-red-600 dark:text-red-500">
+                        {actionData.errors.bom_qty}
+                      </p>
+                    )}
+                  </div>
+                </div>
+                <TableMO materials={materials} />
+              </div>
+            </Form>
+          </>
+        )}
       </div>
     </section>
   );

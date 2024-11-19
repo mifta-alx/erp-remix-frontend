@@ -59,7 +59,13 @@ const SearchInput = ({
             ? getDisplayString(selectedItem)
             : selectedItem[displayKey]
         );
+      } else {
+        setInputValue("");
+        setSearchTerm("");
       }
+    } else {
+      setInputValue("");
+      setSearchTerm("");
     }
   }, [value, data, valueKey, displayKey, getDisplayString]);
   return (
