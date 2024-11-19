@@ -1,6 +1,7 @@
 import { Link, useNavigate } from "@remix-run/react";
 import { formatPrice } from "@utils/formatPrice.js";
 import { useViewContext } from "@context/ViewScheme.jsx";
+import { formatToDecimal } from "@utils/formatDecimal.js";
 
 const ProductView = ({ products }) => {
   const { view } = useViewContext();
@@ -32,6 +33,9 @@ const ProductView = ({ products }) => {
                 <p className="mt-2 text-sm font-normal leading-tight text-gray-500 dark:text-gray-400">
                   Price: {formatPrice(product.sales_price)}
                 </p>
+                <p className="mt-2 text-sm font-normal leading-tight text-gray-500 dark:text-gray-400">
+                  On hand: {formatToDecimal(product.stock)}
+                </p>
               </div>
             </div>
           </Link>
@@ -58,6 +62,9 @@ const ProductView = ({ products }) => {
               </td>
               <td scope="col" className="px-3 py-3.5">
                 Cost
+              </td>
+              <td scope="col" className="px-3 py-3.5">
+                On Hand
               </td>
             </tr>
           </thead>
@@ -91,6 +98,7 @@ const ProductView = ({ products }) => {
                   {formatPrice(product.sales_price)}
                 </td>
                 <td className="px-3 py-4">{formatPrice(product.cost)}</td>
+                <td className="px-3 py-4">{formatToDecimal(product.stock)}</td>
               </tr>
             ))}
           </tbody>

@@ -11,6 +11,7 @@ import {
   Form,
   Link,
   useLoaderData,
+  useLocation,
   useNavigate,
   useParams,
 } from "@remix-run/react";
@@ -90,6 +91,8 @@ export const loader = async ({ params, request }) => {
 };
 
 export default function EditProduct() {
+  const location = useLocation();
+  const { state } = location;
   const {
     API_URL,
     categories,
@@ -344,17 +347,33 @@ export default function EditProduct() {
                       <House weight="fill" />
                     </Link>
                   </li>
-                  <li>
-                    <div className="flex items-center text-gray-400">
-                      <CaretRight size={18} weight="bold" />
-                      <Link
-                        to="/manufacturing/products"
-                        className="ms-1 text-sm font-medium text-gray-700 hover:text-primary-600 dark:text-gray-400 dark:hover:text-white md:ms-2"
-                      >
-                        Products
-                      </Link>
-                    </div>
-                  </li>
+                  {state ? (
+                    state.map((nav) => (
+                      <li>
+                        <div className="flex items-center text-gray-400">
+                          <CaretRight size={18} weight="bold" />
+                          <Link
+                            to={nav.url}
+                            className="ms-1 text-sm font-medium text-gray-700 hover:text-primary-600 dark:text-gray-400 dark:hover:text-white md:ms-2"
+                          >
+                            {nav.title}
+                          </Link>
+                        </div>
+                      </li>
+                    ))
+                  ) : (
+                    <li>
+                      <div className="flex items-center text-gray-400">
+                        <CaretRight size={18} weight="bold" />
+                        <Link
+                          to="/manufacturing/products"
+                          className="ms-1 text-sm font-medium text-gray-700 hover:text-primary-600 dark:text-gray-400 dark:hover:text-white md:ms-2"
+                        >
+                          Products
+                        </Link>
+                      </div>
+                    </li>
+                  )}
                   <li aria-current="page">
                     <div className="flex items-center text-gray-400">
                       <CaretRight size={18} weight="bold" />
