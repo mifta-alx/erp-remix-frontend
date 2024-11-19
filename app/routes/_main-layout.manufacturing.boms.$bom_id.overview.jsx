@@ -4,6 +4,7 @@ import { ErrorView } from "@views/index.js";
 import { formatToDecimal } from "@utils/formatDecimal.js";
 import { formatPrice } from "@utils/formatPrice.js";
 import { useEffect, useState } from "react";
+import { formatBomName, formatProductName } from "@utils/formatName.js";
 
 export const meta = () => {
   return [
@@ -61,23 +62,11 @@ export default function BomOverview() {
     setQuantity(boms.bom_qty);
   }, [boms]);
 
-  const formattedName = `${
-    boms?.bom_reference ? boms.bom_reference + ":" : ""
-  } ${
-    boms?.product?.internal_reference
-      ? `[${boms.product.internal_reference}]`
-      : ""
-  } ${boms?.product?.name || ""}`;
-
   const formattedBoM = {
     bom_id: boms.bom_id,
     product: {
       id: boms.product.id,
-      name: `${
-        boms?.product?.internal_reference
-          ? `[${boms.product.internal_reference}]`
-          : ""
-      } ${boms.product.name || ""}`,
+      name: boms.product.name,
       cost: quantity * boms.product.cost,
       sales_price: boms.product.sales_price,
       internal_reference: boms.product.internal_reference,
@@ -87,11 +76,7 @@ export default function BomOverview() {
     bom_components: boms.bom_components.map((component) => ({
       material: {
         id: component.material.id,
-        name: `${
-          component.material.internal_reference
-            ? `[${component.material.internal_reference}]`
-            : ""
-        } ${component.material.name || ""}`,
+        name: component.material.name,
         cost: quantity * component.material_qty * component.material.cost,
         qty: quantity * component.material_qty,
         sales_price: component.material.sales_price,
@@ -109,7 +94,7 @@ export default function BomOverview() {
       return total + component.material_qty * component.material.cost;
     }, 0),
   };
-
+  console.log(formattedBoM);
   const handleAddQuantity = () => {
     setQuantity(quantity + 1);
   };
@@ -119,6 +104,22 @@ export default function BomOverview() {
       setQuantity(quantity - 1);
     }
   };
+
+  const sourcePage = [
+    {
+      title: "Bills of Materials",
+      url: "/manufacturing/boms",
+    },
+    {
+      title: formatBomName(boms),
+      url: `/manufacturing/boms/${params.bom_id}`,
+    },
+    {
+      title: "Overview",
+      url: `/manufacturing/boms/${params.bom_id}/overview`,
+    },
+  ];
+
   return (
     <section>
       <div className="mx-auto max-w-screen-xl px-4 2xl:px-0">
@@ -159,7 +160,7 @@ export default function BomOverview() {
                         to={`/manufacturing/boms/${params.bom_id}`}
                         className="ms-1 text-sm font-medium text-gray-700 hover:text-primary-600 dark:text-gray-400 dark:hover:text-white md:ms-2"
                       >
-                        {formattedName}
+                        {formatBomName(boms)}
                       </Link>
                     </div>
                   </li>
@@ -216,9 +217,10 @@ export default function BomOverview() {
                 <div className="space-y-1">
                   <Link
                     to={`/manufacturing/products/${formattedBoM.product.id}`}
+                    state={sourcePage}
                     className="text-2xl font-semibold leading-none text-primary-600 dark:text-primary-500"
                   >
-                    {formattedBoM.product.name}
+                    {formatProductName(formattedBoM.product)}
                   </Link>
                   {formattedBoM.bom_reference && (
                     <h6 className="text-sm font-medium text-gray-900 dark:text-gray-100">
@@ -259,8 +261,11 @@ export default function BomOverview() {
                         scope="row"
                         className="px-6 py-4 font-semibold text-lg whitespace-nowrap text-primary-600 dark:text-primary-500 capitalize"
                       >
-                        <Link to={`/manufacturing/products/${boms.product.id}`}>
-                          {formattedBoM.product.name}
+                        <Link
+                          to={`/manufacturing/products/${boms.product.id}`}
+                          state={sourcePage}
+                        >
+                          {formatProductName(formattedBoM.product)}
                         </Link>
                       </th>
                       <td className="px-6 py-4 text-end">
@@ -284,8 +289,9 @@ export default function BomOverview() {
                         >
                           <Link
                             to={`/manufacturing/materials/${component.material.id}`}
+                            state={sourcePage}
                           >
-                            {component.material.name}
+                            {formatProductName(component.material)}
                           </Link>
                         </th>
                         <td className="px-6 py-4 text-end">
