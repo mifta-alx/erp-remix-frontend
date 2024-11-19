@@ -5,6 +5,7 @@ import { ErrorView } from "@views/index.js";
 import { SearchInput } from "@components/index.js";
 import TableBom from "@views/TableBom.jsx";
 import { formatToDecimal } from "@utils/formatDecimal.js";
+import { formatProductName } from "@utils/formatName.js";
 
 export const meta = () => {
   return [
@@ -75,12 +76,6 @@ export default function AddBom() {
       ...prevData,
       [name]: value,
     }));
-  };
-
-  const getDisplayStringProducts = (item) => {
-    return item.internal_reference
-      ? `[${item.internal_reference}] ${item.product_name}`
-      : item.product_name;
   };
 
   const handleProductChange = (product) => {
@@ -233,9 +228,9 @@ export default function AddBom() {
                     data={products}
                     label="Product"
                     placeholder="Select Product"
-                    valueKey="product_id"
+                    valueKey="id"
                     displayKey="product_name"
-                    getDisplayString={getDisplayStringProducts}
+                    getDisplayString={formatProductName}
                     onChange={handleProductChange}
                     error={actionData?.errors?.product_id}
                     value={formData.product_id}
@@ -256,6 +251,7 @@ export default function AddBom() {
                       placeholder="BOM-001"
                       value={formData.reference}
                       onChange={handleChange}
+                      autoComplete="off"
                     />
                   </div>
                   <div>
