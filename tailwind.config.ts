@@ -1,10 +1,20 @@
 import type { Config } from "tailwindcss";
 import colors from "tailwindcss/colors";
+
 export default {
   darkMode: "class",
   content: ["./app/**/{**,.client,.server}/**/*.{js,jsx,ts,tsx}"],
   theme: {
     extend: {
+      keyframes: {
+        fillLine: {
+          "0%": { width: "0%" },
+          "100%": { width: "58%" },
+        },
+      },
+      animation: {
+        "fill-line": "fillLine 0.4s ease-in-out forwards",
+      },
       colors: {
         primary: colors.blue,
       },
