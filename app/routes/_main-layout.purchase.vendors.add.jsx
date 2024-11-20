@@ -141,13 +141,13 @@ export default function AddVendors() {
   useEffect(() => {
     setFormData((prevFormData) => ({
       ...prevFormData,
-      vendor_type: selected,
+      type: selected,
     }));
   }, [selected]);
 
   const [formData, setFormData] = useState({
     name: "",
-    vendor_type: null,
+    type: null,
     street: "",
     city: "",
     state: "",
@@ -178,7 +178,7 @@ export default function AddVendors() {
         },
         body: JSON.stringify({
           name: formData.name,
-          vendor_type: selected,
+          type: selected,
           street: formData.street,
           city: formData.city,
           state: formData.state,
@@ -202,7 +202,7 @@ export default function AddVendors() {
         localStorage.removeItem("image");
         setFormData({
           name: "",
-          vendor_type: null,
+          type: null,
           street: "",
           city: "",
           state: "",
@@ -449,9 +449,9 @@ export default function AddVendors() {
                         value={formData.state}
                         onChange={handleChange}
                       />
-                      {actionData?.errors?.name && (
+                      {actionData?.errors?.state && (
                         <p className="mt-2 text-sm text-red-600">
-                          {actionData?.errors.name}
+                          {actionData?.errors.state}
                         </p>
                       )}
                     </div>

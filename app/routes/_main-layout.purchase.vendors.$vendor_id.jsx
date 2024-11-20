@@ -130,14 +130,14 @@ export default function EditVendor() {
     }
   };
 
-  const [selected, setSelected] = useState(vendor.vendor_type);
+  const [selected, setSelected] = useState(vendor.type);
   const handleCheckboxChange = (type) => {
     setSelected(selected === type ? null : type);
   };
   useEffect(() => {
     setFormData((prevFormData) => ({
       ...prevFormData,
-      vendor_type: selected,
+      type: selected,
     }));
   }, [selected]);
 
@@ -165,7 +165,7 @@ export default function EditVendor() {
   //
   const [formData, setFormData] = useState({
     name: vendor.name || "",
-    vendor_type: vendor.vendor_type || null,
+    type: vendor.type || null,
     street: vendor.street || "",
     city: vendor.city || "",
     state: vendor.state || "",
@@ -195,7 +195,7 @@ export default function EditVendor() {
         },
         body: JSON.stringify({
           name: formData.name,
-          vendor_type: formData.vendor_type,
+          type: formData.type,
           street: formData.street,
           city: formData.city,
           state: formData.state,
@@ -219,7 +219,7 @@ export default function EditVendor() {
         localStorage.removeItem("image");
         setFormData({
           name: "",
-          vendor_type: null,
+          type: null,
           street: "",
           city: "",
           state: "",

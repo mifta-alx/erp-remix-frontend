@@ -11,7 +11,7 @@ const VendorView = ({ vendors }) => {
                     key={index}
                     className=" rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800 hover:bg-gray-100 hover:dark:bg-gray-700"
                 >
-                    <Link to={`/purchase/vendors/${vendor.vendor_id}`}>
+                    <Link to={`/purchase/vendors/${vendor.id}`}>
                         <div className="flex flex-row gap-4">
                             <div className="h-24 w-24">
                                 <img
@@ -26,7 +26,7 @@ const VendorView = ({ vendors }) => {
                                 </p>
                                 <div className="gap-4 flex mt-2 text-sm ">
                                     <p className="rounded-xl  flex items-center gap-2 bg-primary-100 px-3 py-1 text-xs font-semibold text-primary-800 dark:bg-primary-900 dark:text-primary-300">
-                                        {vendor.vendor_type}
+                                        {vendor.type}
                                     </p>
                                 </div>
                                 <p className="mt-2 text-sm font-normal leading-tight text-gray-500 dark:text-gray-400 ">
