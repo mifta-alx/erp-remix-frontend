@@ -70,8 +70,13 @@ export default function Bom() {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      const newData = boms.filter((bom) =>
-        bom.product.name.toLowerCase().includes(keyword.toLowerCase())
+      const newData = boms.filter(
+        (bom) =>
+          bom.product.name.toLowerCase().includes(keyword.toLowerCase()) ||
+          bom.product.internal_reference
+            .toLowerCase()
+            .includes(keyword.toLowerCase()) ||
+          bom.bom_reference.toLowerCase().includes(keyword.toLowerCase())
       );
       setFilteredData(newData);
     }, debounceDelay);
