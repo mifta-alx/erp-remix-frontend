@@ -134,9 +134,9 @@ export default function AddVendors() {
   };
 
   //vendors company
-  const [selected, setSelected] = useState("Individual");
+  const [selected, setSelected] = useState(1);
   const handleCheckboxChange = (type) => {
-    setSelected(selected === type ? null : type);
+    setSelected((prevSelected) => (prevSelected === type ? null : type));
   };
   useEffect(() => {
     setFormData((prevFormData) => ({
@@ -177,7 +177,7 @@ export default function AddVendors() {
         },
         body: JSON.stringify({
           name: formData.name,
-          type: selected,
+          type: formData.type,
           street: formData.street,
           city: formData.city,
           state: formData.state,
@@ -188,6 +188,7 @@ export default function AddVendors() {
           image_uuid: image,
           image_url: preview,
         }),
+
       });
       if (!response.ok) {
         const result = await response.json();
@@ -321,10 +322,10 @@ export default function AddVendors() {
                         <input
                           id="default-radio-1"
                           type="radio"
-                          checked={selected === "Individual"}
+                          checked={selected === 1}
                           name="default-radio"
                           className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                          onChange={() => handleCheckboxChange("Individual")}
+                          onChange={() => handleCheckboxChange(1)}
                         />
                         <label
                           htmlFor="default-radio-1"
@@ -337,9 +338,9 @@ export default function AddVendors() {
                         <input
                           id="default-radio-2"
                           type="radio"
-                          checked={selected === "Company"}
+                          checked={selected === 2}
                           name="default-radio"
-                          onChange={() => handleCheckboxChange("Company")}
+                          onChange={() => handleCheckboxChange(2)}
                           className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
                         />
                         <label
@@ -366,7 +367,7 @@ export default function AddVendors() {
                           ? "border-red-500 dark:border-red-500"
                           : "border-gray-300 dark:border-gray-600"
                           } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
-                        placeholder="Type vendor name"
+                        placeholder="Vendor"
                         value={formData.name}
                         onChange={handleChange}
                       />
@@ -378,7 +379,7 @@ export default function AddVendors() {
                     </div>
                     <div className="sm:col-span-6">
                       <label
-                        htmlFor="street"
+                        htmlFor="Street"
                         className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                       >
                         Street
@@ -392,7 +393,7 @@ export default function AddVendors() {
                           ? "border-red-500 dark:border-red-500"
                           : "border-gray-300 dark:border-gray-600"
                           } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
-                        placeholder="Type street name"
+                        placeholder="Street"
                         value={formData.street}
                         onChange={handleChange}
                       />
@@ -418,7 +419,7 @@ export default function AddVendors() {
                           ? "border-red-500 dark:border-red-500"
                           : "border-gray-300 dark:border-gray-600"
                           } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
-                        placeholder="Type street name"
+                        placeholder="City"
                         value={formData.city}
                         onChange={handleChange}
                       />
@@ -444,7 +445,7 @@ export default function AddVendors() {
                           ? "border-red-500 dark:border-red-500"
                           : "border-gray-300 dark:border-gray-600"
                           } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
-                        placeholder=""
+                        placeholder="State"
                         value={formData.state}
                         onChange={handleChange}
                       />
@@ -470,7 +471,7 @@ export default function AddVendors() {
                           ? "border-red-500 dark:border-red-500"
                           : "border-gray-300 dark:border-gray-600"
                           } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
-                        placeholder="12345"
+                        placeholder="Zip Number"
                         value={formData.zip}
                         onChange={handleChange}
                       />
@@ -496,7 +497,7 @@ export default function AddVendors() {
                           ? "border-red-500 dark:border-red-500"
                           : "border-gray-300 dark:border-gray-600"
                           } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
-                        placeholder=""
+                        placeholder="Phone Number"
                         value={formData.phone}
                         onChange={handleChange}
                       />
@@ -523,7 +524,7 @@ export default function AddVendors() {
                           ? "border-red-500 dark:border-red-500"
                           : "border-gray-300 dark:border-gray-600"
                           } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
-                        placeholder=""
+                        placeholder="Mobile Number"
                         value={formData.mobile}
                         onChange={handleChange}
                       />

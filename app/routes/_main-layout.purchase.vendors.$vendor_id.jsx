@@ -16,9 +16,8 @@ import {
 import { ErrorView } from "@views/index.js";
 
 export const meta = ({ data }) => {
-  const formattedName = `${
-    data.vendor?.internal_reference ? `[${data.vendor.internal_reference}]` : ""
-  } ${data.vendor?.name || ""}`;
+  const formattedName = `${data.vendor?.internal_reference ? `[${data.vendor.internal_reference}]` : ""
+    } ${data.vendor?.name || ""}`;
   return [
     { title: `F&F - ${formattedName}` },
     { name: "description", content: `${formattedName}` },
@@ -81,9 +80,8 @@ export default function EditVendor() {
   const [actionData, setActionData] = useState();
   const [loadingUpdate, setLoadingUpdate] = useState(false);
   const [loadingDelete, setLoadingDelete] = useState(false);
-  const formattedName = `${
-    vendor?.internal_reference ? `[${vendor.internal_reference}]` : ""
-  } ${vendor?.name || ""}`;
+  const formattedName = `${vendor?.internal_reference ? `[${vendor.internal_reference}]` : ""
+    } ${vendor?.name || ""}`;
   //image upload
   const [image, setImage] = useState(vendor.image_uuid || "");
   const [preview, setPreview] = useState(vendor.image_url || "");
@@ -137,7 +135,7 @@ export default function EditVendor() {
 
   const [selected, setSelected] = useState(vendor.type);
   const handleCheckboxChange = (type) => {
-    setSelected(selected === type ? null : type);
+    setSelected((prevSelected) => (prevSelected === type ? null : type));
   };
   useEffect(() => {
     setFormData((prevFormData) => ({
@@ -385,10 +383,10 @@ export default function EditVendor() {
                           id="default-radio-1"
                           type="radio"
                           value=""
-                          checked={selected === "Individual"}
+                          checked={selected === 1}
                           name="default-radio"
                           className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                          onChange={() => handleCheckboxChange("Individual")}
+                          onChange={() => handleCheckboxChange(1)}
                         />
                         <label
                           htmlFor="default-radio-1"
@@ -402,9 +400,9 @@ export default function EditVendor() {
                           id="default-radio-2"
                           type="radio"
                           value=""
-                          checked={selected === "Company"}
+                          checked={selected === 2}
                           name="default-radio"
-                          onChange={() => handleCheckboxChange("Company")}
+                          onChange={() => handleCheckboxChange(2)}
                           className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
                         />
                         <label
@@ -427,11 +425,10 @@ export default function EditVendor() {
                         name="name"
                         id="name"
                         autoComplete="off"
-                        className={`bg-gray-50 border ${
-                          actionData?.errors?.name
-                            ? "border-red-500 dark:border-red-500"
-                            : "border-gray-300 dark:border-gray-600"
-                        } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
+                        className={`bg-gray-50 border ${actionData?.errors?.name
+                          ? "border-red-500 dark:border-red-500"
+                          : "border-gray-300 dark:border-gray-600"
+                          } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
                         placeholder="Type vendor name"
                         value={formData.name}
                         onChange={handleChange}
@@ -454,11 +451,10 @@ export default function EditVendor() {
                         name="street"
                         id="street"
                         autoComplete="off"
-                        className={`bg-gray-50 border ${
-                          actionData?.errors?.street
-                            ? "border-red-500 dark:border-red-500"
-                            : "border-gray-300 dark:border-gray-600"
-                        } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
+                        className={`bg-gray-50 border ${actionData?.errors?.street
+                          ? "border-red-500 dark:border-red-500"
+                          : "border-gray-300 dark:border-gray-600"
+                          } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
                         placeholder=""
                         value={formData.street}
                         onChange={handleChange}
@@ -481,11 +477,10 @@ export default function EditVendor() {
                         name="city"
                         id="city"
                         autoComplete="off"
-                        className={`bg-gray-50 border ${
-                          actionData?.errors?.city
-                            ? "border-red-500 dark:border-red-500"
-                            : "border-gray-300 dark:border-gray-600"
-                        } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
+                        className={`bg-gray-50 border ${actionData?.errors?.city
+                          ? "border-red-500 dark:border-red-500"
+                          : "border-gray-300 dark:border-gray-600"
+                          } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
                         placeholder=""
                         value={formData.city}
                         onChange={handleChange}
@@ -508,11 +503,10 @@ export default function EditVendor() {
                         name="state"
                         id="state"
                         autoComplete="off"
-                        className={`bg-gray-50 border ${
-                          actionData?.errors?.state
-                            ? "border-red-500 dark:border-red-500"
-                            : "border-gray-300 dark:border-gray-600"
-                        } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
+                        className={`bg-gray-50 border ${actionData?.errors?.state
+                          ? "border-red-500 dark:border-red-500"
+                          : "border-gray-300 dark:border-gray-600"
+                          } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
                         placeholder=""
                         value={formData.state}
                         onChange={handleChange}
@@ -535,11 +529,10 @@ export default function EditVendor() {
                         name="zip"
                         id="zip"
                         autoComplete="off"
-                        className={`bg-gray-50 border ${
-                          actionData?.errors?.zip
-                            ? "border-red-500 dark:border-red-500"
-                            : "border-gray-300 dark:border-gray-600"
-                        } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
+                        className={`bg-gray-50 border ${actionData?.errors?.zip
+                          ? "border-red-500 dark:border-red-500"
+                          : "border-gray-300 dark:border-gray-600"
+                          } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
                         placeholder="12345"
                         value={formData.zip}
                         onChange={handleChange}
@@ -562,11 +555,10 @@ export default function EditVendor() {
                         name="phone"
                         id="phone"
                         autoComplete="off"
-                        className={`bg-gray-50 border ${
-                          actionData?.errors?.phone
-                            ? "border-red-500 dark:border-red-500"
-                            : "border-gray-300 dark:border-gray-600"
-                        } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
+                        className={`bg-gray-50 border ${actionData?.errors?.phone
+                          ? "border-red-500 dark:border-red-500"
+                          : "border-gray-300 dark:border-gray-600"
+                          } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
                         placeholder=""
                         value={formData.phone}
                         onChange={handleChange}
@@ -590,11 +582,10 @@ export default function EditVendor() {
                         name="mobile"
                         id="mobile"
                         autoComplete="off"
-                        className={`bg-gray-50 border ${
-                          actionData?.errors?.mobile
-                            ? "border-red-500 dark:border-red-500"
-                            : "border-gray-300 dark:border-gray-600"
-                        } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
+                        className={`bg-gray-50 border ${actionData?.errors?.mobile
+                          ? "border-red-500 dark:border-red-500"
+                          : "border-gray-300 dark:border-gray-600"
+                          } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
                         placeholder=""
                         value={formData.mobile}
                         onChange={handleChange}
@@ -617,11 +608,10 @@ export default function EditVendor() {
                         name="email"
                         id="email"
                         autoComplete="off"
-                        className={`bg-gray-50 border ${
-                          actionData?.errors?.email
-                            ? "border-red-500 dark:border-red-500"
-                            : "border-gray-300 dark:border-gray-600"
-                        } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
+                        className={`bg-gray-50 border ${actionData?.errors?.email
+                          ? "border-red-500 dark:border-red-500"
+                          : "border-gray-300 dark:border-gray-600"
+                          } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
                         placeholder="example@gmail.com"
                         value={formData.email}
                         onChange={handleChange}
@@ -661,11 +651,10 @@ export default function EditVendor() {
                       </div>
                     ) : (
                       <div
-                        className={`bg-gray-50 border ${
-                          actionData?.errors?.image_uuid
-                            ? "border-red-500 dark:border-red-500 dark:hover:border-red-400"
-                            : "border-gray-300 dark:border-gray-600 dark:hover:border-gray-500"
-                        } flex flex-col items-center justify-center h-40 md:w-40 border-2 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-700 hover:bg-gray-100`}
+                        className={`bg-gray-50 border ${actionData?.errors?.image_uuid
+                          ? "border-red-500 dark:border-red-500 dark:hover:border-red-400"
+                          : "border-gray-300 dark:border-gray-600 dark:hover:border-gray-500"
+                          } flex flex-col items-center justify-center h-40 md:w-40 border-2 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-700 hover:bg-gray-100`}
                         onClick={handleFilePickerClick}
                       >
                         <div className="flex flex-col items-center justify-center pt-5 pb-6 text-gray-300 dark:text-gray-400 text-5xl">

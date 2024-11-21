@@ -5,6 +5,7 @@ const VendorView = ({ vendors }) => {
     const { view } = useViewContext();
     const navigate = useNavigate();
     return view === "gallery" ? (
+
         vendors?.length > 0 ? (
             <div className="mb-4 grid gap-4 sm:grid-cols-2 md:mb-8 lg:grid-cols-3 xl:grid-cols-4">
                 {vendors?.map((vendor, index) => (
@@ -27,7 +28,7 @@ const VendorView = ({ vendors }) => {
                                     </p>
                                     <div className="gap-4 flex mt-2 text-sm ">
                                         <p className="rounded-xl  flex items-center gap-2 bg-primary-100 px-3 py-1 text-xs font-semibold text-primary-800 dark:bg-primary-900 dark:text-primary-300">
-                                            {vendor.type}
+                                            {vendor.type === 1 ? "Individual" : "Company"}
                                         </p>
                                     </div>
                                     <p className="mt-2 text-sm font-normal leading-tight text-gray-500 dark:text-gray-400 ">
