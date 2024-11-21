@@ -306,7 +306,7 @@ export default function EditMaterial() {
     }
   };
 
-  //delete product
+  //delete material
   const handleDeleteMaterial = async () => {
     setLoadingDelete(true);
     try {
@@ -794,7 +794,7 @@ export default function EditMaterial() {
                         <div className="flex flex-col items-center justify-center pt-5 pb-6 text-gray-300 dark:text-gray-400 text-5xl">
                           <Camera />
                           <p className="text-xs text-center mt-2 text-gray-300 dark:text-gray-400">
-                            Product Image
+                            materials Image
                           </p>
                         </div>
                       </div>
