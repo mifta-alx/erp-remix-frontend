@@ -157,7 +157,6 @@ export default function AddVendors() {
     email: "",
     image_uuid: "",
   });
-  console.log(formData)
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
