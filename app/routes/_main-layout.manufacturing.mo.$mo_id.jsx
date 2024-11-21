@@ -72,7 +72,6 @@ const DetailedMo = () => {
   const params = useParams();
   const { API_URL, products, boms, mo, error, message, description, status } =
     useLoaderData();
-  const [loading, setLoading] = useState(false);
   const [loadingUpdate, setLoadingUpdate] = useState(false);
   const [loadingCancel, setLoadingCancel] = useState(false);
   const [actionData, setActionData] = useState();
