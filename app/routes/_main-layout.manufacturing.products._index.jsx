@@ -1,7 +1,14 @@
-import { CaretRight, House, Package, Plus } from "@phosphor-icons/react";
+import {
+  CaretRight,
+  House,
+  MagnifyingGlass,
+  Package,
+  Plus,
+} from "@phosphor-icons/react";
 import { Link, useLoaderData } from "@remix-run/react";
 import { EmptyView, ErrorView, ProductView } from "@views/index.js";
 import { ViewSwitch } from "@components/index.js";
+import { useEffect, useState } from "react";
 
 export const meta = () => {
   return [
@@ -34,8 +41,8 @@ export const loader = async () => {
         description: errorDescription,
       };
     }
-    const data = await response.json();
-    return { error: false, data };
+    const products = await response.json();
+    return { error: false, products: products.data };
   } catch (error) {
     return {
       error: true,
@@ -48,8 +55,32 @@ export const loader = async () => {
 };
 
 export default function Products() {
-  const { error, data, message, description, status } = useLoaderData();
-  const products = data?.data || [];
+  const { error, products, message, description, status } = useLoaderData();
+  const [keyword, setKeyword] = useState("");
+  const [filteredData, setFilteredData] = useState([]);
+  useEffect(() => {
+    setFilteredData(products);
+  }, []);
+  const debounceDelay = 500;
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      const newData = products.filter(
+        (product) =>
+          product.product_name.toLowerCase().includes(keyword.toLowerCase()) ||
+          product.internal_reference
+            .toLowerCase()
+            .includes(keyword.toLowerCase())
+      );
+      setFilteredData(newData);
+    }, debounceDelay);
+
+    return () => clearTimeout(timer);
+  }, [keyword, products]);
+
+  const handleSearch = (e) => {
+    setKeyword(e.target.value);
+  };
 
   return (
     <section>
@@ -80,17 +111,32 @@ export default function Products() {
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white sm:text-2xl">
               Products
             </h2>
-            <div className="flex flex-row gap-4 w-full sm:w-fit">
-              {products.length > 0 && (
-                <Link
-                  to="/manufacturing/products/add"
-                  className="text-gray-900 bg-white gap-2 w-full md:w-fit hover:bg-gray-100 border border-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2 text-center inline-flex items-center justify-center dark:focus:ring-gray-600 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:bg-gray-700"
-                >
-                  <Plus size={16} weight="bold" />
-                  New
-                </Link>
-              )}
-              <ViewSwitch />
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full sm:w-fit justify-end">
+              <div className="relative w-full md:w-1/2">
+                <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-500 dark:text-gray-400">
+                  <MagnifyingGlass size={16} weight="bold" />
+                </div>
+                <input
+                  type="text"
+                  id="simple-search"
+                  className="bg-white border border-gray-200 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full pl-10 p-2 dark:bg-gray-800 dark:border-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                  placeholder="Search"
+                  value={keyword}
+                  onChange={handleSearch}
+                />
+              </div>
+              <div className="flex flex-row gap-4 w-full sm:w-fit">
+                {products.length > 0 && (
+                  <Link
+                    to="/manufacturing/products/add"
+                    className="text-gray-900 bg-white gap-2 w-full md:w-fit hover:bg-gray-100 border border-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2 text-center inline-flex items-center justify-center dark:focus:ring-gray-600 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:bg-gray-700"
+                  >
+                    <Plus size={16} weight="bold" />
+                    New
+                  </Link>
+                )}
+                <ViewSwitch />
+              </div>
             </div>
           </div>
         </div>
@@ -103,7 +149,7 @@ export default function Products() {
         ) : (
           <>
             {products.length > 0 ? (
-              <ProductView products={products} />
+              <ProductView products={filteredData} />
             ) : (
               <EmptyView
                 section="product"
