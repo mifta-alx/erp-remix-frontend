@@ -5,11 +5,18 @@ const formatProductName = (item) => {
 };
 
 const formatBomName = (item) => {
-  return `${item?.bom_reference ? item.bom_reference + ":" : ""} ${
-    item?.product?.internal_reference
-      ? `[${item.product.internal_reference}]`
-      : ""
-  } ${item?.product?.name || ""}`;
+  if (item.bom_reference && item.product.internal_reference) {
+    return `${item.bom_reference}: [${item.product.internal_reference}] ${item.product.name}`;
+  }
+
+  if (item.bom_reference) {
+    return `${item.bom_reference}: ${item.product.name}`;
+  }
+  if (item.product.internal_reference) {
+    return `[${item.product.internal_reference}] ${item.product.name}`;
+  }
+
+  return item.product.name;
 };
 
 export { formatProductName, formatBomName };
