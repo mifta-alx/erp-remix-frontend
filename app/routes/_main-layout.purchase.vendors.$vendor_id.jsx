@@ -6,18 +6,13 @@ import {
   TrashSimple,
 } from "@phosphor-icons/react";
 import { useEffect, useRef, useState } from "react";
-import {
-  Form,
-  Link,
-  useLoaderData,
-  useNavigate,
-  useParams,
-} from "@remix-run/react";
+import { Link, useLoaderData, useNavigate, useParams } from "@remix-run/react";
 import { ErrorView } from "@views/index.js";
 
 export const meta = ({ data }) => {
-  const formattedName = `${data.vendor?.internal_reference ? `[${data.vendor.internal_reference}]` : ""
-    } ${data.vendor?.name || ""}`;
+  const formattedName = `${
+    data.vendor?.internal_reference ? `[${data.vendor.internal_reference}]` : ""
+  } ${data.vendor?.name || ""}`;
   return [
     { title: `F&F - ${formattedName}` },
     { name: "description", content: `${formattedName}` },
@@ -80,8 +75,9 @@ export default function EditVendor() {
   const [actionData, setActionData] = useState();
   const [loadingUpdate, setLoadingUpdate] = useState(false);
   const [loadingDelete, setLoadingDelete] = useState(false);
-  const formattedName = `${vendor?.internal_reference ? `[${vendor.internal_reference}]` : ""
-    } ${vendor?.name || ""}`;
+  const formattedName = `${
+    vendor?.internal_reference ? `[${vendor.internal_reference}]` : ""
+  } ${vendor?.name || ""}`;
   //image upload
   const [image, setImage] = useState(vendor.image_uuid || "");
   const [preview, setPreview] = useState(vendor.image_url || "");
@@ -373,47 +369,14 @@ export default function EditVendor() {
                 </div>
               </div>
             </div>
-            <Form onSubmit={handleUpdate} encType="multipart/form-data">
-              <div className="relative bg-white border-gray-200 dark:border-gray-700 border dark:bg-gray-800 rounded-lg mb-4 p-8">
-                <div className="flex flex-col md:flex-row gap-4 sm:gap-6">
-                  <div className="grid gap-4 sm:grid-cols-6 sm:gap-6 w-full order-2 md:order-1">
-                    <div className="sm:col-span-6 flex flex-row gap-3">
-                      <div className="flex items-center">
-                        <input
-                          id="default-radio-1"
-                          type="radio"
-                          value=""
-                          checked={selected === 1}
-                          name="default-radio"
-                          className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                          onChange={() => handleCheckboxChange(1)}
-                        />
-                        <label
-                          htmlFor="default-radio-1"
-                          className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-                        >
-                          Individual
-                        </label>
-                      </div>
-                      <div className="flex items-center">
-                        <input
-                          id="default-radio-2"
-                          type="radio"
-                          value=""
-                          checked={selected === 2}
-                          name="default-radio"
-                          onChange={() => handleCheckboxChange(2)}
-                          className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                        />
-                        <label
-                          htmlFor="default-radio-2"
-                          className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-                        >
-                          Company
-                        </label>
-                      </div>
-                    </div>
-                    <div className="sm:col-span-6">
+            <div className="flex flex-col lg:flex-row gap-4">
+              <div className="lg:w-2/3 gap-4 flex flex-col">
+                <div className="sm:col-span-2 relative bg-white border-gray-200 dark:border-gray-700 border dark:bg-gray-800 rounded-lg p-8">
+                  <p className="mb-6 text-lg font-medium text-gray-700 dark:text-gray-400">
+                    Vendor Information
+                  </p>
+                  <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 sm:gap-6">
+                    <div className="sm:col-span-2">
                       <label
                         htmlFor="name"
                         className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
@@ -425,10 +388,11 @@ export default function EditVendor() {
                         name="name"
                         id="name"
                         autoComplete="off"
-                        className={`bg-gray-50 border ${actionData?.errors?.name
-                          ? "border-red-500 dark:border-red-500"
-                          : "border-gray-300 dark:border-gray-600"
-                          } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
+                        className={`bg-gray-50 border ${
+                          actionData?.errors?.name
+                            ? "border-red-500 dark:border-red-500"
+                            : "border-gray-300 dark:border-gray-600"
+                        } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
                         placeholder="Type vendor name"
                         value={formData.name}
                         onChange={handleChange}
@@ -439,9 +403,58 @@ export default function EditVendor() {
                         </p>
                       )}
                     </div>
-                    <div className="sm:col-span-6">
+                    <div className="sm:col-span-2">
                       <label
-                        htmlFor="street"
+                        htmlFor="name"
+                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                      >
+                        Category
+                      </label>
+                      <div className="grid gap-6 md:grid-cols-2">
+                        <div className="flex items-center ps-4 border border-gray-200 rounded-lg dark:border-gray-700">
+                          <input
+                            checked={selected === 1}
+                            id="bordered-radio-1"
+                            type="radio"
+                            name="bordered-radio"
+                            onChange={() => handleCheckboxChange(1)}
+                            className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-0 dark:bg-gray-700 dark:border-gray-600"
+                          />
+                          <label
+                            htmlFor="bordered-radio-1"
+                            className="w-full py-4 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                          >
+                            Individual
+                          </label>
+                        </div>
+                        <div className="flex items-center ps-4 border border-gray-200 rounded-lg dark:border-gray-700">
+                          <input
+                            checked={selected === 2}
+                            id="bordered-radio-2"
+                            type="radio"
+                            name="bordered-radio"
+                            onChange={() => handleCheckboxChange(2)}
+                            className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-0 dark:bg-gray-700 dark:border-gray-600"
+                          />
+                          <label
+                            htmlFor="bordered-radio-2"
+                            className="w-full py-4 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                          >
+                            Company
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="sm:col-span-2 relative bg-white border-gray-200 dark:border-gray-700 border dark:bg-gray-800 rounded-lg p-8">
+                  <p className="mb-6 text-lg font-medium text-gray-700 dark:text-gray-400">
+                    Address
+                  </p>
+                  <div className="grid gap-4 grid-cols-1 sm:grid-cols-3 sm:gap-6">
+                    <div className="sm:col-span-3">
+                      <label
+                        htmlFor="Street"
                         className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                       >
                         Street
@@ -451,11 +464,12 @@ export default function EditVendor() {
                         name="street"
                         id="street"
                         autoComplete="off"
-                        className={`bg-gray-50 border ${actionData?.errors?.street
-                          ? "border-red-500 dark:border-red-500"
-                          : "border-gray-300 dark:border-gray-600"
-                          } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
-                        placeholder=""
+                        className={`bg-gray-50 border ${
+                          actionData?.errors?.street
+                            ? "border-red-500 dark:border-red-500"
+                            : "border-gray-300 dark:border-gray-600"
+                        } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
+                        placeholder="123 Main St"
                         value={formData.street}
                         onChange={handleChange}
                       />
@@ -465,7 +479,7 @@ export default function EditVendor() {
                         </p>
                       )}
                     </div>
-                    <div className="sm:col-span-2">
+                    <div>
                       <label
                         htmlFor="city"
                         className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
@@ -477,11 +491,12 @@ export default function EditVendor() {
                         name="city"
                         id="city"
                         autoComplete="off"
-                        className={`bg-gray-50 border ${actionData?.errors?.city
-                          ? "border-red-500 dark:border-red-500"
-                          : "border-gray-300 dark:border-gray-600"
-                          } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
-                        placeholder=""
+                        className={`bg-gray-50 border ${
+                          actionData?.errors?.city
+                            ? "border-red-500 dark:border-red-500"
+                            : "border-gray-300 dark:border-gray-600"
+                        } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
+                        placeholder="Los Angeles"
                         value={formData.city}
                         onChange={handleChange}
                       />
@@ -491,7 +506,7 @@ export default function EditVendor() {
                         </p>
                       )}
                     </div>
-                    <div className="sm:col-span-2">
+                    <div>
                       <label
                         htmlFor="state"
                         className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
@@ -503,11 +518,12 @@ export default function EditVendor() {
                         name="state"
                         id="state"
                         autoComplete="off"
-                        className={`bg-gray-50 border ${actionData?.errors?.state
-                          ? "border-red-500 dark:border-red-500"
-                          : "border-gray-300 dark:border-gray-600"
-                          } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
-                        placeholder=""
+                        className={`bg-gray-50 border ${
+                          actionData?.errors?.state
+                            ? "border-red-500 dark:border-red-500"
+                            : "border-gray-300 dark:border-gray-600"
+                        } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
+                        placeholder="California"
                         value={formData.state}
                         onChange={handleChange}
                       />
@@ -517,7 +533,7 @@ export default function EditVendor() {
                         </p>
                       )}
                     </div>
-                    <div className="sm:col-span-2">
+                    <div>
                       <label
                         htmlFor="zip"
                         className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
@@ -529,105 +545,33 @@ export default function EditVendor() {
                         name="zip"
                         id="zip"
                         autoComplete="off"
-                        className={`bg-gray-50 border ${actionData?.errors?.zip
-                          ? "border-red-500 dark:border-red-500"
-                          : "border-gray-300 dark:border-gray-600"
-                          } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
-                        placeholder="12345"
+                        className={`bg-gray-50 border ${
+                          actionData?.errors?.zip
+                            ? "border-red-500 dark:border-red-500"
+                            : "border-gray-300 dark:border-gray-600"
+                        } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
+                        placeholder="90210"
                         value={formData.zip}
                         onChange={handleChange}
                       />
                       {actionData?.errors?.zip && (
-                        <p className="mt-2 text-sm text-red-600 dark:text-red-500">
-                          {actionData.errors.zip}
-                        </p>
-                      )}
-                    </div>
-                    <div className="sm:col-span-2">
-                      <label
-                        htmlFor="phone"
-                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                      >
-                        Phone
-                      </label>
-                      <input
-                        type="text"
-                        name="phone"
-                        id="phone"
-                        autoComplete="off"
-                        className={`bg-gray-50 border ${actionData?.errors?.phone
-                          ? "border-red-500 dark:border-red-500"
-                          : "border-gray-300 dark:border-gray-600"
-                          } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
-                        placeholder=""
-                        value={formData.phone}
-                        onChange={handleChange}
-                      />
-                      {actionData?.errors?.phone && (
                         <p className="mt-2 text-sm text-red-600">
-                          {actionData?.errors.phone}
-                        </p>
-                      )}
-                    </div>
-
-                    <div className="sm:col-span-2">
-                      <label
-                        htmlFor="mobile"
-                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                      >
-                        Mobile
-                      </label>
-                      <input
-                        type="text"
-                        name="mobile"
-                        id="mobile"
-                        autoComplete="off"
-                        className={`bg-gray-50 border ${actionData?.errors?.mobile
-                          ? "border-red-500 dark:border-red-500"
-                          : "border-gray-300 dark:border-gray-600"
-                          } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
-                        placeholder=""
-                        value={formData.mobile}
-                        onChange={handleChange}
-                      />
-                      {actionData?.errors?.mobile && (
-                        <p className="mt-2 text-sm text-red-600">
-                          {actionData?.errors.mobile}
-                        </p>
-                      )}
-                    </div>
-                    <div className="sm:col-span-2">
-                      <label
-                        htmlFor="email"
-                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                      >
-                        Email
-                      </label>
-                      <input
-                        type="text"
-                        name="email"
-                        id="email"
-                        autoComplete="off"
-                        className={`bg-gray-50 border ${actionData?.errors?.email
-                          ? "border-red-500 dark:border-red-500"
-                          : "border-gray-300 dark:border-gray-600"
-                          } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
-                        placeholder="example@gmail.com"
-                        value={formData.email}
-                        onChange={handleChange}
-                      />
-                      {actionData?.errors?.email && (
-                        <p className="mt-2 text-sm text-red-600 dark:text-red-500">
-                          {actionData.errors.email}
+                          {actionData?.errors.zip}
                         </p>
                       )}
                     </div>
                   </div>
-
-                  <div className="md:mt-7 order-1 md:order-2">
+                </div>
+              </div>
+              <div className="lg:w-1/3 gap-4 flex flex-col">
+                <div className="relative bg-white border-gray-200 dark:border-gray-700 border dark:bg-gray-800 rounded-lg p-8">
+                  <p className="mb-6 text-lg font-medium text-gray-700 dark:text-gray-400">
+                    Vendor Image
+                  </p>
+                  <div>
                     {preview ? (
                       <div
-                        className="relative cursor-pointer h-40 md:w-40"
+                        className="relative cursor-pointer h-44 md:w-full"
                         onMouseEnter={() => setIsHovered(true)}
                         onMouseLeave={() => setIsHovered(false)}
                       >
@@ -651,16 +595,17 @@ export default function EditVendor() {
                       </div>
                     ) : (
                       <div
-                        className={`bg-gray-50 border ${actionData?.errors?.image_uuid
-                          ? "border-red-500 dark:border-red-500 dark:hover:border-red-400"
-                          : "border-gray-300 dark:border-gray-600 dark:hover:border-gray-500"
-                          } flex flex-col items-center justify-center h-40 md:w-40 border-2 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-700 hover:bg-gray-100`}
+                        className={`bg-gray-50 border ${
+                          actionData?.errors?.image_uuid
+                            ? "border-red-500 dark:border-red-500 dark:hover:border-red-400"
+                            : "border-gray-300 dark:border-gray-600 dark:hover:border-gray-500"
+                        } flex flex-col items-center justify-center h-44 md:w-full border-2 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-700 hover:bg-gray-100`}
                         onClick={handleFilePickerClick}
                       >
                         <div className="flex flex-col items-center justify-center pt-5 pb-6 text-gray-300 dark:text-gray-400 text-5xl">
                           <Camera />
                           <p className="text-xs text-center mt-2 text-gray-300 dark:text-gray-400">
-                            Product Image
+                            Vendor Image
                           </p>
                         </div>
                       </div>
@@ -680,8 +625,96 @@ export default function EditVendor() {
                     )}
                   </div>
                 </div>
+                <div className="relative bg-white border-gray-200 dark:border-gray-700 border dark:bg-gray-800 rounded-lg p-8">
+                  <p className="mb-6 text-lg font-medium text-gray-700 dark:text-gray-400">
+                    Contact
+                  </p>
+                  <div className="grid gap-4 grid-cols-1 sm:gap-6">
+                    <div>
+                      <label
+                        htmlFor="phone"
+                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                      >
+                        Phone
+                      </label>
+                      <input
+                        type="text"
+                        name="phone"
+                        id="phone"
+                        autoComplete="off"
+                        className={`bg-gray-50 border ${
+                          actionData?.errors?.phone
+                            ? "border-red-500 dark:border-red-500"
+                            : "border-gray-300 dark:border-gray-600"
+                        } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
+                        placeholder="0341000100"
+                        value={formData.phone}
+                        onChange={handleChange}
+                      />
+                      {actionData?.errors?.phone && (
+                        <p className="mt-2 text-sm text-red-600">
+                          {actionData?.errors.phone}
+                        </p>
+                      )}
+                    </div>
+                    <div>
+                      <label
+                        htmlFor="mobile"
+                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                      >
+                        Mobile
+                      </label>
+                      <input
+                        type="text"
+                        name="mobile"
+                        id="mobile"
+                        autoComplete="off"
+                        className={`bg-gray-50 border ${
+                          actionData?.errors?.mobile
+                            ? "border-red-500 dark:border-red-500"
+                            : "border-gray-300 dark:border-gray-600"
+                        } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
+                        placeholder="0852118018256"
+                        value={formData.mobile}
+                        onChange={handleChange}
+                      />
+                      {actionData?.errors?.mobile && (
+                        <p className="mt-2 text-sm text-red-600">
+                          {actionData?.errors.mobile}
+                        </p>
+                      )}
+                    </div>
+                    <div>
+                      <label
+                        htmlFor="email"
+                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                      >
+                        Email
+                      </label>
+                      <input
+                        type="text"
+                        name="email"
+                        id="email"
+                        autoComplete="off"
+                        className={`bg-gray-50 border ${
+                          actionData?.errors?.email
+                            ? "border-red-500 dark:border-red-500"
+                            : "border-gray-300 dark:border-gray-600"
+                        } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
+                        placeholder="example@gmail.com"
+                        value={formData.email}
+                        onChange={handleChange}
+                      />
+                      {actionData?.errors?.email && (
+                        <p className="mt-2 text-sm text-red-600 dark:text-red-500">
+                          {actionData.errors.email}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </div>
               </div>
-            </Form>
+            </div>
           </>
         )}
       </div>
