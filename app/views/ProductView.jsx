@@ -14,7 +14,7 @@ const ProductView = ({ products }) => {
             key={index}
             className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800 hover:bg-gray-100 hover:dark:bg-gray-700"
           >
-            <Link to={`/manufacturing/products/${product.product_id}`}>
+            <Link to={`/manufacturing/products/${product.id}`}>
               <div className="flex flex-row gap-4">
                 <div className="h-24 w-24">
                   <img
@@ -25,7 +25,7 @@ const ProductView = ({ products }) => {
                 </div>
                 <div>
                   <p className="text-lg font-semibold leading-tight text-gray-900 dark:text-white">
-                    {product.product_name}
+                    {product.name}
                   </p>
                   <p className="text-sm font-medium text-gray-500 dark:text-gray-400 mt-2">
                     {product.internal_reference &&
@@ -83,14 +83,14 @@ const ProductView = ({ products }) => {
                   className="border-b dark:border-gray-700 text-sm cursor-pointer bg-white dark:bg-gray-800 hover:bg-gray-100 hover:dark:bg-gray-600 "
                   key={index}
                   onClick={() =>
-                    navigate(`/manufacturing/products/${product.product_id}`)
+                    navigate(`/manufacturing/products/${product.id}`)
                   }
                 >
                   <td
                     scope="row"
                     className="ps-6 pe-3 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
                   >
-                    {product.product_name}
+                    {product.name}
                   </td>
                   <td className="px-3 py-4">{product.internal_reference}</td>
                   <td className="px-3 py-4 flex items-center gap-2">

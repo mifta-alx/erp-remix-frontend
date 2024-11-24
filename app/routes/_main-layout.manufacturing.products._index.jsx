@@ -67,7 +67,7 @@ export default function Products() {
     const timer = setTimeout(() => {
       const newData = products.filter(
         (product) =>
-          product.product_name.toLowerCase().includes(keyword.toLowerCase()) ||
+          product.name.toLowerCase().includes(keyword.toLowerCase()) ||
           product.internal_reference
             .toLowerCase()
             .includes(keyword.toLowerCase())
