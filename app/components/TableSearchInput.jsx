@@ -1,6 +1,7 @@
 import { forwardRef, useEffect, useRef, useState } from "react";
 import useClickOutside from "@hooks/useClickOutside.js";
 import { CaretDown } from "@phosphor-icons/react";
+import { twMerge } from "tailwind-merge";
 
 const TableSearchInput = forwardRef(
   (
@@ -13,6 +14,7 @@ const TableSearchInput = forwardRef(
       onChange,
       error,
       value,
+      parentClassName,
     },
     ref
   ) => {
@@ -69,7 +71,10 @@ const TableSearchInput = forwardRef(
       }
     }, [value, data, valueKey, displayKey, getDisplayString]);
     return (
-      <div ref={dropdownRef} className="relative w-full sm:w-1/2">
+      <div
+        ref={dropdownRef}
+        className={twMerge("relative w-full sm:w-1/2", parentClassName)}
+      >
         <div className="absolute inset-y-0 end-0 flex items-center pe-3 pointer-events-none text-gray-500 dark:text-gray-400">
           {isFocused && <CaretDown weight="bold" size={16} />}
         </div>
@@ -79,7 +84,7 @@ const TableSearchInput = forwardRef(
           name="search-input"
           id="search-input"
           className={`${
-            error
+            error && inputValue === ""
               ? "border-red-500 dark:border-red-600 focus:border-red-500 dark:focus:border-red-600 "
               : "border-transparent focus:border-primary-600 dark:focus:border-primary-500"
           } text-gray-900 border-b text-sm focus:outline-none focus:ring-0 block w-full py-2.5 px-1 dark:bg-transparent dark:placeholder-gray-400 dark:text-white`}
