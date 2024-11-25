@@ -3,16 +3,16 @@ import {
   CaretRight,
   Check,
   House,
-  TrashSimple,
+  // TrashSimple,
   X,
   XCircle,
 } from "@phosphor-icons/react";
 import { useEffect, useRef, useState } from "react";
-import { Form, Link, useLoaderData, useNavigate } from "@remix-run/react";
+import { Link, useLoaderData, useNavigate } from "@remix-run/react";
 import useClickOutside from "@hooks/useClickOutside";
 import useDebounce from "@hooks/useDebounce";
 import { ErrorView } from "@views/index.js";
-
+import { formatPriceBase, unformatPriceBase } from "@utils/formatPrice.js";
 export const meta = () => {
   return [
     { title: "F&F - New Material" },
@@ -192,8 +192,10 @@ export default function AddMaterial() {
   const [formData, setFormData] = useState({
     material_name: "",
     category_id: "",
-    sales_price: "",
-    cost: "",
+    // sales_price: "",
+    // cost: "",
+    sales_price: formatPriceBase(0),
+    cost: formatPriceBase(0),
     barcode: "",
     internal_reference: "",
     notes: "",
@@ -209,6 +211,7 @@ export default function AddMaterial() {
   //submit data
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
       const response = await fetch(`${API_URL}/materials`, {
         method: "POST",
@@ -218,8 +221,10 @@ export default function AddMaterial() {
         body: JSON.stringify({
           material_name: formData.material_name,
           category_id: formData.category_id,
-          sales_price: formData.sales_price || 0,
-          cost: formData.cost || 0,
+          // sales_price: formData.sales_price || 0,
+          // cost: formData.cost || 0,
+          sales_price: unformatPriceBase(formData.sales_price),
+          cost: unformatPriceBase(formData.cost),
           barcode: formData.barcode,
           internal_reference: formData.internal_reference,
           notes: formData.notes,
@@ -252,6 +257,8 @@ export default function AddMaterial() {
       }
     } catch (error) {
       console.error(error);
+    } finally {
+      setLoading(false);
     }
   };
   const handleDiscard = () => {
@@ -295,7 +302,7 @@ export default function AddMaterial() {
                     <div className="flex items-center text-gray-400">
                       <CaretRight size={18} weight="bold" />
                       <span className="ms-1 text-sm font-medium text-gray-500 dark:text-gray-400 md:ms-2">
-                        New Material
+                        New
                       </span>
                     </div>
                   </li>
@@ -347,11 +354,15 @@ export default function AddMaterial() {
                 </div>
               </div>
             </div>
-            <Form onSubmit={handleSubmit} encType="multipart/form-data">
-              <div className="relative bg-white border-gray-200 dark:border-gray-700 border dark:bg-gray-800 rounded-lg mb-4 p-8">
-                <div className="flex flex-col md:flex-row gap-4 sm:gap-6">
-                  <div className="grid gap-4 sm:grid-cols-6 sm:gap-6 w-full order-2 md:order-1">
-                    <div className="sm:col-span-6">
+            <div className="flex flex-col lg:flex-row gap-4">
+              <div className="lg:w-2/3 gap-4 flex flex-col">
+
+                <div className="sm:col-span-2 relative bg-white border-gray-200 dark:border-gray-700 border dark:bg-gray-800 rounded-lg p-8">
+                  <p className="mb-6 text-lg font-medium text-gray-700 dark:text-gray-400">
+                    Material Information
+                  </p>
+                  <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 sm:gap-6">
+                    <div className="sm:col-span-2">
                       <label
                         htmlFor="material_name"
                         className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
@@ -363,11 +374,10 @@ export default function AddMaterial() {
                         name="material_name"
                         id="material_name"
                         autoComplete="off"
-                        className={`bg-gray-50 border ${
-                          actionData?.errors?.material_name
-                            ? "border-red-500 dark:border-red-500"
-                            : "border-gray-300 dark:border-gray-600"
-                        } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
+                        className={`bg-gray-50 border ${actionData?.errors?.material_name
+                          ? "border-red-500 dark:border-red-500"
+                          : "border-gray-300 dark:border-gray-600"
+                          } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
                         placeholder="Type material name"
                         value={formData.material_name}
                         onChange={handleChange}
@@ -378,22 +388,217 @@ export default function AddMaterial() {
                         </p>
                       )}
                     </div>
-
+                    <div>
+                      <label
+                        htmlFor="barcode"
+                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                      >
+                        Barcode
+                      </label>
+                      <input
+                        type="text"
+                        name="barcode"
+                        id="barcode"
+                        autoComplete="off"
+                        className={`bg-gray-50 border ${actionData?.errors?.barcode
+                          ? "border-red-500 dark:border-red-500"
+                          : "border-gray-300 dark:border-gray-600"
+                          } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
+                        placeholder="PRO-001"
+                        value={formData.barcode}
+                        onChange={handleChange}
+                      />
+                      {actionData?.errors?.barcode && (
+                        <p className="mt-2 text-sm text-red-600">
+                          {actionData?.errors.barcode}
+                        </p>
+                      )}
+                    </div>
+                    <div>
+                      <label
+                        htmlFor="internal_reference"
+                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                      >
+                        Internal Reference
+                      </label>
+                      <input
+                        type="text"
+                        name="internal_reference"
+                        id="internal_reference"
+                        autoComplete="off"
+                        className={`bg-gray-50 border ${actionData?.errors?.internal_reference
+                          ? "border-red-500 dark:border-red-500"
+                          : "border-gray-300 dark:border-gray-600"
+                          } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
+                        placeholder="PRO-001"
+                        value={formData.internal_reference}
+                        onChange={handleChange}
+                      />
+                      {actionData?.errors?.internal_reference && (
+                        <p className="mt-2 text-sm text-red-600">
+                          {actionData?.errors.internal_reference}
+                        </p>
+                      )}
+                    </div>
                     <div className="sm:col-span-2">
+                      <label
+                        htmlFor="notes"
+                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                      >
+                        Notes
+                      </label>
+                      <textarea
+                        id="notes"
+                        rows="4"
+                        name="notes"
+                        className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                        placeholder="Your notes here"
+                        value={formData.notes}
+                        onChange={handleChange}
+                      ></textarea>
+                    </div>
+                  </div>
+                </div>
+                <div className="sm:col-span-2 relative bg-white border-gray-200 dark:border-gray-700 border dark:bg-gray-800 rounded-lg p-8">
+                  <p className="mb-6 text-lg font-medium text-gray-700 dark:text-gray-400">
+                    Material Image
+                  </p>
+                  <div>
+                    {preview ? (
+                      <div
+                        className="relative cursor-pointer h-44 md:w-full"
+                        onMouseEnter={() => setIsHovered(true)}
+                        onMouseLeave={() => setIsHovered(false)}
+                      >
+                        <img
+                          src={preview}
+                          alt="Image Preview"
+                          className="h-full w-full object-cover rounded-lg"
+                        />
+                        {isHovered && (
+                          <div className="absolute top-0 right-0 left-0 bottom-0 rounded-lg flex items-center justify-center">
+                            <div className="absolute dark:bg-gray-800 bg-gray-600 rounded-lg opacity-40 w-full h-full" />
+                            <button
+                              type="button"
+                              className="bg-white dark:bg-gray-800 z-10 hover:dark:bg-gray-900 hover:bg-gray-100 text-gray-700 dark:text-gray-400 hover:dark:text-gray-500 hover:text-gray-600 text-2xl p-4 rounded-full"
+                              onClick={() => handleDeleteImage(image)}
+                            >
+                              <TrashSimple weight="bold" />
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <div
+                        className={`bg-gray-50 border ${actionData?.errors?.image_uuid
+                          ? "border-red-500 dark:border-red-500 dark:hover:border-red-400"
+                          : "border-gray-300 dark:border-gray-600 dark:hover:border-gray-500"
+                          } flex flex-col items-center justify-center h-44 md:w-full border-2 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-700 hover:bg-gray-100`}
+                        onClick={handleFilePickerClick}
+                      >
+                        <div className="flex flex-col items-center justify-center pt-5 pb-6 text-gray-300 dark:text-gray-400 text-5xl">
+                          <Camera />
+                          <p className="text-xs text-center mt-2 text-gray-300 dark:text-gray-400">
+                            Material Image
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                    <input
+                      ref={fileInputRef}
+                      id="image_file"
+                      type="file"
+                      className="hidden"
+                      accept="image/*"
+                      onChange={handleImageChange}
+                    />
+                    {actionData?.errors?.image_uuid && (
+                      <p className="mt-2 text-sm text-red-600">
+                        {actionData?.errors.image_uuid}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </div>
+              <div className="lg:w-1/3 gap-4 flex flex-col">
+                <div className="relative bg-white border-gray-200 dark:border-gray-700 border dark:bg-gray-800 rounded-lg p-8">
+                  <p className="mb-6 text-lg font-medium text-gray-700 dark:text-gray-400">
+                    Pricing
+                  </p>
+                  <div className="grid gap-4 grid-cols-1 sm:gap-6">
+                    <div>
+                      <label
+                        htmlFor="price"
+                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                      >
+                        Sales Price
+                      </label>
+                      <input
+                        type="text"
+                        name="sales_price"
+                        id="price"
+                        autoComplete="off"
+                        className={`bg-gray-50 border ${actionData?.errors?.sales_price
+                          ? "border-red-500 dark:border-red-500"
+                          : "border-gray-300 dark:border-gray-600"
+                          } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
+                        placeholder="Rp. 0"
+                        value={formData.sales_price}
+                        onChange={handleChange}
+                      />
+                      {actionData?.errors?.sales_price && (
+                        <p className="mt-2 text-sm text-red-600">
+                          {actionData?.errors.sales_price}
+                        </p>
+                      )}
+                    </div>
+                    <div>
+                      <label
+                        htmlFor="cost"
+                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                      >
+                        Cost
+                      </label>
+                      <input
+                        type="text"
+                        name="cost"
+                        id="cost"
+                        autoComplete="off"
+                        className={`bg-gray-50 border ${actionData?.errors?.cost
+                          ? "border-red-500 dark:border-red-500"
+                          : "border-gray-300 dark:border-gray-600"
+                          } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
+                        placeholder="Rp. 0"
+                        value={formData.cost}
+                        onChange={handleChange}
+                      />
+                      {actionData?.errors?.cost && (
+                        <p className="mt-2 text-sm text-red-600 dark:text-red-500">
+                          {actionData.errors.cost}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+                <div className="relative bg-white border-gray-200 dark:border-gray-700 border dark:bg-gray-800 rounded-lg p-8">
+                  <p className="mb-6 text-lg font-medium text-gray-700 dark:text-gray-400">
+                    Organize
+                  </p>
+                  <div className="grid gap-4 grid-cols-1 sm:gap-6">
+                    <div>
                       <label
                         htmlFor="category"
                         className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                       >
-                        Material Category
+                        Category
                       </label>
                       <select
                         id="category"
                         name="category_id"
-                        className={`bg-gray-50 border ${
-                          actionData?.errors?.category_id
-                            ? "border-red-500 dark:border-red-500"
-                            : "border-gray-300 dark:border-gray-600"
-                        } capitalize text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
+                        className={`bg-gray-50 border ${actionData?.errors?.category_id
+                          ? "border-red-500 dark:border-red-500"
+                          : "border-gray-300 dark:border-gray-600"
+                          } capitalize text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
                         value={formData.category_id}
                         onChange={handleChange}
                       >
@@ -417,133 +622,21 @@ export default function AddMaterial() {
                         </p>
                       )}
                     </div>
-
-                    <div className="sm:col-span-2">
+                    <div>
                       <label
-                        htmlFor="price"
+                        htmlFor="product_tag"
                         className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                       >
-                        Sales Price
-                      </label>
-                      <input
-                        type="text"
-                        name="sales_price"
-                        id="price"
-                        autoComplete="off"
-                        className={`bg-gray-50 border ${
-                          actionData?.errors?.sales_price
-                            ? "border-red-500 dark:border-red-500"
-                            : "border-gray-300 dark:border-gray-600"
-                        } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
-                        placeholder="Rp. 0"
-                        value={formData.sales_price}
-                        onChange={handleChange}
-                      />
-                      {actionData?.errors?.sales_price && (
-                        <p className="mt-2 text-sm text-red-600">
-                          {actionData?.errors.sales_price}
-                        </p>
-                      )}
-                    </div>
-
-                    <div className="sm:col-span-2">
-                      <label
-                        htmlFor="cost"
-                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                      >
-                        Cost
-                      </label>
-                      <input
-                        type="text"
-                        name="cost"
-                        id="cost"
-                        autoComplete="off"
-                        className={`bg-gray-50 border ${
-                          actionData?.errors?.cost
-                            ? "border-red-500 dark:border-red-500"
-                            : "border-gray-300 dark:border-gray-600"
-                        } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
-                        placeholder="Rp. 0"
-                        value={formData.cost}
-                        onChange={handleChange}
-                      />
-                      {actionData?.errors?.cost && (
-                        <p className="mt-2 text-sm text-red-600 dark:text-red-500">
-                          {actionData.errors.cost}
-                        </p>
-                      )}
-                    </div>
-
-                    <div className="sm:col-span-3">
-                      <label
-                        htmlFor="barcode"
-                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                      >
-                        Barcode
-                      </label>
-                      <input
-                        type="text"
-                        name="barcode"
-                        id="barcode"
-                        autoComplete="off"
-                        className={`bg-gray-50 border ${
-                          actionData?.errors?.barcode
-                            ? "border-red-500 dark:border-red-500"
-                            : "border-gray-300 dark:border-gray-600"
-                        } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
-                        placeholder="PRO-001"
-                        value={formData.barcode}
-                        onChange={handleChange}
-                      />
-                      {actionData?.errors?.barcode && (
-                        <p className="mt-2 text-sm text-red-600">
-                          {actionData?.errors.barcode}
-                        </p>
-                      )}
-                    </div>
-                    <div className="sm:col-span-3">
-                      <label
-                        htmlFor="internal_reference"
-                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                      >
-                        Internal Reference
-                      </label>
-                      <input
-                        type="text"
-                        name="internal_reference"
-                        id="internal_reference"
-                        autoComplete="off"
-                        className={`bg-gray-50 border ${
-                          actionData?.errors?.internal_reference
-                            ? "border-red-500 dark:border-red-500"
-                            : "border-gray-300 dark:border-gray-600"
-                        } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
-                        placeholder="PRO-001"
-                        value={formData.internal_reference}
-                        onChange={handleChange}
-                      />
-                      {actionData?.errors?.internal_reference && (
-                        <p className="mt-2 text-sm text-red-600">
-                          {actionData?.errors.internal_reference}
-                        </p>
-                      )}
-                    </div>
-                    <div className="sm:col-span-6">
-                      <label
-                        htmlFor="materials_tag"
-                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                      >
-                        Material Tag
+                        Tags
                       </label>
                       <div ref={dropdownRef} className="relative">
                         <div
-                          className={`bg-gray-50 border ${
-                            isOpen
-                              ? "border-primary-600 ring-1 ring-primary-600 dark:ring-primary-500 dark:border-primary-500"
-                              : actionData?.errors?.materials_tag
+                          className={`bg-gray-50 border ${isOpen
+                            ? "border-primary-600 ring-1 ring-primary-600 dark:ring-primary-500 dark:border-primary-500"
+                            : actionData?.errors?.product_tag
                               ? "border-red-500 dark:border-red-500"
                               : "border-gray-300 dark:border-gray-600"
-                          } text-gray-900 text-sm rounded-lg flex flex-row gap-2 flex-wrap w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white`}
+                            } text-gray-900 text-sm rounded-lg flex flex-row gap-2 flex-wrap w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white`}
                         >
                           <div className="flex flex-wrap gap-2">
                             {selectedTags.map((tag) => (
@@ -564,8 +657,8 @@ export default function AddMaterial() {
                           </div>
                           <input
                             type="text"
-                            name="materials_tag"
-                            id="materials_tag"
+                            name="product_tag"
+                            id="product_tag"
                             placeholder="Food, Clothes, etc"
                             autoComplete="off"
                             className="flex-grow outline-0 bg-transparent"
@@ -618,94 +711,20 @@ export default function AddMaterial() {
                           </div>
                         )}
                       </div>
-
-                      {actionData?.errors?.materials_tag && (
+                      {actionData?.errors?.product_tag && (
                         <p className="mt-2 text-sm text-red-600">
-                          {actionData?.errors.materials_tag}
+                          {actionData?.errors.product_tag}
                         </p>
                       )}
                     </div>
-                    <div className="sm:col-span-6">
-                      <label
-                        htmlFor="notes"
-                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                      >
-                        Notes
-                      </label>
-                      <textarea
-                        id="notes"
-                        rows="4"
-                        name="notes"
-                        className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                        placeholder="Your notes here"
-                        value={formData.notes}
-                        onChange={handleChange}
-                      ></textarea>
-                    </div>
-                  </div>
-
-                  <div className="md:mt-7 order-1 md:order-2">
-                    {preview ? (
-                      <div
-                        className="relative cursor-pointer h-40 md:w-40"
-                        onMouseEnter={() => setIsHovered(true)}
-                        onMouseLeave={() => setIsHovered(false)}
-                      >
-                        <img
-                          src={preview}
-                          alt="Image Preview"
-                          className="h-full w-full object-cover rounded-lg"
-                        />
-                        {isHovered && (
-                          <div className="absolute top-0 right-0 left-0 bottom-0 rounded-lg flex items-center justify-center">
-                            <div className="absolute dark:bg-gray-800 bg-gray-600 rounded-lg opacity-40 w-full h-full" />
-                            <button
-                              type="button"
-                              className="bg-white dark:bg-gray-800 z-10 hover:dark:bg-gray-900 hover:bg-gray-100 text-gray-700 dark:text-gray-400 hover:dark:text-gray-500 hover:text-gray-600 text-2xl p-4 rounded-full"
-                              onClick={() => handleDeleteImage(image)}
-                            >
-                              <TrashSimple weight="bold" />
-                            </button>
-                          </div>
-                        )}
-                      </div>
-                    ) : (
-                      <div
-                        className={`bg-gray-50 border ${
-                          actionData?.errors?.image_uuid
-                            ? "border-red-500 dark:border-red-500 dark:hover:border-red-400"
-                            : "border-gray-300 dark:border-gray-600 dark:hover:border-gray-500"
-                        } flex flex-col items-center justify-center h-40 md:w-40 border-2 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-700 hover:bg-gray-100`}
-                        onClick={handleFilePickerClick}
-                      >
-                        <div className="flex flex-col items-center justify-center pt-5 pb-6 text-gray-300 dark:text-gray-400 text-5xl">
-                          <Camera />
-                          <p className="text-xs text-center mt-2 text-gray-300 dark:text-gray-400">
-                            Material Image
-                          </p>
-                        </div>
-                      </div>
-                    )}
-                    <input
-                      ref={fileInputRef}
-                      id="image_file"
-                      type="file"
-                      className="hidden"
-                      accept="image/*"
-                      onChange={handleImageChange}
-                    />
-                    {actionData?.errors?.image_uuid && (
-                      <p className="mt-2 text-sm text-red-600">
-                        {actionData?.errors.image_uuid}
-                      </p>
-                    )}
                   </div>
                 </div>
               </div>
-            </Form>
+            </div>
+
           </>
         )}
       </div>
-    </section>
+    </section >
   );
 }
