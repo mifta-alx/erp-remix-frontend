@@ -83,7 +83,7 @@ const MaterialView = ({ materials }) => {
                   className="border-b dark:border-gray-700 text-sm cursor-pointer bg-white dark:bg-gray-800 hover:bg-gray-100 hover:dark:bg-gray-600 "
                   key={index}
                   onClick={() =>
-                    navigate(`/manufacturing/materials/${material.material_id}`)
+                    navigate(`/manufacturing/materials/${material.id}`)
                   }
                 >
                   <td
