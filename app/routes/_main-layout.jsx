@@ -1,6 +1,6 @@
 import { CaretDown, List, Moon, Sun } from "@phosphor-icons/react";
-import { Outlet, NavLink, useLocation } from "@remix-run/react";
-import { useState, useEffect, useRef } from "react";
+import { NavLink, Outlet, useLocation } from "@remix-run/react";
+import { useEffect, useRef, useState } from "react";
 import { useColorScheme } from "../context/ColorScheme";
 import useClickOutside from "../hooks/useClickOutside";
 
@@ -54,24 +54,35 @@ export default function _mainLayout() {
                 </li>
                 <li>
                   <button
-                      data-toggle="dropdown"
+                    data-toggle="dropdown"
                     className={`
                     flex items-center gap-1.5 text-sm font-medium text-gray-900 hover:text-primary-700 dark:text-white dark:hover:text-primary-500`}
-                      onClick={() => toggleDropdown('manufacturing')}
+                    onClick={() => toggleDropdown("manufacturing")}
                   >
                     Manufacturing
-                      <CaretDown size={12} weight="bold" />
+                    <CaretDown size={12} weight="bold" />
                   </button>
                 </li>
                 <li>
                   <button
-                      data-toggle="dropdown"
+                    data-toggle="dropdown"
                     className={`
                     flex items-center gap-1.5 text-sm font-medium text-gray-900 hover:text-primary-700 dark:text-white dark:hover:text-primary-500`}
-                      onClick={() => toggleDropdown('purchase')}
+                    onClick={() => toggleDropdown("purchase")}
                   >
                     Purchase
-                      <CaretDown size={12} weight="bold" />
+                    <CaretDown size={12} weight="bold" />
+                  </button>
+                </li>
+                <li>
+                  <button
+                    data-toggle="dropdown"
+                    className={`
+                    flex items-center gap-1.5 text-sm font-medium text-gray-900 hover:text-primary-700 dark:text-white dark:hover:text-primary-500`}
+                    onClick={() => toggleDropdown("sales")}
+                  >
+                    Sales
+                    <CaretDown size={12} weight="bold" />
                   </button>
                 </li>
               </ul>
@@ -96,9 +107,9 @@ export default function _mainLayout() {
           </div>
 
           <div
-          ref={navRef}
+            ref={navRef}
             id="ecommerce-navbar-menu-1"
-            className={`bg-gray-50 dark:bg-gray-700 dark:border-gray-600 border border-gray-200 md:hidden rounded-lg py-3 px-4 mt-4 ${
+            className={`bg-gray-50 dark:bg-gray-700 dark:border-gray-600 border border-gray-200 lg:hidden rounded-lg py-3 px-4 mt-4 ${
               !showNav && "hidden"
             }`}
           >
@@ -113,31 +124,30 @@ export default function _mainLayout() {
               </li>
               <li>
                 <button
-                    data-toggle="dropdown"
+                  data-toggle="dropdown"
                   className={`
                     flex items-center gap-1.5 text-sm font-medium text-gray-900 hover:text-primary-700 dark:text-white dark:hover:text-primary-500`}
-                  onClick={() => toggleDropdown('manufacturing')}
+                  onClick={() => toggleDropdown("manufacturing")}
                 >
                   Manufacturing
-                    <CaretDown size={12} weight="bold" />
+                  <CaretDown size={12} weight="bold" />
                 </button>
               </li>
               <li>
                 <button
-                    data-toggle="dropdown"
+                  data-toggle="dropdown"
                   className={`
                     flex items-center gap-1.5 text-sm font-medium text-gray-900 hover:text-primary-700 dark:text-white dark:hover:text-primary-500`}
-                  onClick={() => toggleDropdown('purchase')}
+                  onClick={() => toggleDropdown("purchase")}
                 >
                   Purchase
-                    <CaretDown size={12} weight="bold" />
+                  <CaretDown size={12} weight="bold" />
                 </button>
               </li>
             </ul>
           </div>
         </div>
-
-        {showDropdown === 'manufacturing' && (
+        {showDropdown === "manufacturing" && (
           <div
             ref={dropdownRef}
             id="mega-menu-full-dropdown"
@@ -223,7 +233,7 @@ export default function _mainLayout() {
             </ul>
           </div>
         )}
-        {showDropdown === 'purchase' && (
+        {showDropdown === "purchase" && (
           <div
             ref={dropdownRef}
             id="mega-menu-full-dropdown"
@@ -246,6 +256,73 @@ export default function _mainLayout() {
                   <div className="font-semibold">Vendors</div>
                   <span className="text-sm text-gray-500 dark:text-gray-400">
                     Manage all vendors.
+                  </span>
+                </NavLink>
+              </li>
+              <li>
+                <NavLink
+                  to="/purchase/rfq"
+                  className={({ isActive, isPending }) =>
+                    `block p-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 ${
+                      isPending
+                        ? "pending"
+                        : isActive
+                        ? "bg-gray-100 dark:bg-gray-700"
+                        : ""
+                    }`
+                  }
+                >
+                  <div className="font-semibold">Requests for Quotation</div>
+                  <span className="text-sm text-gray-500 dark:text-gray-400">
+                    Manage all request for quotation.
+                  </span>
+                </NavLink>
+              </li>
+              <li>
+                <NavLink
+                  to="/purchase/po"
+                  className={({ isActive, isPending }) =>
+                    `block p-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 ${
+                      isPending
+                        ? "pending"
+                        : isActive
+                        ? "bg-gray-100 dark:bg-gray-700"
+                        : ""
+                    }`
+                  }
+                >
+                  <div className="font-semibold">Purchase Orders</div>
+                  <span className="text-sm text-gray-500 dark:text-gray-400">
+                    Manage all purchase orders.
+                  </span>
+                </NavLink>
+              </li>
+            </ul>
+          </div>
+        )}
+        {showDropdown === "sales" && (
+          <div
+            ref={dropdownRef}
+            id="mega-menu-full-dropdown"
+            className="mt-1 border-gray-200 shadow-sm bg-gray-50 md:bg-white border-y dark:bg-gray-900 dark:border-gray-600"
+          >
+            <ul className="grid max-w-screen-lg px-4 py-5 mx-auto text-gray-900 dark:text-white sm:grid-cols-2 md:px-6 gap-2">
+              <li>
+                <NavLink
+                  to="/sales/customers"
+                  className={({ isActive, isPending }) =>
+                    `block p-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 ${
+                      isPending
+                        ? "pending"
+                        : isActive
+                        ? "bg-gray-100 dark:bg-gray-700"
+                        : ""
+                    }`
+                  }
+                >
+                  <div className="font-semibold">Customers</div>
+                  <span className="text-sm text-gray-500 dark:text-gray-400">
+                    Manage all customers.
                   </span>
                 </NavLink>
               </li>
