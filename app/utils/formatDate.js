@@ -1,24 +1,9 @@
 const formatDate = (date) => {
-  const months = [
-    "Jan",
-    "Feb",
-    "Mar",
-    "Apr",
-    "May",
-    "Jun",
-    "Jul",
-    "Aug",
-    "Sep",
-    "Oct",
-    "Nov",
-    "Dec",
-  ];
-  const month = months[date.getMonth()];
-  const monthNumber = date.getMonth();
-  const day = date.getDate();
+  const day = String(date.getDate()).padStart(2, "0"); // Pastikan 2 digit
+  const monthNumber = String(date.getMonth() + 1).padStart(2, "0"); // Tambahkan +1 untuk bulan
   const year = date.getFullYear();
 
-  return `${day}/${monthNumber}/${year}`;
+  return `${day}/${monthNumber}/${year}`; // Format DD/MM/YYYY
 };
 
 const formatDatetime = (date) => {
