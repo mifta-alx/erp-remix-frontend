@@ -7,3 +7,4 @@ export { default as VendorView } from "./VendorView";
 export { default as TableBom } from "./TableBom";
 export { default as TableMO } from "./TableMO";
 export { default as StepperMO } from "./StepperMO";
+export { default as CustomersView } from "./CustomersView";
