@@ -20,9 +20,7 @@ export const meta = () => {
 export const loader = async () => {
   let apiEndpoint = process.env.API_URL;
   try {
-    const [VendorResponse] = await Promise.all([
-      fetch(`${process.env.API_URL}/vendors`),
-    ]);
+    const VendorResponse = await fetch(`${process.env.API_URL}/vendors`);
 
     if (!VendorResponse.ok) {
       let errorMessage = "An error occurred.";
@@ -331,11 +329,10 @@ export default function AddVendors() {
                         name="name"
                         id="name"
                         autoComplete="off"
-                        className={`bg-gray-50 border ${
-                          actionData?.errors?.name
+                        className={`bg-gray-50 border ${actionData?.errors?.name
                             ? "border-red-500 dark:border-red-500"
                             : "border-gray-300 dark:border-gray-600"
-                        } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
+                          } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
                         placeholder="Type vendor name"
                         value={formData.name}
                         onChange={handleChange}
@@ -407,11 +404,10 @@ export default function AddVendors() {
                         name="street"
                         id="street"
                         autoComplete="off"
-                        className={`bg-gray-50 border ${
-                          actionData?.errors?.street
+                        className={`bg-gray-50 border ${actionData?.errors?.street
                             ? "border-red-500 dark:border-red-500"
                             : "border-gray-300 dark:border-gray-600"
-                        } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
+                          } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
                         placeholder="123 Main St"
                         value={formData.street}
                         onChange={handleChange}
@@ -434,11 +430,10 @@ export default function AddVendors() {
                         name="city"
                         id="city"
                         autoComplete="off"
-                        className={`bg-gray-50 border ${
-                          actionData?.errors?.city
+                        className={`bg-gray-50 border ${actionData?.errors?.city
                             ? "border-red-500 dark:border-red-500"
                             : "border-gray-300 dark:border-gray-600"
-                        } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
+                          } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
                         placeholder="Los Angeles"
                         value={formData.city}
                         onChange={handleChange}
@@ -461,11 +456,10 @@ export default function AddVendors() {
                         name="state"
                         id="state"
                         autoComplete="off"
-                        className={`bg-gray-50 border ${
-                          actionData?.errors?.state
+                        className={`bg-gray-50 border ${actionData?.errors?.state
                             ? "border-red-500 dark:border-red-500"
                             : "border-gray-300 dark:border-gray-600"
-                        } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
+                          } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
                         placeholder="California"
                         value={formData.state}
                         onChange={handleChange}
@@ -488,11 +482,10 @@ export default function AddVendors() {
                         name="zip"
                         id="zip"
                         autoComplete="off"
-                        className={`bg-gray-50 border ${
-                          actionData?.errors?.zip
+                        className={`bg-gray-50 border ${actionData?.errors?.zip
                             ? "border-red-500 dark:border-red-500"
                             : "border-gray-300 dark:border-gray-600"
-                        } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
+                          } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
                         placeholder="90210"
                         value={formData.zip}
                         onChange={handleChange}
@@ -538,11 +531,10 @@ export default function AddVendors() {
                       </div>
                     ) : (
                       <div
-                        className={`bg-gray-50 border ${
-                          actionData?.errors?.image_uuid
+                        className={`bg-gray-50 border ${actionData?.errors?.image_uuid
                             ? "border-red-500 dark:border-red-500 dark:hover:border-red-400"
                             : "border-gray-300 dark:border-gray-600 dark:hover:border-gray-500"
-                        } flex flex-col items-center justify-center h-44 md:w-full border-2 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-700 hover:bg-gray-100`}
+                          } flex flex-col items-center justify-center h-44 md:w-full border-2 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-700 hover:bg-gray-100`}
                         onClick={handleFilePickerClick}
                       >
                         <div className="flex flex-col items-center justify-center pt-5 pb-6 text-gray-300 dark:text-gray-400 text-5xl">
@@ -585,11 +577,10 @@ export default function AddVendors() {
                         name="phone"
                         id="phone"
                         autoComplete="off"
-                        className={`bg-gray-50 border ${
-                          actionData?.errors?.phone
+                        className={`bg-gray-50 border ${actionData?.errors?.phone
                             ? "border-red-500 dark:border-red-500"
                             : "border-gray-300 dark:border-gray-600"
-                        } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
+                          } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
                         placeholder="0341000100"
                         value={formData.phone}
                         onChange={handleChange}
@@ -612,11 +603,10 @@ export default function AddVendors() {
                         name="mobile"
                         id="mobile"
                         autoComplete="off"
-                        className={`bg-gray-50 border ${
-                          actionData?.errors?.mobile
+                        className={`bg-gray-50 border ${actionData?.errors?.mobile
                             ? "border-red-500 dark:border-red-500"
                             : "border-gray-300 dark:border-gray-600"
-                        } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
+                          } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
                         placeholder="0852118018256"
                         value={formData.mobile}
                         onChange={handleChange}
@@ -639,11 +629,10 @@ export default function AddVendors() {
                         name="email"
                         id="email"
                         autoComplete="off"
-                        className={`bg-gray-50 border ${
-                          actionData?.errors?.email
+                        className={`bg-gray-50 border ${actionData?.errors?.email
                             ? "border-red-500 dark:border-red-500"
                             : "border-gray-300 dark:border-gray-600"
-                        } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
+                          } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
                         placeholder="example@gmail.com"
                         value={formData.email}
                         onChange={handleChange}
