@@ -34,7 +34,7 @@ export const loader = async ({ params, request }) => {
   let apiEndpoint = process.env.API_URL;
   try {
     const [initResponse, productResponse] = await Promise.all([
-      fetch(`${process.env.API_URL}/init?categories&tags`),
+      fetch(`${process.env.API_URL}/init?categories&tags&type=product`),
       fetch(`${process.env.API_URL}/products/${params.product_id}`),
     ]);
     if (!initResponse.ok || !productResponse.ok) {
@@ -205,7 +205,7 @@ export default function EditProduct() {
   };
   const handleAddtag = async () => {
     try {
-      const response = await fetch(`${API_URL}/tags`, {
+      const response = await fetch(`${API_URL}/tags?type=product`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

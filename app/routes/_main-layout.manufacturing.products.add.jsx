@@ -24,7 +24,9 @@ export const meta = () => {
 export const loader = async () => {
   let apiEndpoint = process.env.API_URL;
   try {
-    const response = await fetch(`${process.env.API_URL}/init?categories&tags`);
+    const response = await fetch(
+      `${process.env.API_URL}/init?categories&tags&type=product`
+    );
     if (!response.ok) {
       let errorMessage = "An error occurred.";
       let errorDescription = "Something went wrong while fetching data.";
@@ -166,7 +168,7 @@ export default function AddProduct() {
   };
   const handleAddtag = async () => {
     try {
-      const response = await fetch(`${API_URL}/tags`, {
+      const response = await fetch(`${API_URL}/tags?type=product`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
