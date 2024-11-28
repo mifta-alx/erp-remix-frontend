@@ -3,7 +3,6 @@ import {
   CaretRight,
   Check,
   House,
-  // TrashSimple,
   X,
   XCircle,
 } from "@phosphor-icons/react";
@@ -13,6 +12,7 @@ import useClickOutside from "@hooks/useClickOutside";
 import useDebounce from "@hooks/useDebounce";
 import { ErrorView } from "@views/index.js";
 import { formatPriceBase, unformatPriceBase } from "@utils/formatPrice.js";
+
 export const meta = () => {
   return [
     { title: "F&F - New Material" },
@@ -23,7 +23,9 @@ export const meta = () => {
 export const loader = async () => {
   let apiEndpoint = process.env.API_URL;
   try {
-    const response = await fetch(`${process.env.API_URL}/init?categories&tags`);
+    const response = await fetch(
+      `${process.env.API_URL}/init?categories&tags&type=material`
+    );
     if (!response.ok) {
       let errorMessage = "An error occurred.";
       let errorDescription = "Something went wrong while fetching data.";
@@ -167,7 +169,7 @@ export default function AddMaterial() {
   };
   const handleAddtag = async () => {
     try {
-      const response = await fetch(`${API_URL}/tags`, {
+      const response = await fetch(`${API_URL}/tags?type=material`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -356,7 +358,6 @@ export default function AddMaterial() {
             </div>
             <div className="flex flex-col lg:flex-row gap-4">
               <div className="lg:w-2/3 gap-4 flex flex-col">
-
                 <div className="sm:col-span-2 relative bg-white border-gray-200 dark:border-gray-700 border dark:bg-gray-800 rounded-lg p-8">
                   <p className="mb-6 text-lg font-medium text-gray-700 dark:text-gray-400">
                     Material Information
@@ -374,10 +375,11 @@ export default function AddMaterial() {
                         name="material_name"
                         id="material_name"
                         autoComplete="off"
-                        className={`bg-gray-50 border ${actionData?.errors?.material_name
-                          ? "border-red-500 dark:border-red-500"
-                          : "border-gray-300 dark:border-gray-600"
-                          } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
+                        className={`bg-gray-50 border ${
+                          actionData?.errors?.material_name
+                            ? "border-red-500 dark:border-red-500"
+                            : "border-gray-300 dark:border-gray-600"
+                        } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
                         placeholder="Type material name"
                         value={formData.material_name}
                         onChange={handleChange}
@@ -400,10 +402,11 @@ export default function AddMaterial() {
                         name="barcode"
                         id="barcode"
                         autoComplete="off"
-                        className={`bg-gray-50 border ${actionData?.errors?.barcode
-                          ? "border-red-500 dark:border-red-500"
-                          : "border-gray-300 dark:border-gray-600"
-                          } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
+                        className={`bg-gray-50 border ${
+                          actionData?.errors?.barcode
+                            ? "border-red-500 dark:border-red-500"
+                            : "border-gray-300 dark:border-gray-600"
+                        } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
                         placeholder="PRO-001"
                         value={formData.barcode}
                         onChange={handleChange}
@@ -426,10 +429,11 @@ export default function AddMaterial() {
                         name="internal_reference"
                         id="internal_reference"
                         autoComplete="off"
-                        className={`bg-gray-50 border ${actionData?.errors?.internal_reference
-                          ? "border-red-500 dark:border-red-500"
-                          : "border-gray-300 dark:border-gray-600"
-                          } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
+                        className={`bg-gray-50 border ${
+                          actionData?.errors?.internal_reference
+                            ? "border-red-500 dark:border-red-500"
+                            : "border-gray-300 dark:border-gray-600"
+                        } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
                         placeholder="PRO-001"
                         value={formData.internal_reference}
                         onChange={handleChange}
@@ -490,10 +494,11 @@ export default function AddMaterial() {
                       </div>
                     ) : (
                       <div
-                        className={`bg-gray-50 border ${actionData?.errors?.image_uuid
-                          ? "border-red-500 dark:border-red-500 dark:hover:border-red-400"
-                          : "border-gray-300 dark:border-gray-600 dark:hover:border-gray-500"
-                          } flex flex-col items-center justify-center h-44 md:w-full border-2 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-700 hover:bg-gray-100`}
+                        className={`bg-gray-50 border ${
+                          actionData?.errors?.image_uuid
+                            ? "border-red-500 dark:border-red-500 dark:hover:border-red-400"
+                            : "border-gray-300 dark:border-gray-600 dark:hover:border-gray-500"
+                        } flex flex-col items-center justify-center h-44 md:w-full border-2 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-700 hover:bg-gray-100`}
                         onClick={handleFilePickerClick}
                       >
                         <div className="flex flex-col items-center justify-center pt-5 pb-6 text-gray-300 dark:text-gray-400 text-5xl">
@@ -538,10 +543,11 @@ export default function AddMaterial() {
                         name="sales_price"
                         id="price"
                         autoComplete="off"
-                        className={`bg-gray-50 border ${actionData?.errors?.sales_price
-                          ? "border-red-500 dark:border-red-500"
-                          : "border-gray-300 dark:border-gray-600"
-                          } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
+                        className={`bg-gray-50 border ${
+                          actionData?.errors?.sales_price
+                            ? "border-red-500 dark:border-red-500"
+                            : "border-gray-300 dark:border-gray-600"
+                        } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
                         placeholder="Rp. 0"
                         value={formData.sales_price}
                         onChange={handleChange}
@@ -564,10 +570,11 @@ export default function AddMaterial() {
                         name="cost"
                         id="cost"
                         autoComplete="off"
-                        className={`bg-gray-50 border ${actionData?.errors?.cost
-                          ? "border-red-500 dark:border-red-500"
-                          : "border-gray-300 dark:border-gray-600"
-                          } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
+                        className={`bg-gray-50 border ${
+                          actionData?.errors?.cost
+                            ? "border-red-500 dark:border-red-500"
+                            : "border-gray-300 dark:border-gray-600"
+                        } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
                         placeholder="Rp. 0"
                         value={formData.cost}
                         onChange={handleChange}
@@ -595,10 +602,11 @@ export default function AddMaterial() {
                       <select
                         id="category"
                         name="category_id"
-                        className={`bg-gray-50 border ${actionData?.errors?.category_id
-                          ? "border-red-500 dark:border-red-500"
-                          : "border-gray-300 dark:border-gray-600"
-                          } capitalize text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
+                        className={`bg-gray-50 border ${
+                          actionData?.errors?.category_id
+                            ? "border-red-500 dark:border-red-500"
+                            : "border-gray-300 dark:border-gray-600"
+                        } capitalize text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
                         value={formData.category_id}
                         onChange={handleChange}
                       >
@@ -631,12 +639,13 @@ export default function AddMaterial() {
                       </label>
                       <div ref={dropdownRef} className="relative">
                         <div
-                          className={`bg-gray-50 border ${isOpen
-                            ? "border-primary-600 ring-1 ring-primary-600 dark:ring-primary-500 dark:border-primary-500"
-                            : actionData?.errors?.product_tag
+                          className={`bg-gray-50 border ${
+                            isOpen
+                              ? "border-primary-600 ring-1 ring-primary-600 dark:ring-primary-500 dark:border-primary-500"
+                              : actionData?.errors?.product_tag
                               ? "border-red-500 dark:border-red-500"
                               : "border-gray-300 dark:border-gray-600"
-                            } text-gray-900 text-sm rounded-lg flex flex-row gap-2 flex-wrap w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white`}
+                          } text-gray-900 text-sm rounded-lg flex flex-row gap-2 flex-wrap w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white`}
                         >
                           <div className="flex flex-wrap gap-2">
                             {selectedTags.map((tag) => (
@@ -721,10 +730,9 @@ export default function AddMaterial() {
                 </div>
               </div>
             </div>
-
           </>
         )}
       </div>
-    </section >
+    </section>
   );
 }
