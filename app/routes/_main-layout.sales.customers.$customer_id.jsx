@@ -4,6 +4,7 @@ import {
   Check,
   House,
   TrashSimple,
+  XCircle,
 } from "@phosphor-icons/react";
 import { useEffect, useRef, useState } from "react";
 import { Link, useLoaderData, useNavigate, useParams } from "@remix-run/react";
@@ -104,8 +105,6 @@ export default function EditCustomer() {
   });
 
   const handleImageChange = async (event) => {
-    console.log(event.target.files[0]);
-
     const file = event.target.files[0];
     if (file) {
       const apiData = new FormData();
@@ -177,7 +176,7 @@ export default function EditCustomer() {
   useClickOutside(dropdownRef, () => setIsOpen(false));
   const [tagKeywords, setTagKeywords] = useState("");
   const debounceKeywords = useDebounce(tagKeywords, 300);
-  const [selectedTags, setSelectedTags] = useState([]);
+  const [selectedTags, setSelectedTags] = useState(customer.tags || []);
   const tagResults = tags
     ?.filter((tag) =>
       tag.name.toLowerCase().includes(debounceKeywords.toLowerCase())
@@ -242,7 +241,6 @@ export default function EditCustomer() {
       [name]: value,
     }));
   };
-
   //update data
   const handleUpdate = async (e) => {
     e.preventDefault();
@@ -266,7 +264,7 @@ export default function EditCustomer() {
           email: formData.email,
           image_uuid: image,
           image_url: preview,
-          tags: selectedTags.map((tag) => tag.id),
+          tag_id: selectedTags.map((tag) => tag.id),
         }),
       });
       if (!response.ok) {

@@ -185,8 +185,8 @@ export default function AddCustomers() {
         }
     };
 
-    //vendors company
-    const [selected, setSelected] = useState(1);
+    //customer company
+    const [selected, setSelected] = useState(2);
     const handleCheckboxChange = (type) => {
         setSelected((prevSelected) => (prevSelected === type ? null : type));
     };
@@ -210,7 +210,6 @@ export default function AddCustomers() {
         email: "",
         image_uuid: "",
     });
-    console.log(formData)
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData((prevData) => ({
@@ -218,7 +217,6 @@ export default function AddCustomers() {
             [name]: value,
         }));
     };
-
     //submit data
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -242,10 +240,9 @@ export default function AddCustomers() {
                     email: formData.email,
                     image_uuid: image,
                     image_url: preview,
-                    tags: selectedTags.map((tag) => tag.id),
+                    tag_id: selectedTags.map((tag) => tag.id),
                 }),
             });
-            console.log(response);
             if (!response.ok) {
                 const result = await response.json();
                 setActionData({ errors: result.errors || {} });
