@@ -1,5 +1,6 @@
 import { Link, useLoaderData } from "@remix-run/react";
 import { CirclesFour, Package, Receipt, Stack } from "@phosphor-icons/react";
+import { ErrorView } from "@views/index.js";
 
 export const meta = () => {
   return [
@@ -50,19 +51,11 @@ export default function Index() {
     <section>
       <div className="mx-auto max-w-screen-xl px-4 2xl:px-0">
         {error ? (
-          <div className="py-48  px-4 mx-auto max-w-screen-xl lg:py-24 lg:px-6">
-            <div className="mx-auto max-w-screen-sm text-center">
-              <h1 className="mb-4 text-7xl tracking-tight font-extrabold lg:text-9xl text-primary-600 dark:text-primary-500">
-                {status}
-              </h1>
-              <p className="mb-4 text-3xl tracking-tight first-letter:capitalize font-bold text-gray-900 md:text-4xl dark:text-white">
-                {message}
-              </p>
-              <p className="mb-4 text-lg font-light text-gray-500 dark:text-gray-400">
-                {description}
-              </p>
-            </div>
-          </div>
+          <ErrorView
+            status={status}
+            message={message}
+            description={description}
+          />
         ) : (
           <div className="grid xl:grid-cols-4 md:grid-cols-2 grid-cols-1 gap-5">
             <div className="bg-white dark:bg-gray-800 rounded-lg drop-shadow-md">
