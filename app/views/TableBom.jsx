@@ -82,14 +82,8 @@ const TableBom = ({
     });
   };
 
-  const getDisplayStringMaterials = (item) => {
-    return item.internal_reference
-      ? `[${item.internal_reference}] ${item.material_name}`
-      : item.material_name;
-  };
-
   return (
-    <div className="bg-white border-gray-200 dark:border-gray-700 border dark:bg-gray-800 rounded-lg mt-6 py-6">
+    <div className="bg-white border-gray-200 dark:border-gray-700 border dark:bg-gray-800 rounded-lg mt-6 pt-6">
       <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400 table-auto">
         <thead className="text-sm text-gray-900 capitalize dark:text-gray-400 border-b border-gray-200 dark:border-gray-600">
           <tr>
@@ -102,10 +96,10 @@ const TableBom = ({
             <th scope="col" className="px-6 py-3"></th>
           </tr>
         </thead>
-        <tbody>
+        <tbody className="divide-y divide-gray-200 dark:divide-gray-600">
           {materialsArr?.map((material, index) => (
             <tr
-              className="bg-white dark:bg-gray-800 border-b p-0 m-0 border-gray-200 dark:border-gray-600"
+              className="bg-white dark:bg-gray-800 border-b p-0 m-0"
               key={index}
             >
               <td scope="row" className="px-6">
@@ -153,7 +147,7 @@ const TableBom = ({
               </td>
             </tr>
           ))}
-          <tr className="bg-gray-50 dark:bg-gray-700 border-b p-0 border-gray-300 dark:border-gray-700">
+          <tr className="bg-gray-50 dark:bg-gray-700 p-0">
             <td colSpan="3" className="px-6 py-2.5">
               <button
                 type="button"
