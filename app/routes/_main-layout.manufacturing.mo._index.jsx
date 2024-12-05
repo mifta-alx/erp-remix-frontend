@@ -163,19 +163,19 @@ export default function ManufacturingOrders() {
                   <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400 table-fixed">
                     <thead className="text-sm font-semibold text-gray-800 border-b border-gray-200 dark:border-gray-700 capitalize bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                       <tr>
-                        <td scope="col" className="ps-6 pe-3 py-3.5 w-72">
+                        <td scope="col" className="ps-6 pe-3 py-3.5 w-48">
                           Reference
                         </td>
                         <td scope="col" className="px-3 py-3.5 w-48">
                           Product
                         </td>
-                        <td scope="col" className="px-3 py-3.5 w-48 text-end">
+                        <td scope="col" className="px-3 py-3.5 w-14 text-end">
                           Quantity
                         </td>
                         <td scope="col" className="px-3 py-3.5 w-48">
                           Material Availability
                         </td>
-                        <td scope="col" className="ps-3 pe-6 py-3.5 w-24">
+                        <td scope="col" className="ps-3 pe-6 py-3.5 w-32">
                           State
                         </td>
                       </tr>
