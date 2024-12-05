@@ -6,7 +6,7 @@ const formatDate = (date) => {
   return `${day}/${monthNumber}/${year}`; // Format DD/MM/YYYY
 };
 
-const formatDatetime = (date) => {
+const formatDisplayDatetime = (date) => {
   const utcOffset = 7; // UTC+7
   const localDate = new Date(date);
 
@@ -23,4 +23,27 @@ const formatDatetime = (date) => {
   return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
 };
 
-export { formatDate, formatDatetime };
+const formatDatetime = (date) => {
+  const localDate = new Date(date); // Waktu sudah otomatis dikonversi ke zona waktu lokal
+
+  const year = localDate.getFullYear();
+  const month = String(localDate.getMonth() + 1).padStart(2, "0"); // Bulan 1-12
+  const day = String(localDate.getDate()).padStart(2, "0");
+  const hours = String(localDate.getHours()).padStart(2, "0");
+  const minutes = String(localDate.getMinutes()).padStart(2, "0");
+  const seconds = String(localDate.getSeconds()).padStart(2, "0");
+
+  return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
+};
+
+const formatBasicDate = (date) => {
+  const localDate = new Date(date);
+
+  const year = localDate.getFullYear();
+  const month = String(localDate.getMonth() + 1).padStart(2, "0"); // Bulan 1-12
+  const day = String(localDate.getDate()).padStart(2, "0");
+
+  return `${day}/${month}/${year}`;
+};
+
+export { formatDate, formatDatetime, formatDisplayDatetime, formatBasicDate };
