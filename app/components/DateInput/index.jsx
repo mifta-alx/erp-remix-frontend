@@ -19,7 +19,13 @@ function getDateSlots(currentMonth, currentYear) {
   return dateArray;
 }
 
-const DateInput = ({ value, onChange, actionButton = false }) => {
+const DateInput = ({
+  value,
+  onChange,
+  actionButton = false,
+  name,
+  position,
+}) => {
   const popupRef = useRef();
   const [showPopup, setShowPopup] = useState(false);
   const [selectedDate, setSelectedDate] = useState("");
@@ -75,18 +81,15 @@ const DateInput = ({ value, onChange, actionButton = false }) => {
 
     date.setHours(now.getHours(), now.getMinutes(), now.getSeconds());
 
-    onChange(date.toISOString());
+    const isoDate = date.toISOString();
+    onChange({
+      target: {
+        name,
+        value: isoDate,
+      },
+    });
     setSelectedDate(formatDate(date));
     setShowPopup(false);
-  }
-
-  function clearDate() {
-    setSelectedDate(null);
-  }
-
-  function dateToday() {
-    setShowPopup(false);
-    setSelectedDate(formatDate(new Date()));
   }
 
   function handleInputChange(event) {
@@ -101,7 +104,12 @@ const DateInput = ({ value, onChange, actionButton = false }) => {
       setTimeout(() => {
         const parsedDate = new Date(inputValue);
         if (!isNaN(parsedDate) && inputValue === formatDate(parsedDate)) {
-          onChange(parsedDate);
+          onChange({
+            target: {
+              name,
+              value: parsedDate.toISOString(),
+            },
+          });
           setCurrentMonth(parsedDate.getMonth());
           setCurrentYear(parsedDate.getFullYear());
         }
@@ -125,11 +133,10 @@ const DateInput = ({ value, onChange, actionButton = false }) => {
 
         {showPopup && (
           <DateInputPopup
+            position={position}
             currentMonth={currentMonth}
             currentYear={currentYear}
             navigateMonth={navigateMonthHandler}
-            clearDate={clearDate}
-            dateToday={dateToday}
             actionButton={actionButton}
           >
             {dateArray.map((dateObj, index) => {

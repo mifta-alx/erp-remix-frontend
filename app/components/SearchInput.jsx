@@ -3,8 +3,10 @@ import { useEffect, useRef, useState } from "react";
 import useClickOutside from "@hooks/useClickOutside.js";
 
 const SearchInput = ({
+  name,
   data = [],
   label = "Label",
+  showLabel = true,
   placeholder = "Select item",
   valueKey = "",
   displayKey = "",
@@ -12,6 +14,7 @@ const SearchInput = ({
   onChange,
   error,
   value,
+  disabled,
 }) => {
   const dropdownRef = useRef(null);
   const [searchTerm, setSearchTerm] = useState("");
@@ -35,7 +38,7 @@ const SearchInput = ({
     setInputValue(getDisplayString ? getDisplayString(item) : item[displayKey]);
     setSearchTerm("");
     setIsDropdownVisible(false);
-    onChange?.(newValue);
+    onChange({ target: { name, value: newValue } });
   };
 
   const handleSearchChange = (e) => {
@@ -44,8 +47,8 @@ const SearchInput = ({
     setInputValue(targetValue);
 
     // Jika input kosong, kosongkan selectedItems
-    if (targetValue === "") {
-      onChange?.(""); // Menghapus item yang terpilih
+    if (targetValue === "" && onChange) {
+      onChange({ target: { name, value: "" } });
     }
     setIsDropdownVisible(true);
   };
@@ -70,22 +73,24 @@ const SearchInput = ({
   }, [value, data, valueKey, displayKey, getDisplayString]);
   return (
     <div>
-      <label
-        htmlFor="search-input"
-        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-      >
-        {label}
-      </label>
-
+      {showLabel && (
+        <label
+          htmlFor="search-input"
+          className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+        >
+          {label}
+        </label>
+      )}
       <div ref={dropdownRef} className="relative w-full">
         <div className="absolute inset-y-0 end-0 flex items-center pe-3 pointer-events-none text-gray-500 dark:text-gray-400">
           <CaretDown weight="bold" size={16} />
         </div>
         <input
+          disabled={disabled}
           type="text"
-          name="search-input"
-          id="search-input"
-          className={`bg-gray-50 border ${
+          name={name}
+          id={name}
+          className={`bg-gray-50 disabled:bg-gray-100 disabled:cursor-not-allowed border ${
             error
               ? "border-red-500 dark:border-red-500"
               : "border-gray-300 dark:border-gray-600"
