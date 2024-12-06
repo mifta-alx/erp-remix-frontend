@@ -59,7 +59,7 @@ export default function Materials() {
     const timer = setTimeout(() => {
       const newData = materials.filter(
         (material) =>
-          material.material_name.toLowerCase().includes(keyword.toLowerCase()) ||
+          material.name.toLowerCase().includes(keyword.toLowerCase()) ||
           material.internal_reference
             .toLowerCase()
             .includes(keyword.toLowerCase())
