@@ -193,8 +193,6 @@ export default function AddMaterial() {
   const [formData, setFormData] = useState({
     material_name: "",
     category_id: "",
-    // sales_price: "",
-    // cost: "",
     sales_price: formatPriceBase(0),
     cost: formatPriceBase(0),
     barcode: "",
@@ -264,6 +262,19 @@ export default function AddMaterial() {
   };
   const handleDiscard = () => {
     navigate("/manufacturing/materials");
+  };
+
+  const handleFormatPrice = (e) => {
+    const { name, value } = e.target;
+    const rawValue = value.replace(/\./g, "");
+    const updatedValue =
+      rawValue === ""
+        ? formatPriceBase(0)
+        : formatPriceBase(parseFloat(rawValue));
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: updatedValue,
+    }));
   };
 
   return (
@@ -523,6 +534,7 @@ export default function AddMaterial() {
                         placeholder="Rp. 0"
                         value={formData.sales_price}
                         onChange={handleChange}
+                        onBlur={handleFormatPrice}
                       />
                       {actionData?.errors?.sales_price && (
                         <p className="mt-2 text-sm text-red-600">
@@ -549,6 +561,7 @@ export default function AddMaterial() {
                         placeholder="Rp. 0"
                         value={formData.cost}
                         onChange={handleChange}
+                        onBlur={handleFormatPrice}
                       />
                       {actionData?.errors?.cost && (
                         <p className="mt-2 text-sm text-red-600 dark:text-red-500">

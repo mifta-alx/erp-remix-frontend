@@ -647,6 +647,7 @@ export default function EditMaterial() {
                         placeholder="Rp. 0"
                         value={formData.cost}
                         onChange={handleChange}
+                        onBlur={handleFormatPrice}
                       />
                       {actionData?.errors?.cost && (
                         <p className="mt-2 text-sm text-red-600 dark:text-red-500">
