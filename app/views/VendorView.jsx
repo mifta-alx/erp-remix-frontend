@@ -21,7 +21,7 @@ const VendorView = ({ vendors }) => {
                     alt={vendor.name}
                   />
                 </div>
-                <div>
+                <div className="flex-1">
                   <p className="text-lg font-semibold leading-tight text-gray-900 dark:text-white">
                     {vendor.name}
                   </p>
@@ -30,10 +30,10 @@ const VendorView = ({ vendors }) => {
                       {vendor.type === 1 ? "Individual" : "Company"}
                     </p>
                   </div>
-                  <p className="mt-2 text-sm font-normal leading-tight text-gray-500 dark:text-gray-400 ">
+                  <p className="mt-2 text-sm font-normal leading-tight text-gray-500 dark:text-gray-400">
                     {`${vendor.city}, ${vendor.state}`}
                   </p>
-                  <p className="mt-2 text-sm font-normal leading-tight text-gray-500 dark:text-gray-400">
+                  <p className="mt-2 text-sm font-normal leading-tight text-gray-500 max-w-36 dark:text-gray-400 truncate">
                     {vendor.email}
                   </p>
                 </div>
