@@ -729,9 +729,11 @@ export default function BillRequestForQuotation() {
                     <CheckCircle weight="fill" /> Posted
                   </span>
                 ) : (
-                  <span className="inline-flex gap-1 justify-center items-center bg-red-100 border border-red-500 text-red-800 text-xs font-medium px-3 py-0.5 rounded dark:bg-red-900 dark:text-red-300">
-                    <XCircle weight="fill" /> Cancelled
-                  </span>
+                  formData.state === 3 && (
+                    <span className="inline-flex gap-1 justify-center items-center bg-red-100 border border-red-500 text-red-800 text-xs font-medium px-3 py-0.5 rounded dark:bg-red-900 dark:text-red-300">
+                      <XCircle weight="fill" /> Cancelled
+                    </span>
+                  )
                 )}
               </div>
             </div>
@@ -1005,30 +1007,8 @@ export default function BillRequestForQuotation() {
                         {loadingSave ? <Spinner /> : "Save Changes"}
                       </button>
                     </>
-                  ) : formData.state === 3 ? (
-                    <button
-                      type="button"
-                      onClick={handleResetToDraft}
-                      className="text-gray-900 w-full bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium rounded-md text-sm px-5 py-2.5 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"
-                    >
-                      {loadingReset ? <Spinner /> : "Reset to Draft"}
-                    </button>
-                  ) : (
+                  ) : formData.state === 2 && formData.payment_status === 2 ? (
                     <>
-                      {formData.state === 2 && formData.payment_status < 2 && (
-                        <button
-                          type="button"
-                          onClick={handleRegisterPayment}
-                          className="inline-flex items-center justify-center gap-2 text-white w-full bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-md text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
-                        >
-                          {loadingConfirm ? (
-                            <Spinner />
-                          ) : (
-                            <CurrencyDollarSimple size={16} weight="bold" />
-                          )}
-                          Register Payment
-                        </button>
-                      )}
                       <button
                         type="button"
                         className="inline-flex items-center justify-center gap-2 text-white w-full bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-md text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
@@ -1052,6 +1032,31 @@ export default function BillRequestForQuotation() {
                         Print
                       </button>
                     </>
+                  ) : (
+                    formData.state === 2 &&
+                    formData.payment_status < 2 && (
+                      <>
+                        <button
+                          type="button"
+                          onClick={handleRegisterPayment}
+                          className="inline-flex items-center justify-center gap-2 text-white w-full bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-md text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+                        >
+                          {loadingConfirm ? (
+                            <Spinner />
+                          ) : (
+                            <CurrencyDollarSimple size={16} weight="bold" />
+                          )}
+                          Register Payment
+                        </button>
+                        <button
+                          type="button"
+                          onClick={handleResetToDraft}
+                          className="text-gray-900 w-full bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium rounded-md text-sm px-5 py-2.5 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"
+                        >
+                          {loadingReset ? <Spinner /> : "Reset to Draft"}
+                        </button>
+                      </>
+                    )
                   )}
                 </div>
               </div>
@@ -1107,9 +1112,10 @@ export default function BillRequestForQuotation() {
                 Rp
               </span>
               <input
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                className="disabled:bg-gray-100 disabled:cursor-not-allowed disabled:text-gray-500 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                 type="text"
                 name="amount"
+                disabled
                 id="amount"
                 onChange={handlePaymentChange}
                 onBlur={handleFormatPrice}
