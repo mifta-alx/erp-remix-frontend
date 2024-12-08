@@ -7,4 +7,7 @@ export { default as VendorView } from "./VendorView";
 export { default as TableBom } from "./TableBom";
 export { default as TableMO } from "./TableMO";
 export { default as StepperMO } from "./StepperMO";
+export { default as TableRFQ } from "./TableRFQ";
+export { default as TableRFQValidate } from "./TableRFQValidate";
+export { default as TableVendorBill } from "./TableVendorBill";
 export { default as CustomersView } from "./CustomersView";
