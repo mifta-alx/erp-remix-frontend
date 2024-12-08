@@ -1,10 +1,12 @@
 import {
+  isRouteErrorResponse,
   Links,
   Meta,
   Outlet,
   Scripts,
   ScrollRestoration,
   useLoaderData,
+  useRouteError,
 } from "@remix-run/react";
 import type { LinksFunction, LoaderFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
@@ -12,6 +14,7 @@ import { ColorSchemeProvider } from "@context/ColorScheme.jsx";
 import { ViewProvider } from "@context/ViewScheme.jsx";
 import { getThemeFromRequest } from "./utils/theme.server";
 import "./tailwind.css";
+import { ErrorView } from "~/views";
 
 type LoaderData = {
   theme: string;
@@ -53,6 +56,42 @@ export function Layout({ children }: { children: React.ReactNode }) {
           <ViewProvider>{children}</ViewProvider>
         </ColorSchemeProvider>
         <ScrollRestoration />
+        <Scripts />
+      </body>
+    </html>
+  );
+}
+
+export function ErrorBoundary() {
+  const error = useRouteError();
+
+  const errorMessage = isRouteErrorResponse(error)
+    ? error.statusText
+    : error instanceof Error
+    ? error.message
+    : "Unknown Error";
+
+  const errorDescription =
+    isRouteErrorResponse(error) && error.data?.description
+      ? error.data.description
+      : "Unknown Error";
+
+  const errorStatus = isRouteErrorResponse(error) ? error.status : 500;
+
+  return (
+    <html>
+      <head>
+        <title>Oops!</title>
+        <Meta />
+        <Links />
+      </head>
+      <body>
+        <ErrorView
+          message={errorMessage}
+          status={errorStatus}
+          description={errorDescription}
+          className="min-h-screen"
+        />
         <Scripts />
       </body>
     </html>
