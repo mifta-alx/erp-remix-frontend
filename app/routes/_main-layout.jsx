@@ -326,6 +326,44 @@ export default function _mainLayout() {
                   </span>
                 </NavLink>
               </li>
+              <li>
+                <NavLink
+                  to="/sales/quotations"
+                  className={({ isActive, isPending }) =>
+                    `block p-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 ${
+                      isPending
+                        ? "pending"
+                        : isActive
+                        ? "bg-gray-100 dark:bg-gray-700"
+                        : ""
+                    }`
+                  }
+                >
+                  <div className="font-semibold">Quotations</div>
+                  <span className="text-sm text-gray-500 dark:text-gray-400">
+                    Manage all quotations.
+                  </span>
+                </NavLink>
+              </li>
+              <li>
+                <NavLink
+                  to="/sales/sales-orders"
+                  className={({ isActive, isPending }) =>
+                    `block p-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 ${
+                      isPending
+                        ? "pending"
+                        : isActive
+                        ? "bg-gray-100 dark:bg-gray-700"
+                        : ""
+                    }`
+                  }
+                >
+                  <div className="font-semibold">Sales Order</div>
+                  <span className="text-sm text-gray-500 dark:text-gray-400">
+                    Manage all your sales order.
+                  </span>
+                </NavLink>
+              </li>
             </ul>
           </div>
         )}
