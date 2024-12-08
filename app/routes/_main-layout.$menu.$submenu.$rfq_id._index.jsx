@@ -2,6 +2,7 @@ import {
   ArrowLineUp,
   CaretRight,
   Check,
+  ClockClockwise,
   House,
   X,
 } from "@phosphor-icons/react";
@@ -15,8 +16,9 @@ import {
   formatPriceBase,
   unformatPriceBase,
 } from "@utils/formatPrice.js";
-import { formatDatetime } from "@utils/formatDate.js";
+import { formatDisplayDatetime } from "@utils/formatDate.js";
 import { json } from "@remix-run/node";
+import { twMerge } from "tailwind-merge";
 
 export const meta = ({ data }) => {
   const reference = data.rfq.reference;
@@ -107,6 +109,9 @@ export default function DetailedRequestForQuotation() {
   const [materialsArr, setMaterialsArr] = useState([]);
   const [actionData, setActionData] = useState();
   const [rfqState, setRfqState] = useState(rfq.state);
+
+  const thisDay = new Date().toISOString();
+
   const [dataTotal, setDataTotal] = useState({
     untaxed: rfq.total,
     taxes: rfq.taxes,
@@ -123,7 +128,9 @@ export default function DetailedRequestForQuotation() {
     receipt: rfq.receipt || null,
     invoices: rfq.invoices,
   });
+
   const [hasTax, setHasTax] = useState(false);
+
   useEffect(() => {
     const handler = setTimeout(() => {
       const totalTax = materialsArr.reduce(
@@ -231,7 +238,6 @@ export default function DetailedRequestForQuotation() {
   const handleConfirmOrder = async (e) => {
     e.preventDefault();
     setLoadingConfirm(true);
-    const thisDay = new Date().toISOString();
     const formattedData = {
       vendor_id: formData.vendor_id,
       vendor_reference: formData.vendor_reference,
@@ -301,9 +307,11 @@ export default function DetailedRequestForQuotation() {
 
   const handleReceiveProduct = () => {
     if (formData.receipt.length > 1) {
-      navigate(`/purchase/rfq/${rfq_id}/receipt`);
+      navigate(`/${menu}/${submenu}/${rfq_id}/transfers?type=IN`);
     } else {
-      navigate(`/purchase/rfq/${rfq_id}/receipt/${formData.receipt[0].id}`);
+      navigate(
+        `/${menu}/${submenu}/${rfq_id}/transfers/${formData.receipt[0].id}`
+      );
     }
   };
 
@@ -396,7 +404,75 @@ export default function DetailedRequestForQuotation() {
     }
   };
 
-  const handleSetToDraft = () => {};
+  const handleSetToDraft = async (e) => {
+    e.preventDefault();
+    setLoadingConfirm(true);
+    const formattedData = {
+      vendor_id: formData.vendor_id,
+      vendor_reference: formData.vendor_reference,
+      order_date: formData.order_date,
+      state: 1,
+      invoice_status: formData.invoice_status,
+      confirmation_date: thisDay,
+      total: dataTotal.untaxed,
+      taxes: dataTotal.tax,
+      items: materialsArr.map((material) => ({
+        component_id: material.component_id,
+        type: material.type,
+        material_id: material.material_id,
+        description: material.description,
+        qty: unformatToDecimal(material.qty),
+        unit_price: unformatPriceBase(material.unit_price),
+        tax: material.tax,
+        subtotal: material.subtotal,
+      })),
+    };
+
+    try {
+      const response = await fetch(`${API_URL}/rfqs/${rfq_id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formattedData),
+      });
+      const result = await response.json();
+
+      if (response.ok) {
+        const { data } = result;
+        setFormData((prevState) => ({
+          ...prevState,
+          state: data.state,
+          confirmation_date: data.confirmation_date,
+          receipt: data.receipt,
+        }));
+        setRfqState(data.state);
+        const formattedMaterial = data.items.map((material) => ({
+          component_id: material.component_id,
+          name: material.name,
+          internal_reference: material.internal_reference,
+          type: material.type,
+          material_id: material.id,
+          description: material.description,
+          qty: formatToDecimal(material.qty),
+          unit_price: formatPriceBase(material.unit_price),
+          tax: material.tax,
+          subtotal: material.subtotal,
+          qty_received: material.qty_received,
+          qty_to_invoice: material.qty_to_invoice,
+          qty_invoiced: material.qty_invoiced,
+        }));
+
+        setMaterialsArr(formattedMaterial);
+      } else {
+        setActionData({ errors: result.errors || {} });
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoadingConfirm(false);
+    }
+  };
 
   const handleCreateBill = async (e) => {
     e.preventDefault();
@@ -427,13 +503,16 @@ export default function DetailedRequestForQuotation() {
   };
 
   //button left
-  const ActionButton = ({ onClick, loading, children }) => (
+  const ActionButton = ({ onClick, loading, children, icon, className }) => (
     <button
       type="button"
       onClick={onClick}
-      className="disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-300 disabled:dark:bg-gray-900 disabled:dark:text-gray-700 inline-flex items-center w-full sm:w-fit px-4 py-2 gap-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-s-lg hover:bg-gray-100 hover:text-primary-700 focus:z-10 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:text-primary-500 dark:hover:bg-gray-700"
+      className={twMerge(
+        "disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-300 disabled:dark:bg-gray-900 disabled:dark:text-gray-700 inline-flex items-center w-full sm:w-fit px-4 py-2 gap-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-s-lg hover:bg-gray-100 hover:text-primary-700 focus:z-10 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:text-primary-500 dark:hover:bg-gray-700",
+        className
+      )}
     >
-      {loading ? <Spinner /> : <Check size={16} />}
+      {loading ? <Spinner /> : icon}
       {children}
     </button>
   );
@@ -453,14 +532,23 @@ export default function DetailedRequestForQuotation() {
   const RenderLeftButton = () => {
     if (formData.state < 3) {
       return (
-        <ActionButton onClick={handleConfirmOrder} loading={loadingConfirm}>
+        <ActionButton
+          onClick={handleConfirmOrder}
+          loading={loadingConfirm}
+          icon={<Check size={16} />}
+        >
           Confirm Order
         </ActionButton>
       );
     }
     if (formData.state === 4) {
       return (
-        <ActionButton onClick={handleSetToDraft} loading={loadingConfirm}>
+        <ActionButton
+          onClick={handleSetToDraft}
+          loading={loadingConfirm}
+          icon={<ClockClockwise size={16} />}
+          className={rfq.receipt.length === 0 && "rounded-lg"}
+        >
           Set to Draft
         </ActionButton>
       );
@@ -481,14 +569,22 @@ export default function DetailedRequestForQuotation() {
     }
     if (formData.state === 3 && formData.invoice_status === 2) {
       return (
-        <ActionButton onClick={handleCreateBill} loading={loadingConfirm}>
+        <ActionButton
+          onClick={handleCreateBill}
+          loading={loadingConfirm}
+          icon={<Check size={16} />}
+        >
           Create Bill
         </ActionButton>
       );
     }
     if (formData.state === 3 && formData.invoice_status === 1) {
       return (
-        <ActionButton onClick={handleReceiveProduct} loading={loadingConfirm}>
+        <ActionButton
+          onClick={handleReceiveProduct}
+          loading={loadingConfirm}
+          icon={<Check size={16} />}
+        >
           Receive Product
         </ActionButton>
       );
@@ -568,9 +664,9 @@ export default function DetailedRequestForQuotation() {
                       {loadingCancel ? <Spinner /> : <X size={16} />}
                       Cancel Order
                     </button>
-                  ) : (
+                  ) : rfq.receipt.length > 0 ? (
                     <Link
-                      to={`/purchase/rfq/${rfq_id}/bills?id=${formData?.invoices[0]?.id}`}
+                      to={`/${menu}/${submenu}/${rfq_id}/transfers?type=IN`}
                       className="group disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-300 disabled:dark:bg-gray-900 disabled:dark:text-gray-700 inline-flex items-center w-full sm:w-fit px-4 py-2 gap-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-e-lg hover:bg-gray-100 hover:text-primary-700 focus:z-10 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:text-primary-500 dark:hover:bg-gray-700"
                     >
                       <span className="inline-flex items-center justify-center w-4 h-4 text-[10px] font-semibold text-gray-100 bg-gray-800 dark:bg-gray-600 dark:text-white dark:group-hover:bg-primary-500 group-hover:bg-primary-700 group-hover:text-gray-100 rounded-full">
@@ -578,7 +674,7 @@ export default function DetailedRequestForQuotation() {
                       </span>
                       Receipt
                     </Link>
-                  )}
+                  ) : null}
                 </div>
               </div>
             </div>
@@ -621,7 +717,7 @@ export default function DetailedRequestForQuotation() {
                       Vendor
                     </p>
                     <Link
-                      to={`/purchase/vendors/${rfq.vendor_id}`}
+                      to={`/${menu}/${submenu}/vendors/${rfq.vendor_id}`}
                       className="bg-white text-primary-600 font-medium text-sm rounded-lg block w-full dark:bg-gray-800 dark:placeholder-gray-400 dark:text-primary-500"
                     >
                       {rfq.vendor_name}
@@ -639,11 +735,11 @@ export default function DetailedRequestForQuotation() {
                   </div>
                   <div>
                     <p className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                      {rfqState >= 3 ? "Confirmation Date" : "Order Date"}
+                      {rfqState === 3 ? "Confirmation Date" : "Order Date"}
                     </p>
                     <p className="bg-white text-gray-500 font-medium text-sm rounded-lg block w-full dark:bg-gray-800 dark:placeholder-gray-400 dark:text-gray-400">
-                      {formatDatetime(
-                        rfqState >= 3
+                      {formatDisplayDatetime(
+                        rfqState === 3
                           ? formData.confirmation_date
                           : formData.order_date
                       )}
