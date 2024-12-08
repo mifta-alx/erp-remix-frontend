@@ -205,51 +205,51 @@ export default function ValidationRequestForQuotation() {
         qty_received: 0,
       })),
     };
-    console.log("rf", formattedData);
-    // try {
-    //   const response = await fetch(`${API_URL}/receipts/${receipt_id}`, {
-    //     method: "PUT",
-    //     headers: {
-    //       "Content-Type": "application/json",
-    //     },
-    //     body: JSON.stringify(formattedData),
-    //   });
-    //   const result = await response.json();
-    //
-    //   if (response.ok) {
-    //     const { data } = result;
-    //     setFormData((prevState) => ({
-    //       ...prevState,
-    //       state: data.state,
-    //       scheduled_date: data.scheduled_date,
-    //       receipt: data.receipt,
-    //     }));
-    //
-    //     const formattedMaterial = data.items.map((material) => ({
-    //       component_id: material.component_id,
-    //       name: material.name,
-    //       internal_reference: material.internal_reference,
-    //       type: material.type,
-    //       material_id: material.id,
-    //       description: material.description,
-    //       qty: formatToDecimal(material.qty),
-    //       unit_price: formatPriceBase(material.unit_price),
-    //       tax: material.tax,
-    //       subtotal: material.subtotal,
-    //       qty_received: material.qty_received,
-    //       qty_to_invoice: material.qty_to_invoice,
-    //       qty_invoiced: material.qty_invoiced,
-    //     }));
-    //
-    //     setMaterialsArr(formattedMaterial);
-    //   } else {
-    //     setActionData({ errors: result.errors || {} });
-    //   }
-    // } catch (error) {
-    //   console.error(error);
-    // } finally {
-    //   setLoadingCancel(false);
-    // }
+
+    try {
+      const response = await fetch(`${API_URL}/receipts/${receipt_id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formattedData),
+      });
+      const result = await response.json();
+
+      if (response.ok) {
+        const { data } = result;
+        setFormData((prevState) => ({
+          ...prevState,
+          state: data.state,
+          scheduled_date: data.scheduled_date,
+          receipt: data.receipt,
+        }));
+
+        const formattedMaterial = data.items.map((material) => ({
+          component_id: material.component_id,
+          name: material.name,
+          internal_reference: material.internal_reference,
+          type: material.type,
+          material_id: material.id,
+          description: material.description,
+          qty: formatToDecimal(material.qty),
+          unit_price: formatPriceBase(material.unit_price),
+          tax: material.tax,
+          subtotal: material.subtotal,
+          qty_received: material.qty_received,
+          qty_to_invoice: material.qty_to_invoice,
+          qty_invoiced: material.qty_invoiced,
+        }));
+
+        setMaterialsArr(formattedMaterial);
+      } else {
+        setActionData({ errors: result.errors || {} });
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoadingCancel(false);
+    }
   };
 
   const handleChange = (e) => {
@@ -296,7 +296,7 @@ export default function ValidationRequestForQuotation() {
                     <div className="flex items-center text-gray-400">
                       <CaretRight size={18} weight="bold" />
                       <Link
-                        to="/purchase/receipt"
+                        to={`/${menu}/${submenu}`}
                         className="ms-1 text-sm font-medium text-gray-700 hover:text-primary-600 dark:text-gray-400 dark:hover:text-white md:ms-2"
                       >
                         {submenu === "rfq"
@@ -316,6 +316,17 @@ export default function ValidationRequestForQuotation() {
                       </Link>
                     </div>
                   </li>
+                  <li>
+                    <div className="flex items-center text-gray-400">
+                      <CaretRight size={18} weight="bold" />
+                      <Link
+                        to={`/${menu}/${submenu}/${rfq_id}/transfers?type=IN`}
+                        className="ms-1 text-sm font-medium text-gray-700 hover:text-primary-600 dark:text-gray-400 dark:hover:text-white md:ms-2"
+                      >
+                        Transfers
+                      </Link>
+                    </div>
+                  </li>
                   <li aria-current="page">
                     <div className="flex items-center text-gray-400">
                       <CaretRight size={18} weight="bold" />
@@ -328,7 +339,9 @@ export default function ValidationRequestForQuotation() {
               </nav>
               <div className="flex flex-col sm:flex-row gap-4 justify-between items-start w-full">
                 <h2 className="text-xl font-semibold text-gray-900 dark:text-white sm:text-2xl">
-                  Request for Quotation
+                  {submenu === "rfq"
+                    ? "Request for Quotations"
+                    : "Purchase Orders"}
                 </h2>
                 {formData.state < 3 && (
                   <div className="inline-flex w-full sm:w-fit" role="group">
