@@ -20,6 +20,7 @@ function getDateSlots(currentMonth, currentYear) {
 }
 
 const DateInput = ({
+  error,
   value,
   onChange,
   actionButton = false,
@@ -127,7 +128,11 @@ const DateInput = ({
           value={selectedDate}
           onChange={handleInputChange}
           onFocus={togglePopupHandler}
-          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+          className={`bg-gray-50 border ${
+            error
+              ? "border-red-500 dark:border-red-500"
+              : "border-gray-300 dark:border-gray-600"
+          } text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500`}
           placeholder="Select date"
         />
 

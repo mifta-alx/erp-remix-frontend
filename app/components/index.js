@@ -5,3 +5,4 @@ export { default as BadgeState } from "./BadgeState.jsx";
 export { default as Dropdown } from "./Dropdown.jsx";
 export { default as DateInput } from "./DateInput/index.jsx";
 export { default as Spinner } from "./Spinner.jsx";
+export { default as Drawer } from "./Drawer.jsx";
