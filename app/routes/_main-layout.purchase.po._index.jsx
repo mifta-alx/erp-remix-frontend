@@ -31,12 +31,12 @@ export const loader = async () => {
     if (!response.ok) {
       let errorMessage = "An error occurred.";
       let errorDescription =
-        "Something went wrong while fetching manufacturing orders.";
+        "Something went wrong while fetching purchase orders.";
 
       if (response.status === 404) {
-        errorMessage = "Manufacturing Orders Not Found";
+        errorMessage = "Purchase Orders Not Found";
         errorDescription =
-          "The Manufacturing Orders you're looking for does not exist or may have been removed.";
+          "The Purchase Orders you're looking for does not exist or may have been removed.";
       } else if (response.status === 500) {
         errorMessage = "Internal Server Error";
         errorDescription =
