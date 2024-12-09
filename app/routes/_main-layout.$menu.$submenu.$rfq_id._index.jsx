@@ -245,6 +245,7 @@ export default function DetailedRequestForQuotation() {
       state: 3,
       invoice_status: formData.invoice_status,
       confirmation_date: thisDay,
+      scheduled_date: thisDay,
       total: dataTotal.untaxed,
       taxes: dataTotal.tax,
       items: materialsArr.map((material) => ({

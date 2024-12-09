@@ -11,7 +11,7 @@ import { DateInput, SearchInput, Spinner } from "@components/index.js";
 import { formatToDecimal, unformatToDecimal } from "@utils/formatDecimal.js";
 import { formatPriceBase } from "@utils/formatPrice.js";
 import { ErrorView, TableRFQValidate } from "@views/index.js";
-import { formatDatetime } from "@utils/formatDate.js";
+import { formatDisplayDatetime } from "@utils/formatDate.js";
 import { json } from "@remix-run/node";
 
 export const meta = ({ data }) => {
@@ -425,7 +425,7 @@ export default function ValidationRequestForQuotation() {
                       Scheduled Date
                     </p>
                     <p className="bg-white text-gray-500 font-medium text-sm rounded-lg block w-full dark:bg-gray-800 dark:placeholder-gray-400 dark:text-gray-400">
-                      {formatDatetime(formData.scheduled_date)}
+                      {formatDisplayDatetime(formData.scheduled_date)}
                     </p>
                   </div>
                 </div>
