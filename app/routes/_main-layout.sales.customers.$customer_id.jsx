@@ -11,7 +11,7 @@ import { Link, useLoaderData, useNavigate, useParams } from "@remix-run/react";
 import { ErrorView } from "@views/index.js";
 import useClickOutside from "@hooks/useClickOutside";
 import useDebounce from "@hooks/useDebounce";
-import { Spinner } from "@components/index.js";
+import { Spinner, SearchInput } from "@components/index.js";
 
 export const meta = ({ data }) => {
   const formattedName = `${data.customer?.internal_reference ? `[${data.customer.internal_reference}]` : ""
@@ -28,7 +28,7 @@ export const loader = async ({ params, request }) => {
   let apiEndpoint = process.env.API_URL;
   try {
     const [initResponse, customerResponse] = await Promise.all([
-      fetch(`${process.env.API_URL}/init?tags&type=customer`),
+      fetch(`${process.env.API_URL}/init?tags&type=customer&customers`),
       fetch(`${process.env.API_URL}/customers/${params.customer_id}`),
     ]);
     if (!initResponse.ok || !customerResponse.ok) {
@@ -66,7 +66,9 @@ export const loader = async ({ params, request }) => {
     return {
       API_URL: apiEndpoint,
       tags: init.data.tags,
+      customers: init.data.customers,
       customer: customer.data,
+
       showActionButton,
     };
   } catch (error) {
@@ -81,7 +83,7 @@ export const loader = async ({ params, request }) => {
 };
 
 export default function EditCustomer() {
-  const { API_URL, customer, tags, error, message, description, status } =
+  const { API_URL, customer, customers, tags, error, message, description, status } =
     useLoaderData();
   const params = useParams();
   const navigate = useNavigate();
@@ -138,7 +140,6 @@ export default function EditCustomer() {
       fileInputRef.current.click();
     }
   };
-
   const [selected, setSelected] = useState(customer.type);
   const handleCheckboxChange = (type) => {
     setSelected((prevSelected) => (prevSelected === type ? null : type));
@@ -467,24 +468,17 @@ export default function EditCustomer() {
                     {
                       selected === 1 && (
                         <div className="sm:col-span-2">
-                          <label
-                            htmlFor="company"
-                            className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                          >
-                            Company Name
-                          </label>
-                          <input
-                            type="text"
+                          <SearchInput
                             name="company"
-                            id="company"
-                            autoComplete="off"
-                            className={`bg-gray-50 border border-gray-300 dark:border-gray-600"
-                                                            text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
-                            placeholder="Type Company name"
-                            value={formData.company}
+                            data={customers}
+                            label="Company Name"
+                            placeholder="Select Company Name"
+                            valueKey="id"
+                            displayKey="name"
                             onChange={handleChange}
+                            error={actionData?.errors?.company}
+                            value={formData.company}
                           />
-
                         </div>
                       )
                     }

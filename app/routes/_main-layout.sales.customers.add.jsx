@@ -12,7 +12,7 @@ import { Link, useLoaderData, useNavigate } from "@remix-run/react";
 import { ErrorView } from "@views/index.js";
 import useClickOutside from "@hooks/useClickOutside";
 import useDebounce from "@hooks/useDebounce";
-import { Spinner } from "@components/index.js";
+import { Spinner, SearchInput } from "@components/index.js";
 
 export const meta = () => {
     return [
@@ -25,7 +25,8 @@ export const loader = async () => {
     let apiEndpoint = process.env.API_URL;
     try {
         const response = await fetch(
-            `${process.env.API_URL}/init?tags&type=customer`
+            `${process.env.API_URL}/init?tags&type=customer&customers&category=company`
+
         );
         if (!response.ok) {
             let errorMessage = "An error occurred.";
@@ -48,6 +49,7 @@ export const loader = async () => {
         return {
             API_URL: apiEndpoint,
             tags: data.tags,
+            customers: data.customers,
         };
     } catch (error) {
         return {
@@ -61,8 +63,7 @@ export const loader = async () => {
 };
 
 export default function AddCustomers() {
-    const { API_URL, tags, error, message, description, status } = useLoaderData();
-
+    const { API_URL, tags, customers, error, message, description, status } = useLoaderData();
     const navigate = useNavigate();
     const [actionData, setActionData] = useState();
     const [loading, setLoading] = useState(false);
@@ -186,7 +187,6 @@ export default function AddCustomers() {
         }
     };
 
-    //customer company
     const [selected, setSelected] = useState(2);
     const handleCheckboxChange = (type) => {
         setSelected((prevSelected) => (prevSelected === type ? null : type));
@@ -200,7 +200,7 @@ export default function AddCustomers() {
 
     const [formData, setFormData] = useState({
         name: "",
-        company: "",
+        company_id: "",
         type: null,
         street: "",
         city: "",
@@ -210,6 +210,14 @@ export default function AddCustomers() {
         mobile: "",
         email: "",
         image_uuid: "",
+    });
+    console.log('Data Form:', {
+        name: formData.name,
+        company_id: formData.company_id,
+        type: formData.type,
+        email: formData.email,
+        street: formData.street,
+        image: image
     });
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -230,7 +238,7 @@ export default function AddCustomers() {
                 },
                 body: JSON.stringify({
                     name: formData.name,
-                    company: formData.company,
+                    company: formData.company_id,
                     type: formData.type,
                     street: formData.street,
                     city: formData.city,
@@ -240,12 +248,12 @@ export default function AddCustomers() {
                     mobile: formData.mobile,
                     email: formData.email,
                     image_uuid: image,
-                    image_url: preview,
                     tag_id: selectedTags.map((tag) => tag.id),
                 }),
             });
             if (!response.ok) {
                 const result = await response.json();
+                console.error('Server Error Response:', result);
                 setActionData({ errors: result.errors || {} });
                 return;
             }
@@ -256,7 +264,7 @@ export default function AddCustomers() {
                 localStorage.removeItem("image");
                 setFormData({
                     name: "",
-                    company: "",
+                    company_id: "",
                     type: null,
                     street: "",
                     city: "",
@@ -267,7 +275,6 @@ export default function AddCustomers() {
                     email: "",
                     image_uuid: "",
                 });
-                setLoading(false);
                 navigate("/sales/customers");
             }
         } catch (error) {
@@ -279,6 +286,7 @@ export default function AddCustomers() {
     const handleDiscard = () => {
         navigate("/sales/customers");
     };
+
     return (
         <section>
             <div className="mx-auto max-w-screen-xl px-4 2xl:px-0">
@@ -424,24 +432,17 @@ export default function AddCustomers() {
                                         {
                                             selected === 1 && (
                                                 <div className="sm:col-span-2">
-                                                    <label
-                                                        htmlFor="company"
-                                                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                                                    >
-                                                        Company Name
-                                                    </label>
-                                                    <input
-                                                        type="text"
-                                                        name="company"
-                                                        id="company"
-                                                        autoComplete="off"
-                                                        className={`bg-gray-50 border border-gray-300 dark:border-gray-600"
-                                                            text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
-                                                        placeholder="Type Company name"
-                                                        value={formData.company}
+                                                    <SearchInput
+                                                        name="company_id"
+                                                        data={customers}
+                                                        label="Company Name"
+                                                        placeholder="Select Company Name"
+                                                        valueKey="id"
+                                                        displayKey="name"
                                                         onChange={handleChange}
+                                                        error={actionData?.errors?.company_id}
+                                                        value={formData.company_id}
                                                     />
-
                                                 </div>
                                             )
                                         }

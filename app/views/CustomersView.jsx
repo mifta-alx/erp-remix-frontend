@@ -21,7 +21,7 @@ const CustomersView = ({ customers }) => {
                     alt={customer.name}
                   />
                 </div>
-                <div>
+                <div className="flex-1">
                   <p className="text-lg font-semibold leading-tight text-gray-900 dark:text-white">
                     {customer.name}
                   </p>
