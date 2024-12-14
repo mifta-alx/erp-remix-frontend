@@ -74,23 +74,22 @@ const CustomersView = ({ customers }) => {
           </thead>
           <tbody>
             {customers?.length > 0 ? (
-              customers?.map((vendor, index) => (
+              customers?.map((customer, index) => (
                 <tr
                   className="border-b dark:border-gray-700 text-sm cursor-pointer bg-white dark:bg-gray-800 hover:bg-gray-100 hover:dark:bg-gray-600 "
                   key={index}
-                  onClick={() => navigate(`/purchase/customers/${vendor.id}`)}
+                  onClick={() => navigate(`/sales/customers/${customer.id}`)}
                 >
                   <td
                     scope="row"
                     className="ps-6 pe-3 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
                   >
-                    {vendor.name}
+                    {customer.name}
                   </td>
-                  <td className="px-3 py-4">{vendor.phone}</td>
-
-                  <td className="px-3 py-4">{vendor.email}</td>
-                  <td className="px-3 py-4">{vendor.city}</td>
-                  <td className="px-3 py-4">{vendor.state}</td>
+                  <td className="px-3 py-4">{customer.phone ? customer.phone : "-"}</td>
+                  <td className="px-3 py-4">{customer.email}</td>
+                  <td className="px-3 py-4">{customer.city}</td>
+                  <td className="px-3 py-4">{customer.state}</td>
                 </tr>
               ))
             ) : (
