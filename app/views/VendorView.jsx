@@ -86,7 +86,7 @@ const VendorView = ({ vendors }) => {
                   >
                     {vendor.name}
                   </td>
-                  <td className="px-3 py-4">{vendor.phone}</td>
+                  <td className="px-3 py-4">{vendor.phone ? vendor.phone : "-"}</td>
 
                   <td className="px-3 py-4">{vendor.email}</td>
                   <td className="px-3 py-4">{vendor.city}</td>
