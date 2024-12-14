@@ -328,7 +328,7 @@ export default function _mainLayout() {
               </li>
               <li>
                 <NavLink
-                  to="/sales/quotations"
+                  to="/sales/quotation"
                   className={({ isActive, isPending }) =>
                     `block p-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 ${
                       isPending
@@ -347,7 +347,7 @@ export default function _mainLayout() {
               </li>
               <li>
                 <NavLink
-                  to="/sales/sales-orders"
+                  to="/sales/sales-order"
                   className={({ isActive, isPending }) =>
                     `block p-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 ${
                       isPending

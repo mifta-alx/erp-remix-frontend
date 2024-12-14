@@ -4,7 +4,7 @@ const ErrorView = ({ status, message, description, className }) => {
   return (
     <div
       className={twMerge(
-        "py-48 px-4 mx-auto max-w-screen-xl lg:py-24 lg:px-6",
+        "py-48 px-4 mx-auto max-w-screen-xl lg:py-24 lg:px-6 flex items-center justify-center",
         className
       )}
     >
