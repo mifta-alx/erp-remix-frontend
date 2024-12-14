@@ -33,7 +33,7 @@ const CustomersView = ({ customers }) => {
                   <p className="mt-2 text-sm font-normal leading-tight text-gray-500 dark:text-gray-400 ">
                     {`${customer.city}, ${customer.state}`}
                   </p>
-                  <p className="mt-2 text-sm font-normal leading-tight text-gray-500 dark:text-gray-400">
+                  <p className="mt-2 text-sm font-normal leading-tight text-gray-500 max-w-36 dark:text-gray-400 truncate">
                     {customer.email}
                   </p>
                 </div>
@@ -86,7 +86,9 @@ const CustomersView = ({ customers }) => {
                   >
                     {customer.name}
                   </td>
-                  <td className="px-3 py-4">{customer.phone ? customer.phone : "-"}</td>
+                  <td className="px-3 py-4">
+                    {customer.phone ? customer.phone : "-"}
+                  </td>
                   <td className="px-3 py-4">{customer.email}</td>
                   <td className="px-3 py-4">{customer.city}</td>
                   <td className="px-3 py-4">{customer.state}</td>
