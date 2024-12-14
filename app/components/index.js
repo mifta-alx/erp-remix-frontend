@@ -6,3 +6,5 @@ export { default as Dropdown } from "./Dropdown.jsx";
 export { default as DateInput } from "./DateInput/index.jsx";
 export { default as Spinner } from "./Spinner.jsx";
 export { default as Drawer } from "./Drawer.jsx";
+export { default as ImageUpload } from "./ImageUpload.jsx";
+export { default as MultiSelect } from "./MultiSelect.jsx";
