@@ -18,8 +18,6 @@ export const meta = () => {
 };
 
 export const loader = async ({ request, params }) => {
-  const url = new URL(request.url);
-  const transactionType = url.searchParams.get("type");
   const { menu, submenu, rfq_id } = params;
   if (menu !== "purchase" || (submenu !== "rfq" && submenu !== "po")) {
     throw json(
@@ -29,7 +27,7 @@ export const loader = async ({ request, params }) => {
   }
   try {
     const response = await fetch(
-      `${process.env.API_URL}/receipts?transaction_type=${transactionType}&rfq_id=${rfq_id}`
+      `${process.env.API_URL}/receipts?transaction_type=IN&rfq_id=${rfq_id}`
     );
 
     if (!response.ok) {
@@ -222,11 +220,16 @@ export default function Transfers() {
                                   Draft
                                 </span>
                               ) : receipt.state === 2 ? (
+                                <span className="inline-flex items-center bg-yellow-100 border border-yellow-500 text-yellow-800 text-xs font-medium px-2.5 py-0.5 rounded-full dark:bg-yellow-900 dark:text-yellow-300">
+                                  <span className="w-2 h-2 me-1 bg-yellow-500 rounded-full"></span>
+                                  Warning
+                                </span>
+                              ) : receipt.state === 3 ? (
                                 <span className="inline-flex items-center bg-primary-100 border border-primary-500 text-primary-800 text-xs font-medium px-2.5 py-0.5 rounded-full dark:bg-primary-900 dark:text-primary-300">
                                   <span className="w-2 h-2 me-1 bg-primary-500 rounded-full"></span>
                                   Ready
                                 </span>
-                              ) : receipt.state === 4 ? (
+                              ) : receipt.state === 5 ? (
                                 <span className="inline-flex items-center bg-red-100 border border-red-500 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded-full dark:bg-red-900 dark:text-red-300">
                                   <span className="w-2 h-2 me-1 bg-red-500 rounded-full"></span>
                                   Cancelled

@@ -1,10 +1,4 @@
-import {
-  CaretRight,
-  Check,
-  DotsThreeVertical,
-  House,
-  X,
-} from "@phosphor-icons/react";
+import { CaretRight, Check, House, X } from "@phosphor-icons/react";
 import { useEffect, useState } from "react";
 import { Link, useLoaderData, useParams } from "@remix-run/react";
 import { DateInput, SearchInput, Spinner } from "@components/index.js";
@@ -113,14 +107,14 @@ export default function ValidationRequestForQuotation() {
         name: material.name,
         internal_reference: material.internal_reference,
         type: material.type,
-        material_id: material.id,
+        id: material.id,
         description: material.description,
         qty: formatToDecimal(material.qty),
         unit_price: formatPriceBase(material.unit_price),
         tax: material.tax,
         subtotal: material.subtotal,
         qty_received: formatToDecimal(
-          formData.state >= 3 ? material.qty_received : material.qty
+          formData.state >= 4 ? material.qty_received : material.qty
         ),
         qty_to_invoice: material.qty_to_invoice,
         qty_invoiced: material.qty_invoiced,
@@ -134,12 +128,12 @@ export default function ValidationRequestForQuotation() {
       transaction_type: "IN",
       vendor_id: receipt.vendor_id,
       rfq_id: receipt.rfq_id,
-      state: 3,
+      state: 4,
       scheduled_date: formData.scheduled_date,
       invoice_status: 2,
       items: materialsArr.map((material) => ({
         component_id: material.component_id,
-        material_id: material.material_id,
+        id: material.id,
         qty_received: unformatToDecimal(material.qty_received),
       })),
     };
@@ -168,7 +162,7 @@ export default function ValidationRequestForQuotation() {
           name: material.name,
           internal_reference: material.internal_reference,
           type: material.type,
-          material_id: material.id,
+          id: material.id,
           description: material.description,
           qty: formatToDecimal(material.qty),
           unit_price: formatPriceBase(material.unit_price),
@@ -196,12 +190,12 @@ export default function ValidationRequestForQuotation() {
       transaction_type: "IN",
       vendor_id: receipt.vendor_id,
       rfq_id: receipt.rfq_id,
-      state: 4,
+      state: 5,
       scheduled_date: formData.scheduled_date,
       invoice_status: 1,
       items: materialsArr.map((material) => ({
         component_id: material.component_id,
-        material_id: material.material_id,
+        id: material.id,
         qty_received: 0,
       })),
     };
@@ -230,7 +224,7 @@ export default function ValidationRequestForQuotation() {
           name: material.name,
           internal_reference: material.internal_reference,
           type: material.type,
-          material_id: material.id,
+          id: material.id,
           description: material.description,
           qty: formatToDecimal(material.qty),
           unit_price: formatPriceBase(material.unit_price),
@@ -259,16 +253,6 @@ export default function ValidationRequestForQuotation() {
       [name]: value,
     }));
   };
-  const sourcePage = [
-    {
-      title: "Request for Quotations",
-      url: "/purchase/receipt",
-    },
-    {
-      title: receipt.reference,
-      url: `/purchase/receipt/${receipt_id}`,
-    },
-  ];
 
   return (
     <section>
@@ -320,7 +304,7 @@ export default function ValidationRequestForQuotation() {
                     <div className="flex items-center text-gray-400">
                       <CaretRight size={18} weight="bold" />
                       <Link
-                        to={`/${menu}/${submenu}/${rfq_id}/transfers?type=IN`}
+                        to={`/${menu}/${submenu}/${rfq_id}/transfers`}
                         className="ms-1 text-sm font-medium text-gray-700 hover:text-primary-600 dark:text-gray-400 dark:hover:text-white md:ms-2"
                       >
                         Transfers
@@ -343,11 +327,10 @@ export default function ValidationRequestForQuotation() {
                     ? "Request for Quotations"
                     : "Purchase Orders"}
                 </h2>
-                {formData.state < 3 && (
+                {formData.state < 4 && (
                   <div className="inline-flex w-full sm:w-fit" role="group">
                     <button
                       type="button"
-                      disabled={formData.state >= 3}
                       onClick={handleValidate}
                       className="disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-300 disabled:dark:bg-gray-900 disabled:dark:text-gray-700 inline-flex items-center w-full sm:w-fit px-4 py-2 gap-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-s-lg hover:bg-gray-100 hover:text-primary-700 focus:z-10 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:text-primary-500 dark:hover:bg-gray-700"
                     >
@@ -378,11 +361,16 @@ export default function ValidationRequestForQuotation() {
                       Draft
                     </span>
                   ) : formData.state === 2 ? (
+                    <span className="inline-flex items-center bg-yellow-100 border border-yellow-500 text-yellow-800 text-xs font-medium px-2.5 py-0.5 rounded-full dark:bg-yellow-900 dark:text-yellow-300">
+                      <span className="w-2 h-2 me-1 bg-yellow-500 rounded-full"></span>
+                      Waiting
+                    </span>
+                  ) : formData.state === 3 ? (
                     <span className="inline-flex items-center bg-primary-100 border border-primary-500 text-primary-800 text-xs font-medium px-2.5 py-0.5 rounded-full dark:bg-primary-900 dark:text-primary-300">
                       <span className="w-2 h-2 me-1 bg-primary-500 rounded-full"></span>
                       Ready
                     </span>
-                  ) : formData.state === 4 ? (
+                  ) : formData.state === 5 ? (
                     <span className="inline-flex items-center bg-red-100 border border-red-500 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded-full dark:bg-red-900 dark:text-red-300">
                       <span className="w-2 h-2 me-1 bg-red-500 rounded-full"></span>
                       Cancelled
@@ -394,11 +382,11 @@ export default function ValidationRequestForQuotation() {
                     </span>
                   )}
                 </div>
-                <div className="w-8 h-8 rounded-full bg-transparent flex hover:bg-gray-100 items-center justify-center">
-                  <DotsThreeVertical weight="bold" size={24} />
-                </div>
+                {/*<div className="w-8 h-8 rounded-full bg-transparent flex hover:bg-gray-100 items-center justify-center">*/}
+                {/*  <DotsThreeVertical weight="bold" size={24} />*/}
+                {/*</div>*/}
               </div>
-              {formData.state >= 3 ? (
+              {formData.state >= 4 ? (
                 <div className="grid gap-4 sm:grid-cols-3 sm:gap-6 w-full">
                   <div>
                     <p className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
@@ -406,7 +394,6 @@ export default function ValidationRequestForQuotation() {
                     </p>
                     <Link
                       to={`/purchase/vendors/${receipt.vendor_id}`}
-                      state={sourcePage}
                       className="bg-white text-primary-600 font-medium text-sm rounded-lg block w-full dark:bg-gray-800 dark:placeholder-gray-400 dark:text-primary-500"
                     >
                       {receipt.vendor_name}

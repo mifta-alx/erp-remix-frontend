@@ -17,8 +17,8 @@ import { formatDisplayDatetime } from "@utils/formatDate.js";
 
 export const meta = () => {
   return [
-    { title: "F&F - Request for Quotations" },
-    { name: "description", content: "Management Request for Quotations" },
+    { title: "F&F - Purchase Orders" },
+    { name: "description", content: "Management Purchase Orders" },
   ];
 };
 
@@ -49,8 +49,8 @@ export const loader = async () => {
         description: errorDescription,
       };
     }
-    const { data: po } = await response.json();
-    return { error: false, po };
+    const { data: purchase_orders } = await response.json();
+    return { error: false, purchase_orders };
   } catch (error) {
     return {
       error: true,
@@ -63,33 +63,40 @@ export const loader = async () => {
 };
 
 export default function PurchaseOrder() {
-  const { error, po, message, description, status } = useLoaderData();
+  const { error, purchase_orders, message, description, status } =
+    useLoaderData();
   const navigate = useNavigate();
   const [keyword, setKeyword] = useState("");
   const [filteredData, setFilteredData] = useState([]);
 
   useEffect(() => {
-    setFilteredData(po);
+    setFilteredData(purchase_orders);
   }, []);
   const debounceDelay = 500;
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      const newData = po.filter((item) =>
+      const newData = purchase_orders.filter((item) =>
         item.reference.toLowerCase().includes(keyword.toLowerCase())
       );
       setFilteredData(newData);
     }, debounceDelay);
 
     return () => clearTimeout(timer);
-  }, [keyword, po]);
+  }, [keyword, purchase_orders]);
 
   const handleSearch = (e) => {
     setKeyword(e.target.value);
   };
-  const plannedLength = po.filter((item) => item.invoice_status === 1).length;
-  const waitingLength = po.filter((item) => item.invoice_status === 2).length;
-  const completedLength = po.filter((item) => item.invoice_status === 3).length;
+  const plannedLength = purchase_orders.filter(
+    (item) => item.invoice_status === 1
+  ).length;
+  const waitingLength = purchase_orders.filter(
+    (item) => item.invoice_status === 2
+  ).length;
+  const completedLength = purchase_orders.filter(
+    (item) => item.invoice_status === 3
+  ).length;
   return (
     <section>
       <div className="mx-auto max-w-screen-xl px-4 2xl:px-0">
@@ -134,7 +141,7 @@ export default function PurchaseOrder() {
                 />
               </div>
               <div className="flex flex-row gap-3 sm:gap-4">
-                {po.length > 0 && (
+                {purchase_orders.length > 0 && (
                   <Link
                     to="/purchase/po/add"
                     className="text-gray-900 bg-white gap-2 w-full md:w-fit hover:bg-gray-100 border border-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2 text-center inline-flex items-center justify-center dark:focus:ring-gray-600 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:bg-gray-700"
@@ -204,7 +211,7 @@ export default function PurchaseOrder() {
                 </div>
               </div>
             </div>
-            {po.length > 0 ? (
+            {purchase_orders.length > 0 ? (
               <div className="bg-white dark:bg-gray-800 relative border border-gray-200 dark:border-gray-700 shadow-sm sm:rounded-lg overflow-hidden">
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400 table-fixed">
@@ -229,32 +236,45 @@ export default function PurchaseOrder() {
                     </thead>
                     <tbody>
                       {filteredData?.length > 0 ? (
-                        filteredData.map((rfq, index) => (
+                        filteredData.map((purchase_order, index) => (
                           <tr
                             className="border-b dark:border-gray-700 text-sm cursor-pointer bg-white dark:bg-gray-800 hover:bg-gray-100 hover:dark:bg-gray-600"
                             key={index}
-                            onClick={() => navigate(`/purchase/po/${rfq.id}`)}
+                            onClick={() =>
+                              navigate(`/purchase/po/${purchase_order.id}`)
+                            }
                           >
                             <td
                               scope="row"
                               className="ps-6 pe-3 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white truncate ..."
                             >
-                              {rfq.reference}
+                              {purchase_order.reference}
                             </td>
                             <td className="px-3 py-4">
-                              {formatDisplayDatetime(rfq.confirmation_date)}
+                              {formatDisplayDatetime(
+                                purchase_order.confirmation_date
+                              )}
                             </td>
-                            <td className="px-3 py-4">{rfq.vendor_name}</td>
-                            <td className="px-3 py-4 text-end">
-                              {formatPrice(rfq.total + rfq.taxes)}
+                            <td className="px-3 py-4">
+                              {purchase_order.vendor_name}
+                            </td>
+                            <td
+                              className={`px-3 py-4 text-end ${
+                                purchase_order.invoice_status === 2 &&
+                                "text-primary-500"
+                              }`}
+                            >
+                              {formatPrice(
+                                purchase_order.total + purchase_order.taxes
+                              )}
                             </td>
                             <td className="pe-6 ps-3 py-4">
-                              {rfq.invoice_status === 1 ? (
+                              {purchase_order.invoice_status === 1 ? (
                                 <span className="inline-flex items-center bg-gray-100 border border-gray-500 text-gray-800 text-xs font-medium px-2.5 py-0.5 rounded-full dark:bg-gray-700 dark:text-gray-300">
                                   <span className="w-2 h-2 me-1 bg-gray-500 rounded-full"></span>
                                   Nothing to Bill
                                 </span>
-                              ) : rfq.invoice_status === 2 ? (
+                              ) : purchase_order.invoice_status === 2 ? (
                                 <span className="inline-flex items-center bg-primary-100 border border-primary-500 text-primary-800 text-xs font-medium px-2.5 py-0.5 rounded-full dark:bg-primary-900 dark:text-primary-300">
                                   <span className="w-2 h-2 me-1 bg-primary-500 rounded-full"></span>
                                   Waiting Bills
@@ -285,7 +305,7 @@ export default function PurchaseOrder() {
             ) : (
               <EmptyView
                 section="request for quotation"
-                link="/purchase/rfq/add"
+                link="/purchase/po/add"
                 icon={<Receipt />}
               />
             )}

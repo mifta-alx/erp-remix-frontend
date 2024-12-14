@@ -61,7 +61,7 @@ const TableRFQValidate = ({
     <div className="bg-white border-gray-200 dark:border-gray-700 border dark:bg-gray-800 rounded-lg mt-6 pt-6 overflow-x-auto">
       <table
         className={`w-full text-sm text-left ${
-          currentState >= 3
+          currentState >= 4
             ? "text-gray-400 dark:text-gray-300"
             : "text-gray-500 dark:text-gray-400"
         } table-auto`}
@@ -88,7 +88,7 @@ const TableRFQValidate = ({
               <td className="px-3 py-4 text-end">
                 <p>{formatToDecimal(material.qty)}</p>
               </td>
-              {currentState >= 3 ? (
+              {currentState >= 4 ? (
                 <td className="ps-3 pe-6 py-4 text-end">
                   <p>{formatToDecimal(material.qty_received)}</p>
                 </td>

@@ -196,7 +196,11 @@ export default function RequestForQuotation() {
                               {formatDisplayDatetime(rfq.order_date)}
                             </td>
                             <td className="px-3 py-4">{rfq.vendor_name}</td>
-                            <td className="px-3 py-4 text-end">
+                            <td
+                              className={`px-3 py-4 text-end ${
+                                rfq.invoice_status === 2 && "text-primary-500"
+                              }`}
+                            >
                               {formatPrice(rfq.total + rfq.taxes)}
                             </td>
                             <td className="pe-6 ps-3 py-4">

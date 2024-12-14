@@ -2,30 +2,44 @@ import { CaretRight, Check, House, X } from "@phosphor-icons/react";
 import { useEffect, useState } from "react";
 import { Link, useLoaderData, useNavigate, useParams } from "@remix-run/react";
 import { DateInput, SearchInput, Spinner } from "@components/index.js";
-import { ErrorView, TableRFQ } from "@views/index.js";
+import { ErrorView, TableQuotation, TableRFQ } from "@views/index.js";
 import { formatPrice, unformatPriceBase } from "@utils/formatPrice.js";
 import { unformatToDecimal } from "@utils/formatDecimal.js";
 import { json } from "@remix-run/node";
+import { formatCustomerName } from "@utils/formatName.js";
 
-export const meta = () => {
+export const meta = ({ data }) => {
+  const { menu } = data;
+  const title = menu === "purchase" ? "Add Request for Quotation" : "Quotation";
   return [
-    { title: "F&F - Add Request for Quotation" },
-    { name: "description", content: "Add Request for Quotation" },
+    { title: `F&F - ${title}` },
+    { name: "description", content: `${title}` },
   ];
 };
 
 export const loader = async ({ params }) => {
   const { menu, submenu } = params;
-  if (menu !== "purchase" || (submenu !== "rfq" && submenu !== "po")) {
+  if (menu !== "purchase" && menu !== "sales") {
     throw json(
       { description: `The page you're looking for doesn't exist.` },
       { status: 404, statusText: "Page Not Found" }
     );
   }
+
+  if (
+    (menu === "purchase" && submenu !== "rfq" && submenu !== "po") ||
+    (menu === "sales" && submenu !== "quotation" && submenu !== "sales-order")
+  ) {
+    throw json(
+      { description: `The page you're looking for doesn't exist.` },
+      { status: 404, statusText: "Page Not Found" }
+    );
+  }
+
   let apiEndpoint = process.env.API_URL;
   try {
     const response = await fetch(
-      `${process.env.API_URL}/init?vendors&materials`
+      `${process.env.API_URL}/init?vendors&materials&customers&products&payment_terms`
     );
     if (!response.ok) {
       let errorMessage = "An error occurred.";
@@ -51,6 +65,10 @@ export const loader = async ({ params }) => {
       API_URL: apiEndpoint,
       vendors: data.vendors,
       materials: data.materials,
+      products: data.products,
+      customers: data.customers,
+      payment_terms: data.payment_terms,
+      menu,
     };
   } catch (error) {
     return {
@@ -63,14 +81,25 @@ export const loader = async ({ params }) => {
   }
 };
 
-export default function AddRequestForQuotation() {
+export default function AddPageQuotation() {
   const params = useParams();
   const { menu, submenu } = params;
   const navigate = useNavigate();
-  const { API_URL, vendors, materials, error, message, description, status } =
-    useLoaderData();
+  const {
+    API_URL,
+    vendors,
+    materials,
+    products,
+    payment_terms,
+    customers,
+    error,
+    message,
+    description,
+    status,
+  } = useLoaderData();
   const [loading, setLoading] = useState(false);
   const [materialsArr, setMaterialsArr] = useState([]);
+  const [productArr, setProductArr] = useState([]);
   const [actionData, setActionData] = useState();
   const [dataTotal, setDataTotal] = useState({
     untaxed: 0,
@@ -78,25 +107,53 @@ export default function AddRequestForQuotation() {
     total: 0,
   });
   const thisDay = new Date();
+  const [hasTax, setHasTax] = useState(false);
+  const expirationDate = new Date();
+  expirationDate.setDate(thisDay.getDate() + 30);
   const [formData, setFormData] = useState({
     vendor_id: "",
     vendor_reference: "",
     order_date: thisDay,
     state: 1,
     invoice_status: 1,
+    customer_id: "",
+    expiration: expirationDate,
+    payment_term_id: "",
   });
 
   useEffect(() => {
     const handler = setTimeout(() => {
-      const totalTax = materialsArr.reduce(
-        (acc, material) =>
-          acc + parseFloat((material.tax / 100) * material.subtotal || 0),
-        0
-      );
-      const totalSubtotal = materialsArr.reduce(
-        (acc, material) => acc + parseFloat(material.subtotal || 0),
-        0
-      );
+      let totalTax = 0;
+      let totalSubtotal = 0;
+
+      if (menu === "purchase") {
+        totalTax = materialsArr.reduce(
+          (acc, material) =>
+            acc + parseFloat((material.tax / 100) * material.subtotal || 0),
+          0
+        );
+        totalSubtotal = materialsArr.reduce(
+          (acc, material) => acc + parseFloat(material.subtotal || 0),
+          0
+        );
+        const materialsWithTax = materialsArr.some(
+          (material) => material.tax > 0
+        );
+        setHasTax(materialsWithTax);
+      } else {
+        totalTax = productArr.reduce(
+          (acc, product) =>
+            acc + parseFloat((product.tax / 100) * product.subtotal || 0),
+          0
+        );
+        totalSubtotal = productArr.reduce(
+          (acc, product) => acc + parseFloat(product.subtotal || 0),
+          0
+        );
+        const productWithTax = productArr.some((product) => product.tax > 0);
+        setHasTax(productWithTax);
+      }
+
       const totalPay = totalSubtotal + totalTax;
 
       setDataTotal((prevData) => ({
@@ -110,7 +167,7 @@ export default function AddRequestForQuotation() {
     return () => {
       clearTimeout(handler);
     };
-  }, [materialsArr]);
+  }, [materialsArr, productArr]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -120,7 +177,7 @@ export default function AddRequestForQuotation() {
     }));
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmitRfq = async (e) => {
     setLoading(true);
     e.preventDefault();
     const formattedData = {
@@ -133,7 +190,7 @@ export default function AddRequestForQuotation() {
       taxes: dataTotal.tax,
       items: materialsArr.map((material) => ({
         type: material.type,
-        material_id: material.material_id,
+        id: material.id,
         description: material.description,
         qty: unformatToDecimal(material.qty),
         unit_price: unformatPriceBase(material.unit_price),
@@ -163,21 +220,52 @@ export default function AddRequestForQuotation() {
     }
   };
 
+  const handleSubmitQuotation = async (e) => {
+    setLoading(true);
+    e.preventDefault();
+    const formattedData = {
+      customer_id: formData.customer_id,
+      expiration: formData.expiration,
+      payment_term_id: formData.payment_term_id,
+      state: formData.state,
+      invoice_status: formData.invoice_status,
+      total: dataTotal.untaxed,
+      taxes: dataTotal.tax,
+      items: productArr.map((product) => ({
+        type: product.type,
+        id: product.id,
+        description: product.description,
+        qty: unformatToDecimal(product.qty),
+        unit_price: unformatPriceBase(product.unit_price),
+        tax: product.tax,
+        subtotal: product.subtotal,
+      })),
+    };
+
+    try {
+      const response = await fetch(`${API_URL}/sales`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formattedData),
+      });
+      if (!response.ok) {
+        const result = await response.json();
+        setActionData({ errors: result.errors || {} });
+        return;
+      }
+      navigate(`/${menu}/${submenu}`);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleDiscard = () => {
     navigate(`/${menu}/${submenu}`);
   };
-  // const handleDashboardClick = () => {
-  //   console.log("Dashboard clicked!");
-  // };
-  //
-  // const handleSettingsClick = () => {
-  //   console.log("Settings clicked!");
-  // };
-  //
-  // const items = [
-  //   { label: "Send by Email", onClick: handleDashboardClick },
-  //   { label: "Print", onClick: handleSettingsClick },
-  // ];
 
   return (
     <section>
@@ -208,9 +296,15 @@ export default function AddRequestForQuotation() {
                         to={`/${menu}/${submenu}`}
                         className="ms-1 text-sm font-medium text-gray-700 hover:text-primary-600 dark:text-gray-400 dark:hover:text-white md:ms-2"
                       >
-                        {submenu === "rfq"
-                          ? "Request for Quotations"
-                          : "Purchase Orders"}
+                        {menu === "purchase"
+                          ? submenu === "rfq"
+                            ? "Request for Quotations"
+                            : "Purchase Orders"
+                          : menu === "sales"
+                          ? submenu === "quotation"
+                            ? "Quotations"
+                            : "Sales Orders"
+                          : null}
                       </Link>
                     </div>
                   </li>
@@ -226,12 +320,24 @@ export default function AddRequestForQuotation() {
               </nav>
               <div className="flex flex-col sm:flex-row gap-4 justify-between items-start w-full">
                 <h2 className="text-xl font-semibold text-gray-900 dark:text-white sm:text-2xl">
-                  Request for Quotation
+                  {menu === "purchase"
+                    ? submenu === "rfq"
+                      ? "Request for Quotations"
+                      : "Purchase Orders"
+                    : menu === "sales"
+                    ? submenu === "quotation"
+                      ? "Quotations"
+                      : "Sales Orders"
+                    : null}
                 </h2>
                 <div className="inline-flex w-full sm:w-fit" role="group">
                   <button
                     type="button"
-                    onClick={handleSubmit}
+                    onClick={
+                      menu === "purchase"
+                        ? handleSubmitRfq
+                        : handleSubmitQuotation
+                    }
                     className="inline-flex items-center w-full sm:w-fit px-4 py-2 gap-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-s-lg hover:bg-gray-100 hover:text-primary-700 focus:z-10 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:text-primary-500 dark:hover:bg-gray-700"
                   >
                     {loading ? <Spinner /> : <Check size={16} />}
@@ -255,75 +361,131 @@ export default function AddRequestForQuotation() {
                 </h2>
                 <span className="inline-flex items-center bg-gray-100 border border-gray-500 text-gray-800 text-xs font-medium px-2.5 py-0.5 rounded-full dark:bg-gray-700 dark:text-gray-300">
                   <span className="w-2 h-2 me-1 bg-gray-500 rounded-full"></span>
-                  RFQ
+                  {menu === "purchase" ? "RFQ" : "Quotation"}
                 </span>
               </div>
-              <div className="grid gap-4 sm:grid-cols-3 sm:gap-6 w-full">
-                <SearchInput
-                  name="vendor_id"
-                  data={vendors}
-                  label="Vendor"
-                  placeholder="Select Vendor"
-                  valueKey="id"
-                  displayKey="name"
-                  onChange={handleChange}
-                  error={actionData?.errors?.vendor_id}
-                  value={formData.vendor_id}
-                />
-                <div>
-                  <label
-                    htmlFor="vendor_reference"
-                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                  >
-                    Vendor Reference
-                  </label>
-                  <input
-                    type="text"
-                    name="vendor_reference"
-                    id="vendor_reference"
-                    className={`bg-gray-50 border
+              {menu === "purchase" ? (
+                <>
+                  <div className="grid gap-4 sm:grid-cols-3 sm:gap-6 w-full">
+                    <SearchInput
+                      name="vendor_id"
+                      data={vendors}
+                      label="Vendor"
+                      placeholder="Select Vendor"
+                      valueKey="id"
+                      displayKey="name"
+                      onChange={handleChange}
+                      error={actionData?.errors?.vendor_id}
+                      value={formData.vendor_id}
+                    />
+                    <div>
+                      <label
+                        htmlFor="vendor_reference"
+                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                      >
+                        Vendor Reference
+                      </label>
+                      <input
+                        type="text"
+                        name="vendor_reference"
+                        id="vendor_reference"
+                        className={`bg-gray-50 border
                       border-gray-300 dark:border-gray-600 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
-                    placeholder="Type Vendor Reference"
-                    value={formData.vendor_reference}
-                    onChange={handleChange}
-                    autoComplete="off"
-                  />
-                </div>
-
-                <div>
-                  <label
-                    htmlFor="order_date"
-                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                  >
-                    Order Date
-                  </label>
-                  <DateInput
-                    name="order_date"
-                    onChange={handleChange}
-                    value={formData.order_date}
-                  />
-                </div>
-              </div>
-              <TableRFQ
-                endpoint={API_URL}
-                currentState={formData.state}
-                materials={materials}
-                actionData={actionData}
-                materialsArr={materialsArr}
-                setMaterialsArr={setMaterialsArr}
-              />
-              <div className="flex justify-end">
-                <div className="flex flex-col gap-2 w-fit mt-8">
-                  <div className="grid grid-cols-2 gap-2 text-end">
-                    <div className="text-gray-800 dark:text-gray-100 font-semibold text-sm space-y-2">
-                      <p>Untaxed Amount:</p>
-                      <p>Taxes:</p>
+                        placeholder="Type Vendor Reference"
+                        value={formData.vendor_reference}
+                        onChange={handleChange}
+                        autoComplete="off"
+                      />
                     </div>
-                    <div className="text-gray-500 dark:text-gray-400 font-normal text-sm space-y-2">
-                      <p>{formatPrice(dataTotal.untaxed)}</p>
-                      <p>{formatPrice(dataTotal.tax)}</p>
+                    <div>
+                      <label
+                        htmlFor="order_date"
+                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                      >
+                        Order Date
+                      </label>
+                      <DateInput
+                        name="order_date"
+                        onChange={handleChange}
+                        value={formData.order_date}
+                      />
                     </div>
                   </div>
+                  <TableRFQ
+                    endpoint={API_URL}
+                    currentState={formData.state}
+                    materials={materials}
+                    actionData={actionData}
+                    materialsArr={materialsArr}
+                    setMaterialsArr={setMaterialsArr}
+                  />
+                </>
+              ) : (
+                <>
+                  <div className="grid gap-4 sm:grid-cols-3 sm:gap-6 w-full">
+                    <SearchInput
+                      name="customer_id"
+                      data={customers}
+                      label="Customer"
+                      placeholder="Select Customer"
+                      valueKey="id"
+                      displayKey="name"
+                      getDisplayString={formatCustomerName}
+                      onChange={handleChange}
+                      error={actionData?.errors?.customer_id}
+                      value={formData.customer_id}
+                    />
+                    <div>
+                      <label
+                        htmlFor="expiration"
+                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                      >
+                        Expiration
+                      </label>
+                      <DateInput
+                        name="expiration"
+                        onChange={handleChange}
+                        value={formData.expiration}
+                      />
+                    </div>
+                    <div>
+                      <SearchInput
+                        name="payment_term_id"
+                        data={payment_terms}
+                        label="Payment Terms"
+                        placeholder="Payment Terms"
+                        valueKey="id"
+                        displayKey="name"
+                        onChange={handleChange}
+                        error={actionData?.errors?.payment_term_id}
+                        value={formData.payment_term_id}
+                      />
+                    </div>
+                  </div>
+                  <TableQuotation
+                    endpoint={API_URL}
+                    currentState={formData.state}
+                    products={products}
+                    actionData={actionData}
+                    productArr={productArr}
+                    setProductArr={setProductArr}
+                  />
+                </>
+              )}
+              <div className="flex justify-end">
+                <div className="flex flex-col gap-2 w-fit mt-8">
+                  {hasTax && (
+                    <div className="grid grid-cols-2 gap-2 text-end">
+                      <div className="text-gray-800 dark:text-gray-100 font-semibold text-sm space-y-2">
+                        <p>Untaxed Amount:</p>
+                        <p>Taxes:</p>
+                      </div>
+                      <div className="text-gray-500 dark:text-gray-400 font-normal text-sm space-y-2">
+                        <p>{formatPrice(dataTotal.untaxed)}</p>
+                        <p>{formatPrice(dataTotal.tax)}</p>
+                      </div>
+                    </div>
+                  )}
                   <div className="grid grid-cols-2 border-t items-center border-gray-300 gap-2 text-end py-2">
                     <div className="text-gray-500 dark:text-gray-400 font-normal text-sm space-y-2">
                       <p>Total:</p>

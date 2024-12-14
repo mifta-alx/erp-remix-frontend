@@ -24,13 +24,11 @@ const TableRFQ = ({
     if (materialsArr.length > 0) {
       const lastRow = materialsArr[materialsArr.length - 1];
       if (lastRow.type === "material") {
-        if (!lastRow?.material_id) {
+        if (!lastRow?.id) {
           rowInputRefs.current[materialsArr.length - 1]?.focus();
           setErrors((prevErrors) => ({
             ...prevErrors,
-            [`bom_components.${materialsArr.length - 1}.material_id`]: [
-              "Material is required",
-            ],
+            [`items.${materialsArr.length - 1}.id`]: ["Material is required"],
           }));
           return;
         }
@@ -39,7 +37,7 @@ const TableRFQ = ({
           rowInputRefs.current[materialsArr.length - 1]?.focus();
           setErrors((prevErrors) => ({
             ...prevErrors,
-            [`bom_components.${materialsArr.length - 1}.description`]: [
+            [`items.${materialsArr.length - 1}.description`]: [
               "Description is required",
             ],
           }));
@@ -50,7 +48,7 @@ const TableRFQ = ({
 
     setErrors((prevErrors) => {
       const newErrors = { ...prevErrors };
-      delete newErrors[`bom_components.${materialsArr.length - 1}.material_id`]; // Hapus error dari baris sebelumnya
+      delete newErrors[`items.${materialsArr.length - 1}.id`]; // Hapus error dari baris sebelumnya
       return newErrors;
     });
 
@@ -59,7 +57,7 @@ const TableRFQ = ({
         ...prevMaterialsArr,
         {
           type: "material",
-          material_id: "",
+          id: "",
           description: "",
           qty: formatToDecimal(0),
           unit_price: formatPriceBase(0),
@@ -84,13 +82,11 @@ const TableRFQ = ({
     if (materialsArr.length > 0) {
       const lastRow = materialsArr[materialsArr.length - 1];
       if (lastRow.type === "material") {
-        if (!lastRow?.material_id) {
+        if (!lastRow?.id) {
           rowInputRefs.current[materialsArr.length - 1]?.focus();
           setErrors((prevErrors) => ({
             ...prevErrors,
-            [`bom_components.${materialsArr.length - 1}.material_id`]: [
-              "Material is required",
-            ],
+            [`items.${materialsArr.length - 1}.id`]: ["Material is required"],
           }));
           return;
         }
@@ -99,7 +95,7 @@ const TableRFQ = ({
           rowInputRefs.current[materialsArr.length - 1]?.focus();
           setErrors((prevErrors) => ({
             ...prevErrors,
-            [`bom_components.${materialsArr.length - 1}.description`]: [
+            [`items.${materialsArr.length - 1}.description`]: [
               "Description is required",
             ],
           }));
@@ -110,7 +106,7 @@ const TableRFQ = ({
 
     setErrors((prevErrors) => {
       const newErrors = { ...prevErrors };
-      delete newErrors[`bom_components.${materialsArr.length - 1}.material_id`]; // Hapus error dari baris sebelumnya
+      delete newErrors[`items.${materialsArr.length - 1}.id`]; // Hapus error dari baris sebelumnya
       return newErrors;
     });
 
@@ -119,7 +115,7 @@ const TableRFQ = ({
         ...prevMaterialsArr,
         {
           type: "line_section",
-          material_id: "",
+          id: "",
           description: "",
           qty: formatToDecimal(0),
           unit_price: formatPriceBase(0),
@@ -186,7 +182,7 @@ const TableRFQ = ({
         [name]: value,
       };
 
-      if (name === "material_id" && value) {
+      if (name === "id" && value) {
         debouncedFetchMaterialData(value, index);
       }
 
@@ -354,10 +350,10 @@ const TableRFQ = ({
                         displayKey="material_name"
                         getDisplayString={formatProductName}
                         onChange={(value) =>
-                          handleMaterialChange(index, "material_id", value)
+                          handleMaterialChange(index, "id", value)
                         }
-                        error={errors?.[`bom_components.${index}.material_id`]}
-                        value={material.material_id}
+                        error={errors?.[`items.${index}.id`]}
+                        value={material.id}
                       />
                     </td>
                     <td className="px-3">
@@ -366,7 +362,7 @@ const TableRFQ = ({
                         name="description"
                         id="description"
                         className={`${
-                          errors?.[`bom_components.${index}.description`]
+                          errors?.[`items.${index}.description`]
                             ? "border-red-500 dark:border-red-500"
                             : "border-transparent"
                         } text-gray-900 text-sm border-b focus:outline-none focus:ring-0 focus:border-primary-600 block w-full py-2.5 px-1 dark:bg-transparent dark:placeholder-gray-400 dark:text-white dark:focus:border-primary-500`}
@@ -388,7 +384,7 @@ const TableRFQ = ({
                         name="qty"
                         id="qty"
                         className={`${
-                          errors?.[`bom_components.${index}.qty`]
+                          errors?.[`items.${index}.qty`]
                             ? "border-red-500 dark:border-red-500"
                             : "border-transparent"
                         } text-gray-900 text-sm border-b text-end focus:outline-none focus:ring-0 focus:border-primary-600 block w-full py-2.5 px-1 dark:bg-transparent dark:placeholder-gray-400 dark:text-white dark:focus:border-primary-500`}
@@ -409,7 +405,7 @@ const TableRFQ = ({
                         name="unit_price"
                         id="unit_price"
                         className={`${
-                          errors?.[`bom_components.${index}.unit_price`]
+                          errors?.[`items.${index}.unit_price`]
                             ? "border-red-500 dark:border-red-500"
                             : "border-transparent"
                         } text-gray-900 text-sm border-b text-end focus:outline-none focus:ring-0 focus:border-primary-600 block w-full py-2.5 px-1 dark:bg-transparent dark:placeholder-gray-400 dark:text-white dark:focus:border-primary-500`}
@@ -434,7 +430,7 @@ const TableRFQ = ({
                         name="tax"
                         id="tax"
                         className={`${
-                          errors?.[`bom_components.${index}.tax`]
+                          errors?.[`items.${index}.tax`]
                             ? "border-red-500 dark:border-red-500"
                             : "border-transparent"
                         } text-gray-900 text-sm border-b text-end focus:outline-none focus:ring-0 focus:border-primary-600 block w-full py-2.5 px-1 dark:bg-transparent dark:placeholder-gray-400 dark:text-white dark:focus:border-primary-500`}
@@ -472,7 +468,7 @@ const TableRFQ = ({
                         name="description"
                         id="description"
                         className={`${
-                          errors?.[`bom_components.${index}.description`] &&
+                          errors?.[`items.${index}.description`] &&
                           material.description === ""
                             ? "border-red-500 dark:border-red-500"
                             : "border-transparent"
