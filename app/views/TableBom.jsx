@@ -98,10 +98,7 @@ const TableBom = ({
         </thead>
         <tbody className="divide-y divide-gray-200 dark:divide-gray-600">
           {materialsArr?.map((material, index) => (
-            <tr
-              className="bg-white dark:bg-gray-800 border-b p-0 m-0"
-              key={index}
-            >
+            <tr className="bg-white dark:bg-gray-800 p-0 m-0" key={index}>
               <td scope="row" className="px-6">
                 <TableSearchInput
                   ref={(el) => (rowInputRefs.current[index] = el)}
