@@ -11,13 +11,16 @@ const MultiSelect = ({
   selectedTags,
   setSelectedTags,
   placeholder = "Food, Clothes, etc",
+  type,
+  name,
 }) => {
+  const [tagData, setTagData] = useState(data || []);
   const dropdownRef = useRef(null);
   const [isOpen, setIsOpen] = useState(false);
   useClickOutside(dropdownRef, () => setIsOpen(false));
   const [tagKeywords, setTagKeywords] = useState("");
   const debounceKeywords = useDebounce(tagKeywords, 300);
-  const tagResults = data
+  const tagResults = tagData
     ?.filter((tag) =>
       tag.name.toLowerCase().includes(debounceKeywords.toLowerCase())
     )
@@ -39,7 +42,7 @@ const MultiSelect = ({
   };
   const handleAddtag = async () => {
     try {
-      const response = await fetch(`${apiUrl}/tags?type=product`, {
+      const response = await fetch(`${apiUrl}/tags?type=${type}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -50,6 +53,7 @@ const MultiSelect = ({
       if (response.ok) {
         const result = await response.json();
         const newTag = result.data;
+        setTagData((prevData) => [...prevData, newTag]);
         setSelectedTags((prevTags) => [...prevTags, newTag]);
         setTagKeywords("");
         setIsOpen(false);
@@ -95,8 +99,8 @@ const MultiSelect = ({
           ))}
           <input
             type="text"
-            name="product_tag"
-            id="product_tag"
+            name={name}
+            id={name}
             placeholder={selectedTags.length > 0 ? "" : placeholder}
             autoComplete="off"
             className="flex-grow flex-shrink min-w-[30px] max-w-full outline-0 bg-transparent"
