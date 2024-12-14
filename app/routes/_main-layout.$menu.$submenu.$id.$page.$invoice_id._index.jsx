@@ -10,7 +10,7 @@ import {
   House,
   Printer,
   XCircle,
-} from "@phosphor-icons/react";
+} from "@phosphor-icons/react/dist/ssr";
 import { useEffect, useState } from "react";
 import { DateInput, Drawer, SearchInput, Spinner } from "@components/index.js";
 import {

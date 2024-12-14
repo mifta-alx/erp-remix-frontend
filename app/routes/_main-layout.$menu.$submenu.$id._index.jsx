@@ -7,7 +7,7 @@ import {
   Invoice,
   Truck,
   X,
-} from "@phosphor-icons/react";
+} from "@phosphor-icons/react/dist/ssr";
 import { useEffect, useState } from "react";
 import { Link, useLoaderData, useNavigate, useParams } from "@remix-run/react";
 import { DateInput, SearchInput, Spinner } from "@components/index.js";

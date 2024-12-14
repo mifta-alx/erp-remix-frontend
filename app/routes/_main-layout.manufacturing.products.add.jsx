@@ -1,4 +1,4 @@
-import { CaretRight, Check, House, X } from "@phosphor-icons/react";
+import { CaretRight, Check, House, X } from "@phosphor-icons/react/dist/ssr";
 import { useState } from "react";
 import { Link, useLoaderData, useNavigate } from "@remix-run/react";
 import { ErrorView } from "@views/index.js";

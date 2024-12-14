@@ -1,5 +1,11 @@
 import { Link, useLoaderData } from "@remix-run/react";
-import { CaretRight, Factory, House, Plus, MagnifyingGlass, } from "@phosphor-icons/react";
+import {
+  CaretRight,
+  Factory,
+  House,
+  Plus,
+  MagnifyingGlass,
+} from "@phosphor-icons/react/dist/ssr";
 import { EmptyView, ErrorView, CustomersView } from "@views/index.js";
 import { ViewSwitch } from "@components/index.js";
 import { useEffect, useState } from "react";
@@ -72,7 +78,6 @@ export default function Customers() {
   const handleSearch = (e) => {
     setKeyword(e.target.value);
   };
-
 
   return (
     <section>

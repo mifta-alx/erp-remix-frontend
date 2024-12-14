@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { twMerge } from "tailwind-merge";
-import { X } from "@phosphor-icons/react";
+import { X } from "@phosphor-icons/react/dist/ssr";
 
 const Drawer = ({
   activateClickOutside = true,

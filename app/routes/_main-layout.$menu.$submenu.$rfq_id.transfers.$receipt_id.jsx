@@ -1,4 +1,4 @@
-import { CaretRight, Check, House, X } from "@phosphor-icons/react";
+import { CaretRight, Check, House, X } from "@phosphor-icons/react/dist/ssr";
 import { useEffect, useState } from "react";
 import { Link, useLoaderData, useParams } from "@remix-run/react";
 import { DateInput, SearchInput, Spinner } from "@components/index.js";

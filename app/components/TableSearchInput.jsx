@@ -1,6 +1,6 @@
 import { forwardRef, useEffect, useRef, useState } from "react";
 import useClickOutside from "@hooks/useClickOutside.js";
-import { CaretDown } from "@phosphor-icons/react";
+import { CaretDown } from "@phosphor-icons/react/dist/ssr";
 import { twMerge } from "tailwind-merge";
 
 const TableSearchInput = forwardRef(

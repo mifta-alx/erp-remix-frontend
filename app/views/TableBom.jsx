@@ -1,4 +1,4 @@
-import { XCircle } from "@phosphor-icons/react";
+import { XCircle } from "@phosphor-icons/react/dist/ssr";
 import { TableSearchInput } from "@components/index.js";
 import { useRef, useState } from "react";
 import { formatToDecimal } from "@utils/formatDecimal.js";

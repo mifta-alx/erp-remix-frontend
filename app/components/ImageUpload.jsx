@@ -1,4 +1,4 @@
-import { Camera, TrashSimple } from "@phosphor-icons/react";
+import { Camera, TrashSimple } from "@phosphor-icons/react/dist/ssr";
 import { useEffect, useRef, useState } from "react";
 
 const ImageUpload = ({

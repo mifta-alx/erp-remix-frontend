@@ -1,4 +1,4 @@
-import { Plus } from "@phosphor-icons/react";
+import { Plus } from "@phosphor-icons/react/dist/ssr";
 import { Link } from "@remix-run/react";
 
 const EmptyView = ({ section = "Empty", icon, link = "" }) => {

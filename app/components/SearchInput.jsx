@@ -1,4 +1,4 @@
-import { CaretDown } from "@phosphor-icons/react";
+import { CaretDown } from "@phosphor-icons/react/dist/ssr";
 import { useEffect, useRef, useState } from "react";
 import useClickOutside from "@hooks/useClickOutside.js";
 

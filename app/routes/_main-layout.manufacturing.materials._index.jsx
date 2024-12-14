@@ -1,4 +1,10 @@
-import { CaretRight, CirclesFour, House, Plus, MagnifyingGlass } from "@phosphor-icons/react";
+import {
+  CaretRight,
+  CirclesFour,
+  House,
+  Plus,
+  MagnifyingGlass,
+} from "@phosphor-icons/react/dist/ssr";
 import { Link, useLoaderData } from "@remix-run/react";
 import { EmptyView, ErrorView, MaterialView } from "@views/index.js";
 import { ViewSwitch } from "@components/index.js";
@@ -71,7 +77,6 @@ export default function Materials() {
   const handleSearch = (e) => {
     setKeyword(e.target.value);
   };
-
 
   return (
     <section>

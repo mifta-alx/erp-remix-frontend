@@ -1,4 +1,10 @@
-import { CaretRight, FilePdf, House, Minus, Plus } from "@phosphor-icons/react";
+import {
+  CaretRight,
+  FilePdf,
+  House,
+  Minus,
+  Plus,
+} from "@phosphor-icons/react/dist/ssr";
 import { Link, useLoaderData, useLocation, useParams } from "@remix-run/react";
 import { ErrorView } from "@views/index.js";
 import { formatToDecimal } from "@utils/formatDecimal.js";

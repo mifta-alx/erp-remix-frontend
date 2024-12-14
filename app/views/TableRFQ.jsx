@@ -1,6 +1,6 @@
 import React, { useRef, useState } from "react";
 import { TableSearchInput } from "@components/index.js";
-import { XCircle } from "@phosphor-icons/react";
+import { XCircle } from "@phosphor-icons/react/dist/ssr";
 import {
   formatPrice,
   formatPriceBase,

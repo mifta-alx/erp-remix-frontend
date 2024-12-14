@@ -1,4 +1,4 @@
-import { Check, X } from "@phosphor-icons/react";
+import { Check, X } from "@phosphor-icons/react/dist/ssr";
 
 const StepperMO = ({ currentStep = 1, status = "process" }) => {
   const steps = {
@@ -77,7 +77,7 @@ const StepperMO = ({ currentStep = 1, status = "process" }) => {
 
 export default StepperMO;
 
-// import { Check } from "@phosphor-icons/react";
+// import { Check } from "@phosphor-icons/react/dist/ssr";
 //
 // const StepperMO = ({ state }) => {
 //   const stepperProcess = [

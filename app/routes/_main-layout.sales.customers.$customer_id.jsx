@@ -4,18 +4,24 @@ import {
   Check,
   House,
   TrashSimple,
-} from "@phosphor-icons/react";
+} from "@phosphor-icons/react/dist/ssr";
 import { useEffect, useState } from "react";
 import { Link, useLoaderData, useNavigate, useParams } from "@remix-run/react";
 import { ErrorView } from "@views/index.js";
 
 import {
-  Spinner, SearchInput, MultiSelect, ImageUpload
+  Spinner,
+  SearchInput,
+  MultiSelect,
+  ImageUpload,
 } from "@components/index.js";
 
 export const meta = ({ data }) => {
-  const formattedName = `${data.customer?.internal_reference ? `[${data.customer.internal_reference}]` : ""
-    } ${data.customer?.name || ""}`;
+  const formattedName = `${
+    data.customer?.internal_reference
+      ? `[${data.customer.internal_reference}]`
+      : ""
+  } ${data.customer?.name || ""}`;
   return [
     { title: `F&F - ${formattedName}` },
     { name: "description", content: `${formattedName}` },
@@ -83,15 +89,24 @@ export const loader = async ({ params, request }) => {
 };
 
 export default function EditCustomer() {
-  const { API_URL, customer, customers, tags, error, message, description, status } =
-    useLoaderData();
+  const {
+    API_URL,
+    customer,
+    customers,
+    tags,
+    error,
+    message,
+    description,
+    status,
+  } = useLoaderData();
   const params = useParams();
   const navigate = useNavigate();
   const [actionData, setActionData] = useState();
   const [loadingUpdate, setLoadingUpdate] = useState(false);
   const [loadingDelete, setLoadingDelete] = useState(false);
-  const formattedName = `${customer?.internal_reference ? `[${customer.internal_reference}]` : ""
-    } ${customer?.name || ""}`;
+  const formattedName = `${
+    customer?.internal_reference ? `[${customer.internal_reference}]` : ""
+  } ${customer?.name || ""}`;
   //image
   const [image, setImage] = useState(customer.image_uuid || "");
   const [preview, setPreview] = useState(customer.image_url || "");
@@ -134,27 +149,30 @@ export default function EditCustomer() {
     e.preventDefault();
     setLoadingUpdate(true);
     try {
-      const response = await fetch(`${API_URL}/customers/${params.customer_id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name: formData.name,
-          company: formData.company,
-          type: formData.type,
-          street: formData.street,
-          city: formData.city,
-          state: formData.state,
-          zip: formData.zip,
-          phone: formData.phone,
-          mobile: formData.mobile,
-          email: formData.email,
-          image_uuid: image,
-          image_url: preview,
-          tag_id: selectedTags.map((tag) => tag.id),
-        }),
-      });
+      const response = await fetch(
+        `${API_URL}/customers/${params.customer_id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            name: formData.name,
+            company: formData.company,
+            type: formData.type,
+            street: formData.street,
+            city: formData.city,
+            state: formData.state,
+            zip: formData.zip,
+            phone: formData.phone,
+            mobile: formData.mobile,
+            email: formData.email,
+            image_uuid: image,
+            image_url: preview,
+            tag_id: selectedTags.map((tag) => tag.id),
+          }),
+        }
+      );
       if (!response.ok) {
         const result = await response.json();
         setActionData({ errors: result.errors || {} });
@@ -190,9 +208,12 @@ export default function EditCustomer() {
   const handleDeleteCustomer = async () => {
     setLoadingDelete(true);
     try {
-      const response = await fetch(`${API_URL}/customers/${params.customer_id}`, {
-        method: "DELETE",
-      });
+      const response = await fetch(
+        `${API_URL}/customers/${params.customer_id}`,
+        {
+          method: "DELETE",
+        }
+      );
 
       if (response.ok) {
         localStorage.removeItem("image_url");
@@ -271,7 +292,6 @@ export default function EditCustomer() {
                     className="inline-flex items-center w-full sm:w-fit px-4 py-2 gap-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-e-lg hover:bg-gray-100 hover:text-red-600 focus:z-10 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:text-red-500 dark:hover:bg-gray-700"
                   >
                     {loadingDelete ? <Spinner /> : <TrashSimple size={16} />}
-
                     Delete
                   </button>
                 </div>
@@ -296,10 +316,11 @@ export default function EditCustomer() {
                         name="name"
                         id="name"
                         autoComplete="off"
-                        className={`bg-gray-50 border ${actionData?.errors?.name
-                          ? "border-red-500 dark:border-red-500"
-                          : "border-gray-300 dark:border-gray-600"
-                          } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
+                        className={`bg-gray-50 border ${
+                          actionData?.errors?.name
+                            ? "border-red-500 dark:border-red-500"
+                            : "border-gray-300 dark:border-gray-600"
+                        } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
                         placeholder="Type vendor name"
                         value={formData.name}
                         onChange={handleChange}
@@ -352,23 +373,21 @@ export default function EditCustomer() {
                         </div>
                       </div>
                     </div>
-                    {
-                      selected === 1 && (
-                        <div className="sm:col-span-2">
-                          <SearchInput
-                            name="company"
-                            data={customers}
-                            label="Company Name"
-                            placeholder="Select Company Name"
-                            valueKey="id"
-                            displayKey="name"
-                            onChange={handleChange}
-                            error={actionData?.errors?.company}
-                            value={formData.company}
-                          />
-                        </div>
-                      )
-                    }
+                    {selected === 1 && (
+                      <div className="sm:col-span-2">
+                        <SearchInput
+                          name="company"
+                          data={customers}
+                          label="Company Name"
+                          placeholder="Select Company Name"
+                          valueKey="id"
+                          displayKey="name"
+                          onChange={handleChange}
+                          error={actionData?.errors?.company}
+                          value={formData.company}
+                        />
+                      </div>
+                    )}
                     <div className="sm:col-span-2">
                       <MultiSelect
                         data={tags}
@@ -397,10 +416,11 @@ export default function EditCustomer() {
                         name="street"
                         id="street"
                         autoComplete="off"
-                        className={`bg-gray-50 border ${actionData?.errors?.street
-                          ? "border-red-500 dark:border-red-500"
-                          : "border-gray-300 dark:border-gray-600"
-                          } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
+                        className={`bg-gray-50 border ${
+                          actionData?.errors?.street
+                            ? "border-red-500 dark:border-red-500"
+                            : "border-gray-300 dark:border-gray-600"
+                        } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
                         placeholder="123 Main St"
                         value={formData.street}
                         onChange={handleChange}
@@ -423,10 +443,11 @@ export default function EditCustomer() {
                         name="city"
                         id="city"
                         autoComplete="off"
-                        className={`bg-gray-50 border ${actionData?.errors?.city
-                          ? "border-red-500 dark:border-red-500"
-                          : "border-gray-300 dark:border-gray-600"
-                          } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
+                        className={`bg-gray-50 border ${
+                          actionData?.errors?.city
+                            ? "border-red-500 dark:border-red-500"
+                            : "border-gray-300 dark:border-gray-600"
+                        } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
                         placeholder="Los Angeles"
                         value={formData.city}
                         onChange={handleChange}
@@ -449,10 +470,11 @@ export default function EditCustomer() {
                         name="state"
                         id="state"
                         autoComplete="off"
-                        className={`bg-gray-50 border ${actionData?.errors?.state
-                          ? "border-red-500 dark:border-red-500"
-                          : "border-gray-300 dark:border-gray-600"
-                          } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
+                        className={`bg-gray-50 border ${
+                          actionData?.errors?.state
+                            ? "border-red-500 dark:border-red-500"
+                            : "border-gray-300 dark:border-gray-600"
+                        } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
                         placeholder="California"
                         value={formData.state}
                         onChange={handleChange}
@@ -475,10 +497,11 @@ export default function EditCustomer() {
                         name="zip"
                         id="zip"
                         autoComplete="off"
-                        className={`bg-gray-50 border ${actionData?.errors?.zip
-                          ? "border-red-500 dark:border-red-500"
-                          : "border-gray-300 dark:border-gray-600"
-                          } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
+                        className={`bg-gray-50 border ${
+                          actionData?.errors?.zip
+                            ? "border-red-500 dark:border-red-500"
+                            : "border-gray-300 dark:border-gray-600"
+                        } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
                         placeholder="90210"
                         value={formData.zip}
                         onChange={handleChange}
@@ -524,10 +547,11 @@ export default function EditCustomer() {
                         name="phone"
                         id="phone"
                         autoComplete="off"
-                        className={`bg-gray-50 border ${actionData?.errors?.phone
-                          ? "border-red-500 dark:border-red-500"
-                          : "border-gray-300 dark:border-gray-600"
-                          } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
+                        className={`bg-gray-50 border ${
+                          actionData?.errors?.phone
+                            ? "border-red-500 dark:border-red-500"
+                            : "border-gray-300 dark:border-gray-600"
+                        } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
                         placeholder="0341000100"
                         value={formData.phone}
                         onChange={handleChange}
@@ -550,10 +574,11 @@ export default function EditCustomer() {
                         name="mobile"
                         id="mobile"
                         autoComplete="off"
-                        className={`bg-gray-50 border ${actionData?.errors?.mobile
-                          ? "border-red-500 dark:border-red-500"
-                          : "border-gray-300 dark:border-gray-600"
-                          } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
+                        className={`bg-gray-50 border ${
+                          actionData?.errors?.mobile
+                            ? "border-red-500 dark:border-red-500"
+                            : "border-gray-300 dark:border-gray-600"
+                        } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
                         placeholder="0852118018256"
                         value={formData.mobile}
                         onChange={handleChange}
@@ -576,10 +601,11 @@ export default function EditCustomer() {
                         name="email"
                         id="email"
                         autoComplete="off"
-                        className={`bg-gray-50 border ${actionData?.errors?.email
-                          ? "border-red-500 dark:border-red-500"
-                          : "border-gray-300 dark:border-gray-600"
-                          } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
+                        className={`bg-gray-50 border ${
+                          actionData?.errors?.email
+                            ? "border-red-500 dark:border-red-500"
+                            : "border-gray-300 dark:border-gray-600"
+                        } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
                         placeholder="example@gmail.com"
                         value={formData.email}
                         onChange={handleChange}

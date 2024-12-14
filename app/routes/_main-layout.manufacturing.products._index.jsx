@@ -4,7 +4,7 @@ import {
   MagnifyingGlass,
   Package,
   Plus,
-} from "@phosphor-icons/react";
+} from "@phosphor-icons/react/dist/ssr";
 import { Link, useLoaderData } from "@remix-run/react";
 import { EmptyView, ErrorView, ProductView } from "@views/index.js";
 import { ViewSwitch } from "@components/index.js";

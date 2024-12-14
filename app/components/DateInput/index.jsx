@@ -5,7 +5,7 @@ import { formatDate } from "@utils/formatDate.js";
 import useClickOutside from "@/hooks/useClickOutside";
 import DateInputPopup from "./DateInputPopup";
 import DateItem from "./DateItem";
-import { CalendarBlank } from "@phosphor-icons/react";
+import { CalendarBlank } from "@phosphor-icons/react/dist/ssr";
 
 function getDateSlots(currentMonth, currentYear) {
   const dateArray = getDaysInMonth(currentMonth, currentYear);

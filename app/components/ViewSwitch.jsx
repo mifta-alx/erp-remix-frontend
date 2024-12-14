@@ -1,4 +1,4 @@
-import { Rows, SquaresFour } from "@phosphor-icons/react";
+import { Rows, SquaresFour } from "@phosphor-icons/react/dist/ssr";
 import { useViewContext } from "@context/ViewScheme.jsx";
 
 const ViewSwitch = () => {

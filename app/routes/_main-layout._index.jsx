@@ -1,5 +1,10 @@
 import { Link, useLoaderData } from "@remix-run/react";
-import { CirclesFour, Package, Receipt, Stack } from "@phosphor-icons/react";
+import {
+  CirclesFour,
+  Package,
+  Receipt,
+  Stack,
+} from "@phosphor-icons/react/dist/ssr";
 import { ErrorView } from "@views/index.js";
 
 export const meta = () => {

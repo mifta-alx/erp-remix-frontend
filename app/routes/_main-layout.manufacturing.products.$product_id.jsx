@@ -1,4 +1,9 @@
-import { CaretRight, Check, House, TrashSimple } from "@phosphor-icons/react";
+import {
+  CaretRight,
+  Check,
+  House,
+  TrashSimple,
+} from "@phosphor-icons/react/dist/ssr";
 import { useState } from "react";
 import {
   Link,

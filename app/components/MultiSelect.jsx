@@ -1,4 +1,4 @@
-import { XCircle } from "@phosphor-icons/react";
+import { XCircle } from "@phosphor-icons/react/dist/ssr";
 import { useRef, useState } from "react";
 import useClickOutside from "@hooks/useClickOutside.js";
 import useDebounce from "@hooks/useDebounce.js";

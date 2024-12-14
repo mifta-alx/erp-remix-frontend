@@ -1,4 +1,4 @@
-import { CaretDown, List, Moon, Sun } from "@phosphor-icons/react";
+import { CaretDown, List, Moon, Sun } from "@phosphor-icons/react/dist/ssr";
 import { NavLink, Outlet, useLocation } from "@remix-run/react";
 import { useEffect, useRef, useState } from "react";
 import { useColorScheme } from "../context/ColorScheme";

@@ -3,7 +3,7 @@ import {
   House,
   MagnifyingGlass,
   Receipt,
-} from "@phosphor-icons/react";
+} from "@phosphor-icons/react/dist/ssr";
 import { Link, useLoaderData, useNavigate, useParams } from "@remix-run/react";
 import { EmptyView, ErrorView } from "@views/index.js";
 import { useEffect, useState } from "react";
