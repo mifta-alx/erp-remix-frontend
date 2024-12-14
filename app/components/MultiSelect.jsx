@@ -10,6 +10,7 @@ const MultiSelect = ({
   data,
   selectedTags,
   setSelectedTags,
+  placeholder = "Food, Clothes, etc",
 }) => {
   const dropdownRef = useRef(null);
   const [isOpen, setIsOpen] = useState(false);
@@ -96,7 +97,7 @@ const MultiSelect = ({
             type="text"
             name="product_tag"
             id="product_tag"
-            placeholder={selectedTags.length > 0 ? "" : "Food, Clothes, etc"}
+            placeholder={selectedTags.length > 0 ? "" : placeholder}
             autoComplete="off"
             className="flex-grow flex-shrink min-w-[30px] max-w-full outline-0 bg-transparent"
             value={tagKeywords}
