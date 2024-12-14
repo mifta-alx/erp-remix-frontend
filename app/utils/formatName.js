@@ -18,4 +18,10 @@ const formatBomName = (item) => {
   return item?.product.name;
 };
 
-export { formatProductName, formatBomName };
+const formatCustomerName = (item) => {
+  if (item?.company_name) {
+    return `${item?.company_name}, ${item?.name}`;
+  }
+  return item?.name;
+};
+export { formatProductName, formatBomName, formatCustomerName };

@@ -4,6 +4,7 @@ import {
   Check,
   CheckCircle,
   Clock,
+  ClockClockwise,
   CurrencyDollarSimple,
   FileArrowDown,
   House,
@@ -22,12 +23,15 @@ import { ErrorView, TableVendorBill } from "@views/index.js";
 import { formatBasicDate } from "@utils/formatDate.js";
 import paid from "/paid.svg";
 import { json } from "@remix-run/node";
+import { formatCustomerName } from "@utils/formatName.js";
 
 export const meta = ({ data }) => {
   const reference =
-    data.bill.state > 1
-      ? data.bill.reference
-      : `Draft bill (* ${data.bill.id})`;
+    data.invoice.state > 1
+      ? data.invoice.reference
+      : data.page === "bills"
+      ? `Draft bill (* ${data.invoice.id})`
+      : `Draft invoice (* ${data.invoice.id})`;
 
   return [
     { title: `F&F - ${reference}` },
@@ -35,21 +39,36 @@ export const meta = ({ data }) => {
   ];
 };
 
-export const loader = async ({ request, params }) => {
-  const url = new URL(request.url);
-  const billId = url.searchParams.get("id");
-  const { menu, submenu, rfq_id } = params;
-  if (menu !== "purchase" || (submenu !== "rfq" && submenu !== "po")) {
+export const loader = async ({ params }) => {
+  const { menu, submenu, id, page, invoice_id } = params;
+  if (menu !== "purchase" && menu !== "sales") {
     throw json(
       { description: `The page you're looking for doesn't exist.` },
       { status: 404, statusText: "Page Not Found" }
     );
   }
+
+  if (
+    (menu === "purchase" &&
+      submenu !== "rfq" &&
+      submenu !== "po" &&
+      page !== "bills") ||
+    (menu === "sales" &&
+      submenu !== "quotation" &&
+      submenu !== "sales-order" &&
+      page !== "invoices")
+  ) {
+    throw json(
+      { description: `The page you're looking for doesn't exist.` },
+      { status: 404, statusText: "Page Not Found" }
+    );
+  }
+
   let apiEndpoint = process.env.API_URL;
   try {
     const [initResponse, invoiceResponse] = await Promise.all([
-      fetch(`${process.env.API_URL}/init?vendors&payment_terms`),
-      fetch(`${process.env.API_URL}/invoices/${billId}`),
+      fetch(`${process.env.API_URL}/init?vendors&payment_terms&customers`),
+      fetch(`${process.env.API_URL}/invoices/${invoice_id}`),
     ]);
     if (!initResponse.ok || !invoiceResponse.ok) {
       let errorMessage = "An error occurred.";
@@ -76,17 +95,18 @@ export const loader = async ({ request, params }) => {
       };
     }
 
-    const [init, bills] = await Promise.all([
+    const [init, invoices] = await Promise.all([
       initResponse.json(),
       invoiceResponse.json(),
     ]);
 
     return {
-      billId,
       API_URL: apiEndpoint,
       vendors: init.data.vendors,
+      customers: init.data.customers,
       payment_terms: init.data.payment_terms,
-      bill: bills.data,
+      invoice: invoices.data,
+      page,
     };
   } catch (error) {
     return {
@@ -99,15 +119,15 @@ export const loader = async ({ request, params }) => {
   }
 };
 
-export default function BillRequestForQuotation() {
+export default function BillsAndInvoices() {
   const params = useParams();
-  const { menu, submenu, rfq_id } = params;
+  const { menu, submenu, id, page, invoice_id } = params;
   const {
-    billId,
     API_URL,
     vendors,
+    customers,
     payment_terms,
-    bill,
+    invoice,
     error,
     message,
     description,
@@ -120,35 +140,39 @@ export default function BillRequestForQuotation() {
   const [loadingReset, setLoadingReset] = useState(false);
   const [loadingCreate, setLoadingCreate] = useState(false);
   //data state
-  const [materialsArr, setMaterialsArr] = useState([]);
+  const type = page === "bills" ? "material" : page === "invoices" && "product";
+  const [dataArr, setDataArr] = useState([]);
   const [actionData, setActionData] = useState();
   const thisDay = new Date().toISOString();
   const [dataTotal, setDataTotal] = useState({
-    untaxed: bill.total,
-    taxes: bill.taxes,
-    total: bill.total + bill.taxes,
+    untaxed: invoice.total,
+    taxes: invoice.taxes,
+    total: invoice.total + invoice.taxes,
   });
 
   const [formData, setFormData] = useState({
-    vendor_id: bill.vendor_id,
-    due_date: bill.due_date || thisDay,
-    accounting_date: bill.accounting_date,
-    rfq_id: bill.rfq_id,
-    invoice_date: bill.invoice_date,
-    state: bill.state,
-    payment_term_id: bill.payment_term_id,
-    payment_status: bill.payment_status,
-    payment_date: bill.payment_date,
-    payment_amount: bill.payment_amount,
-    amount_due: bill.amount_due,
+    vendor_id: invoice.vendor_id,
+    customer_id: invoice.customer_id,
+    due_date: invoice.due_date || thisDay,
+    accounting_date: invoice.accounting_date,
+    delivery_date: invoice.delivery_date,
+    rfq_id: invoice.rfq_id,
+    sales_id: invoice.sales_id,
+    invoice_date: invoice.invoice_date,
+    state: invoice.state,
+    payment_term_id: invoice.payment_term_id,
+    payment_status: invoice.payment_status,
+    payment_date: invoice.payment_date,
+    payment_amount: invoice.payment_amount,
+    amount_due: invoice.amount_due,
   });
 
   const [paymentData, setPaymentData] = useState({
     journal: 1,
     amount: formatPriceBase(dataTotal.total),
     payment_date: thisDay,
-    memo: `${bill.transaction_type}/${bill.reference}`,
-    payment_type: "outbound",
+    memo: `${invoice.transaction_type}/${invoice.reference}`,
+    payment_type: page === "bills" ? "outbound" : "inbound",
   });
 
   const journals = [
@@ -159,45 +183,50 @@ export default function BillRequestForQuotation() {
   useEffect(() => {
     setFormData((prevData) => ({
       ...prevData,
-      vendor_id: bill.vendor_id,
-      due_date: bill.due_date || thisDay,
-      accounting_date: bill.accounting_date,
-      rfq_id: bill.rfq_id,
-      invoice_date: bill.invoice_date,
-      state: bill.state,
-      payment_term_id: bill.payment_term_id,
-      payment_status: bill.payment_status,
-      payment_date: bill.payment_date,
-      payment_amount: bill.payment_amount,
-      amount_due: bill.amount_due,
+      vendor_id: invoice.vendor_id,
+      customer_id: invoice.customer_id,
+      due_date: invoice.due_date || thisDay,
+      accounting_date: invoice.accounting_date,
+      delivery_date: invoice.delivery_date,
+      rfq_id: invoice.rfq_id,
+      sales_id: invoice.sales_id,
+      invoice_date: invoice.invoice_date,
+      state: invoice.state,
+      payment_term_id: invoice.payment_term_id,
+      payment_status: invoice.payment_status,
+      payment_date: invoice.payment_date,
+      payment_amount: invoice.payment_amount,
+      amount_due: invoice.amount_due,
     }));
-    setMaterialsArr(
-      bill.items.map((material) => ({
-        component_id: material.component_id, //send
-        name: material.name,
-        internal_reference: material.internal_reference,
-        type: material.type,
-        material_id: material.id,
-        description: material.description,
-        qty: formatToDecimal(material.qty),
-        unit_price: formatPriceBase(material.unit_price),
-        tax: material.tax,
-        subtotal: material.subtotal,
-        qty_received: material.qty_received,
-        qty_to_invoice: formatToDecimal(material.qty_to_invoice),
-        qty_invoiced: formatToDecimal(material.qty_invoiced), //send
+    setDataArr(
+      invoice.items.map((item) => ({
+        component_id: item.component_id, //send
+        name: item.name,
+        internal_reference: item.internal_reference,
+        type: item.type,
+        id: item.id,
+        description: item.description,
+        qty: formatToDecimal(item.qty),
+        unit_price: formatPriceBase(item.unit_price),
+        tax: item.tax,
+        subtotal: item.subtotal,
+        qty_received: item.qty_received,
+        qty_to_invoice: formatToDecimal(item.qty_to_invoice),
+        qty_invoiced: formatToDecimal(item.qty_invoiced), //send
       }))
     );
-  }, [bill]);
+  }, [invoice]);
 
   //state button save
   const [initialFormData, setInitialFormData] = useState({});
-  const [initialMaterial, setInitialMaterial] = useState([]);
+  const [initialDataArr, setInitialDataArr] = useState([]);
   const [submitted, setSubmitted] = useState(true);
   //state additional
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [selectedVendor, setSelectedVendor] = useState({});
+  const [selectedeCustomer, setSelectedCustomer] = useState({});
   const [usePaymentTerm, setUsePaymentTerm] = useState(false);
+
   useEffect(() => {
     setUsePaymentTerm(!!formData.payment_term_id);
   }, [formData.payment_term_id]);
@@ -207,17 +236,19 @@ export default function BillRequestForQuotation() {
   }, []);
 
   useEffect(() => {
-    if (materialsArr.length > 0) {
-      setInitialMaterial(materialsArr);
+    if (dataArr.length > 0) {
+      setInitialDataArr(dataArr);
     }
-  }, [materialsArr]);
+  }, [dataArr]);
   //cek apakah ada perubahan pada formData
   useEffect(() => {
     const isChanged =
       formData.vendor_id !== initialFormData.vendor_id ||
+      formData.customer_id !== initialFormData.customer_id ||
       formData.due_date !== initialFormData.due_date ||
       formData.invoice_date !== initialFormData.invoice_date ||
       formData.accounting_date !== initialFormData.accounting_date ||
+      formData.delivery_date !== initialFormData.delivery_date ||
       formData.payment_term_id !== initialFormData.payment_term_id;
 
     if (isChanged) {
@@ -228,27 +259,27 @@ export default function BillRequestForQuotation() {
   }, [formData, initialFormData]);
   //cek apakah ada perubahan pada Material Array
   useEffect(() => {
-    const isMaterialChanged = materialsArr.some((material, index) => {
-      const initialMaterials = initialMaterial[index];
+    const isDataChanged = dataArr.some((item, index) => {
+      const initialDataArray = initialDataArr[index];
       return (
-        initialMaterials &&
-        material.qty_to_invoice !== initialMaterials.qty_to_invoice
+        initialDataArray &&
+        item.qty_to_invoice !== initialDataArray.qty_to_invoice
       );
     });
 
-    if (isMaterialChanged) {
+    if (isDataChanged) {
       setSubmitted(false);
     }
-  }, [materialsArr, initialMaterial]);
+  }, [dataArr, initialDataArr]);
   //sum total
   useEffect(() => {
     const handler = setTimeout(() => {
-      const totalTax = materialsArr.reduce(
+      const totalTax = dataArr.reduce(
         (acc, material) =>
           acc + parseFloat((material.tax / 100) * material.subtotal || 0),
         0
       );
-      const totalSubtotal = materialsArr.reduce(
+      const totalSubtotal = dataArr.reduce(
         (acc, material) => acc + parseFloat(material.subtotal || 0),
         0
       );
@@ -265,7 +296,7 @@ export default function BillRequestForQuotation() {
     return () => {
       clearTimeout(handler);
     };
-  }, [materialsArr]);
+  }, [dataArr]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -284,35 +315,56 @@ export default function BillRequestForQuotation() {
   };
 
   useEffect(() => {
-    const selected = vendors.find((vendor) => vendor.id === formData.vendor_id);
-    setSelectedVendor(selected);
-  }, [formData.vendor_id]);
+    if (page === "bills") {
+      const selected = vendors.find(
+        (vendor) => vendor.id === formData.vendor_id
+      );
+      setSelectedVendor(selected);
+    } else {
+      const selected = customers.find(
+        (customer) => customer.id === formData.customer_id
+      );
+      setSelectedCustomer(selected);
+    }
+  }, [formData.vendor_id, formData.customer_id]);
 
   const handleConfirm = async (e) => {
     e.preventDefault();
     setLoadingConfirm(true);
+
+    const billData = {
+      vendor_id: formData.vendor_id,
+      transaction_type: "BILL",
+      rfq_id: formData.rfq_id,
+      accounting_date: formData.accounting_date,
+    };
+
+    const invoiceData = {
+      customer_id: formData.customer_id,
+      transaction_type: "INV",
+      sales_id: formData.sales_id,
+      delivery_date: formData.delivery_date,
+    };
+
     const formattedData = {
       action_type: "confirm",
-      vendor_id: formData.vendor_id,
+      ...(page === "bills" ? billData : invoiceData),
       due_date: formData.payment_term_id ? null : formData.due_date,
       payment_term_id: formData.payment_term_id,
-      accounting_date: formData.accounting_date,
-      rfq_id: formData.rfq_id,
       invoice_date: formData.invoice_date,
       state: 2,
-      transaction_type: "BILL",
       invoice_status: 3,
       total: dataTotal.total,
       taxes: dataTotal.taxes,
-      items: materialsArr
-        .filter((material) => material.type === "material")
-        .map((material) => ({
-          component_id: material.component_id,
-          qty_invoiced: unformatToDecimal(material.qty_to_invoice),
+      items: dataArr
+        .filter((item) => item.type === type)
+        .map((item) => ({
+          component_id: item.component_id,
+          qty_invoiced: unformatToDecimal(item.qty_to_invoice),
         })),
     };
     try {
-      const response = await fetch(`${API_URL}/invoices/${billId}`, {
+      const response = await fetch(`${API_URL}/invoices/${invoice_id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -335,23 +387,23 @@ export default function BillRequestForQuotation() {
           payment_amount: data.payment_amount,
           amount_due: data.amount_due,
         }));
-        const formattedMaterial = data.items.map((material) => ({
-          component_id: material.component_id,
-          name: material.name,
-          internal_reference: material.internal_reference,
-          type: material.type,
-          material_id: material.id,
-          description: material.description,
-          qty: material.qty,
-          unit_price: formatPriceBase(material.unit_price),
-          tax: material.tax,
-          subtotal: material.subtotal,
-          qty_received: material.qty_received,
-          qty_to_invoice: material.qty_to_invoice,
-          qty_invoiced: formatToDecimal(material.qty_invoiced),
-        }));
 
-        setMaterialsArr(formattedMaterial);
+        const formattedItem = data.items.map((item) => ({
+          component_id: item.component_id,
+          name: item.name,
+          internal_reference: item.internal_reference,
+          type: item.type,
+          id: item.id,
+          description: item.description,
+          qty: item.qty,
+          unit_price: formatPriceBase(item.unit_price),
+          tax: item.tax,
+          subtotal: item.subtotal,
+          qty_received: item.qty_received,
+          qty_to_invoice: formatToDecimal(item.qty_to_invoice),
+          qty_invoiced: formatToDecimal(item.qty_invoiced),
+        }));
+        setDataArr(formattedItem);
       } else {
         setActionData({ errors: result.errors || {} });
       }
@@ -365,29 +417,40 @@ export default function BillRequestForQuotation() {
   const handleSave = async (e) => {
     e.preventDefault();
     setLoadingSave(true);
+
+    const billData = {
+      vendor_id: formData.vendor_id,
+      transaction_type: "BILL",
+      rfq_id: formData.rfq_id,
+      accounting_date: formData.accounting_date,
+    };
+
+    const invoiceData = {
+      customer_id: formData.customer_id,
+      transaction_type: "INV",
+      sales_id: formData.sales_id,
+      delivery_date: formData.delivery_date,
+    };
+
     const formattedData = {
       action_type: "save",
-      vendor_id: formData.vendor_id,
+      ...(page === "bills" ? billData : invoiceData),
       due_date: formData.payment_term_id ? null : formData.due_date,
       payment_term_id: formData.payment_term_id,
-      accounting_date: formData.accounting_date,
-      rfq_id: formData.rfq_id,
       invoice_date: formData.invoice_date,
       state: 1,
-      transaction_type: "BILL",
       invoice_status: 2,
       total: dataTotal.total,
       taxes: dataTotal.taxes,
-      items: materialsArr
-        .filter((material) => material.type === "material")
-        .map((material) => ({
-          component_id: material.component_id,
-          qty_invoiced: unformatToDecimal(material.qty_to_invoice),
+      items: dataArr
+        .filter((item) => item.type === type)
+        .map((item) => ({
+          component_id: item.component_id,
+          qty_invoiced: unformatToDecimal(item.qty_to_invoice),
         })),
     };
-
     try {
-      const response = await fetch(`${API_URL}/invoices/${billId}`, {
+      const response = await fetch(`${API_URL}/invoices/${invoice_id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -395,48 +458,52 @@ export default function BillRequestForQuotation() {
         body: JSON.stringify(formattedData),
       });
       const result = await response.json();
-
       if (response.ok) {
         const { data } = result;
         setFormData((prevState) => ({
           ...prevState,
           state: data.state,
           vendor_id: data.vendor_id,
+          customer_id: data.customer_id,
           due_date: data.due_date,
           accounting_date: data.accounting_date,
+          delivery_date: data.delivery_date,
           invoice_date: data.invoice_date,
           payment_term_id: data.payment_term_id,
         }));
 
-        const formattedMaterial = data.items.map((material) => ({
-          component_id: material.component_id,
-          name: material.name,
-          internal_reference: material.internal_reference,
-          type: material.type,
-          material_id: material.id,
-          description: material.description,
-          qty: material.qty,
-          unit_price: formatPriceBase(material.unit_price),
-          tax: material.tax,
-          subtotal: material.subtotal,
-          qty_received: material.qty_received,
-          qty_to_invoice: formatToDecimal(material.qty_to_invoice),
-          qty_invoiced: formatToDecimal(material.qty_invoiced),
+        const formattedItem = data.items.map((item) => ({
+          component_id: item.component_id,
+          name: item.name,
+          internal_reference: item.internal_reference,
+          type: item.type,
+          id: item.id,
+          description: item.description,
+          qty: item.qty,
+          unit_price: formatPriceBase(item.unit_price),
+          tax: item.tax,
+          subtotal: item.subtotal,
+          qty_received: item.qty_received,
+          qty_to_invoice: formatToDecimal(item.qty_to_invoice),
+          qty_invoiced: formatToDecimal(item.qty_invoiced),
         }));
         setSubmitted(true);
         setInitialFormData({
           vendor_id: data.vendor_id,
+          customer_id: data.customer_id,
           due_date: data.due_date,
           accounting_date: data.accounting_date,
+          delivery_date: data.delivery_date,
           rfq_id: data.rfq_id,
+          sales_id: data.sales_id,
           invoice_date: data.invoice_date,
           state: data.state,
           payment_term_id: data.payment_term_id,
           payment_status: data.payment_status,
           payment_date: data.payment_date,
         });
-        setInitialMaterial(formattedMaterial);
-        setMaterialsArr(formattedMaterial);
+        setInitialDataArr(formattedItem);
+        setDataArr(formattedItem);
       } else {
         setActionData({ errors: result.errors || {} });
       }
@@ -451,29 +518,41 @@ export default function BillRequestForQuotation() {
   const handleCancel = async (e) => {
     e.preventDefault();
     setLoadingCancel(true);
+
+    const billData = {
+      vendor_id: formData.vendor_id,
+      transaction_type: "BILL",
+      rfq_id: formData.rfq_id,
+      accounting_date: formData.accounting_date,
+    };
+
+    const invoiceData = {
+      customer_id: formData.customer_id,
+      transaction_type: "INV",
+      sales_id: formData.sales_id,
+      delivery_date: formData.delivery_date,
+    };
+
     const formattedData = {
       action_type: "cancel",
-      vendor_id: formData.vendor_id,
+      ...(page === "bills" ? billData : invoiceData),
       due_date: formData.payment_term_id ? null : formData.due_date,
       payment_term_id: formData.payment_term_id,
-      accounting_date: formData.accounting_date,
-      rfq_id: formData.rfq_id,
       invoice_date: formData.invoice_date,
       state: 3,
-      transaction_type: "BILL",
       invoice_status: 2,
       total: dataTotal.total,
       taxes: dataTotal.taxes,
-      items: materialsArr
-        .filter((material) => material.type === "material")
-        .map((material) => ({
-          component_id: material.component_id,
-          qty_invoiced: unformatToDecimal(material.qty_to_invoice),
+      items: dataArr
+        .filter((item) => item.type === type)
+        .map((item) => ({
+          component_id: item.component_id,
+          qty_invoiced: unformatToDecimal(item.qty_to_invoice),
         })),
     };
 
     try {
-      const response = await fetch(`${API_URL}/invoices/${billId}`, {
+      const response = await fetch(`${API_URL}/invoices/${invoice_id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -488,28 +567,45 @@ export default function BillRequestForQuotation() {
           ...prevState,
           state: data.state,
           vendor_id: data.vendor_id,
+          customer_id: data.customer_id,
           due_date: data.due_date,
           accounting_date: data.accounting_date,
+          delivery_date: data.delivery_date,
           invoice_date: data.invoice_date,
           payment_term_id: data.payment_term_id,
         }));
 
-        const formattedMaterial = data.items.map((material) => ({
-          component_id: material.component_id,
-          name: material.name,
-          internal_reference: material.internal_reference,
-          type: material.type,
-          material_id: material.id,
-          description: material.description,
-          qty: material.qty,
-          unit_price: formatPriceBase(material.unit_price),
-          tax: material.tax,
-          subtotal: material.subtotal,
-          qty_received: material.qty_received,
-          qty_to_invoice: formatToDecimal(material.qty_to_invoice),
-          qty_invoiced: formatToDecimal(material.qty_invoiced),
+        const formattedItem = data.items.map((item) => ({
+          component_id: item.component_id,
+          name: item.name,
+          internal_reference: item.internal_reference,
+          type: item.type,
+          id: item.id,
+          description: item.description,
+          qty: item.qty,
+          unit_price: formatPriceBase(item.unit_price),
+          tax: item.tax,
+          subtotal: item.subtotal,
+          qty_received: item.qty_received,
+          qty_to_invoice: formatToDecimal(item.qty_to_invoice),
+          qty_invoiced: formatToDecimal(item.qty_invoiced),
         }));
-        setMaterialsArr(formattedMaterial);
+        setInitialFormData({
+          vendor_id: data.vendor_id,
+          customer_id: data.customer_id,
+          due_date: data.due_date,
+          accounting_date: data.accounting_date,
+          delivery_date: data.delivery_date,
+          rfq_id: data.rfq_id,
+          sales_id: data.sales_id,
+          invoice_date: data.invoice_date,
+          state: data.state,
+          payment_term_id: data.payment_term_id,
+          payment_status: data.payment_status,
+          payment_date: data.payment_date,
+        });
+        setInitialDataArr(formattedItem);
+        setDataArr(formattedItem);
       } else {
         setActionData({ errors: result.errors || {} });
       }
@@ -523,28 +619,40 @@ export default function BillRequestForQuotation() {
   const handleResetToDraft = async (e) => {
     e.preventDefault();
     setLoadingReset(true);
+
+    const billData = {
+      vendor_id: formData.vendor_id,
+      transaction_type: "BILL",
+      rfq_id: formData.rfq_id,
+      accounting_date: formData.accounting_date,
+    };
+
+    const invoiceData = {
+      customer_id: formData.customer_id,
+      transaction_type: "INV",
+      sales_id: formData.sales_id,
+      delivery_date: formData.delivery_date,
+    };
+
     const formattedData = {
       action_type: "reset",
-      vendor_id: formData.vendor_id,
+      ...(page === "bills" ? billData : invoiceData),
       due_date: formData.payment_term_id ? null : formData.due_date,
       payment_term_id: formData.payment_term_id,
-      accounting_date: formData.accounting_date,
-      rfq_id: formData.rfq_id,
       invoice_date: formData.invoice_date,
       state: 1,
-      transaction_type: "BILL",
       invoice_status: 2,
       total: dataTotal.total,
       taxes: dataTotal.taxes,
-      items: materialsArr
-        .filter((material) => material.type === "material")
-        .map((material) => ({
-          component_id: material.component_id,
-          qty_invoiced: unformatToDecimal(material.qty_invoiced),
+      items: dataArr
+        .filter((item) => item.type === type)
+        .map((item) => ({
+          component_id: item.component_id,
+          qty_invoiced: unformatToDecimal(item.qty_to_invoice),
         })),
     };
     try {
-      const response = await fetch(`${API_URL}/invoices/${billId}`, {
+      const response = await fetch(`${API_URL}/invoices/${invoice_id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -559,6 +667,7 @@ export default function BillRequestForQuotation() {
           ...prevState,
           state: data.state,
           vendor_id: data.vendor_id,
+          customer_id: data.customer_id,
           due_date: data.due_date,
           accounting_date: data.accounting_date,
           invoice_date: data.invoice_date,
@@ -566,23 +675,37 @@ export default function BillRequestForQuotation() {
           payment_status: data.payment_status,
         }));
 
-        const formattedMaterial = data.items.map((material) => ({
-          component_id: material.component_id,
-          name: material.name,
-          internal_reference: material.internal_reference,
-          type: material.type,
-          material_id: material.id,
-          description: material.description,
-          qty: material.qty,
-          unit_price: formatPriceBase(material.unit_price),
-          tax: material.tax,
-          subtotal: material.subtotal,
-          qty_received: material.qty_received,
-          qty_to_invoice: formatToDecimal(material.qty_to_invoice),
-          qty_invoiced: formatToDecimal(material.qty_invoiced),
+        const formattedItem = data.items.map((item) => ({
+          component_id: item.component_id,
+          name: item.name,
+          internal_reference: item.internal_reference,
+          type: item.type,
+          id: item.id,
+          description: item.description,
+          qty: item.qty,
+          unit_price: formatPriceBase(item.unit_price),
+          tax: item.tax,
+          subtotal: item.subtotal,
+          qty_received: item.qty_received,
+          qty_to_invoice: formatToDecimal(item.qty_to_invoice),
+          qty_invoiced: formatToDecimal(item.qty_invoiced),
         }));
-
-        setMaterialsArr(formattedMaterial);
+        setInitialFormData({
+          vendor_id: data.vendor_id,
+          customer_id: data.customer_id,
+          due_date: data.due_date,
+          accounting_date: data.accounting_date,
+          delivery_date: data.delivery_date,
+          rfq_id: data.rfq_id,
+          sales_id: data.sales_id,
+          invoice_date: data.invoice_date,
+          state: data.state,
+          payment_term_id: data.payment_term_id,
+          payment_status: data.payment_status,
+          payment_date: data.payment_date,
+        });
+        setInitialDataArr(formattedItem);
+        setDataArr(formattedItem);
       } else {
         setActionData({ errors: result.errors || {} });
       }
@@ -600,9 +723,18 @@ export default function BillRequestForQuotation() {
   const handleCreatePayment = async (e) => {
     e.preventDefault();
     setLoadingCreate(true);
-    const formattedData = {
-      invoice_id: billId,
+
+    const billData = {
       vendor_id: formData.vendor_id,
+    };
+
+    const invoiceData = {
+      customer_id: formData.customer_id,
+    };
+
+    const formattedData = {
+      invoice_id,
+      ...(page === "bills" ? billData : invoiceData),
       journal: paymentData.journal,
       amount: unformatPriceBase(paymentData.amount),
       payment_date: paymentData.payment_date,
@@ -610,6 +742,7 @@ export default function BillRequestForQuotation() {
       payment_type: paymentData.payment_type,
       payment_status: 2,
     };
+
     try {
       const response = await fetch(`${API_URL}/register-payments`, {
         method: "POST",
@@ -630,7 +763,7 @@ export default function BillRequestForQuotation() {
           payment_amount: data.payment_amount,
           amount_due: data.amount_due,
         }));
-        console.log(data);
+
         setIsDrawerOpen(false);
       } else {
         setActionData({ errors: result.errors || {} });
@@ -684,9 +817,15 @@ export default function BillRequestForQuotation() {
                         to={`/${menu}/${submenu}`}
                         className="ms-1 text-sm font-medium text-gray-700 hover:text-primary-600 dark:text-gray-400 dark:hover:text-white md:ms-2"
                       >
-                        {submenu === "rfq"
-                          ? "Request for Quotations"
-                          : "Purchase Orders"}
+                        {menu === "purchase"
+                          ? submenu === "rfq"
+                            ? "Request for Quotations"
+                            : "Purchase Orders"
+                          : menu === "sales"
+                          ? submenu === "quotation"
+                            ? "Quotations"
+                            : "Sales Orders"
+                          : null}
                       </Link>
                     </div>
                   </li>
@@ -694,10 +833,10 @@ export default function BillRequestForQuotation() {
                     <div className="flex items-center text-gray-400">
                       <CaretRight size={18} weight="bold" />
                       <Link
-                        to={`/${menu}/${submenu}/${rfq_id}`}
+                        to={`/${menu}/${submenu}/${id}`}
                         className="ms-1 text-sm font-medium text-gray-700 hover:text-primary-600 dark:text-gray-400 dark:hover:text-white md:ms-2"
                       >
-                        {bill.source_document}
+                        {invoice.source_document}
                       </Link>
                     </div>
                   </li>
@@ -706,8 +845,10 @@ export default function BillRequestForQuotation() {
                       <CaretRight size={18} weight="bold" />
                       <span className="ms-1 text-sm font-medium text-gray-500 dark:text-gray-400 md:ms-2">
                         {formData.state > 1
-                          ? bill.reference
-                          : `Draft bill (* ${bill.id})`}
+                          ? invoice.reference
+                          : page === "bills"
+                          ? `Draft bill (* ${invoice.id})`
+                          : `Draft invoice (* ${invoice.id})`}
                       </span>
                     </div>
                   </li>
@@ -716,9 +857,15 @@ export default function BillRequestForQuotation() {
 
               <div className="flex flex-col sm:flex-row gap-4 justify-between items-start w-full">
                 <h2 className="text-xl font-semibold text-gray-900 dark:text-white sm:text-2xl">
-                  {submenu === "rfq"
-                    ? "Request for Quotations"
-                    : "Purchase Orders"}
+                  {menu === "purchase"
+                    ? submenu === "rfq"
+                      ? "Request for Quotations"
+                      : "Purchase Orders"
+                    : menu === "sales"
+                    ? submenu === "quotation"
+                      ? "Quotations"
+                      : "Sales Orders"
+                    : null}
                 </h2>
                 {formData.state === 1 ? (
                   <span className="inline-flex gap-1 justify-center items-center bg-gray-100 border border-gray-500 text-gray-800 text-xs font-medium px-3 py-0.5 rounded dark:bg-gray-800 dark:text-gray-300">
@@ -762,7 +909,9 @@ export default function BillRequestForQuotation() {
                             htmlFor="order_date"
                             className="block text-sm font-medium text-gray-900 dark:text-white"
                           >
-                            Bill:
+                            {page === "bills"
+                              ? "Bill:"
+                              : page === "invoices" && "Invoice:"}
                           </label>
                           <input
                             type="text"
@@ -775,7 +924,7 @@ export default function BillRequestForQuotation() {
                                 : "border-gray-300 dark:border-gray-600"
                             }
                       border-gray-300 dark:border-gray-600 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-1/2 p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
-                            value={bill.reference}
+                            value={invoice.reference}
                             autoComplete="off"
                           />
                         </div>
@@ -784,7 +933,9 @@ export default function BillRequestForQuotation() {
                             htmlFor="order_date"
                             className="block text-sm font-medium text-gray-900 dark:text-white"
                           >
-                            Bill Date:
+                            {page === "bills"
+                              ? "Bill Date:"
+                              : page === "invoices" && "Invoice Date:"}
                           </label>
                           <div className="w-1/2">
                             <DateInput
@@ -800,14 +951,28 @@ export default function BillRequestForQuotation() {
                             htmlFor="order_date"
                             className="block text-sm font-medium text-gray-900 dark:text-white"
                           >
-                            Accounting Date:
+                            {page === "bills"
+                              ? "Accounting Date:"
+                              : page === "invoices" && "Delivery Date:"}
                           </label>
                           <div className="w-1/2">
                             <DateInput
-                              error={actionData?.errors?.accounting_date}
+                              error={
+                                page === "bills"
+                                  ? actionData?.errors?.accounting_date
+                                  : actionData?.errors?.delivery_date
+                              }
                               onChange={handleChange}
-                              value={formData.accounting_date}
-                              name="accounting_date"
+                              value={
+                                page === "bills"
+                                  ? formData.accounting_date
+                                  : formData.delivery_date
+                              }
+                              name={
+                                page === "bills"
+                                  ? "accounting_date"
+                                  : "delivery_date"
+                              }
                             />
                           </div>
                         </div>
@@ -815,61 +980,120 @@ export default function BillRequestForQuotation() {
                     ) : (
                       <div className="w-fit">
                         <h6 className="text-lg font-medium text-gray-800 dark:text-gray-200 mb-6">
-                          {bill.transaction_type}/{bill.reference}
+                          {invoice.transaction_type}/{invoice.reference}
                         </h6>
                         <h6 className="text-sm font-normal text-gray-700 dark:text-gray-400">
-                          <span>Bill Date: </span>
+                          <span>
+                            {page === "bills"
+                              ? "Bill Date:"
+                              : page === "invoices" && "Invoice Date:"}
+                          </span>
                           <span>{formatBasicDate(formData.invoice_date)}</span>
                         </h6>
                         <h6 className="text-sm font-normal text-gray-700 dark:text-gray-400">
-                          <span>Accounting Date: </span>
                           <span>
-                            {formatBasicDate(formData.accounting_date)}
+                            {page === "bills"
+                              ? "Accounting Date:"
+                              : page === "invoices" && "Delivery Date:"}
+                          </span>
+                          <span>
+                            {formatBasicDate(
+                              page === "bills"
+                                ? formData.accounting_date
+                                : formData.delivery_date
+                            )}
                           </span>
                         </h6>
                       </div>
                     )}
                   </div>
                   <div className="grid grid-cols-2 gap-4">
-                    <div className="w-1/2 space-y-4">
-                      {formData.state < 2 ? (
-                        <SearchInput
-                          name="vendor_id"
-                          data={vendors}
-                          label="Vendor:"
-                          placeholder="Select Vendor"
-                          valueKey="id"
-                          displayKey="name"
-                          onChange={handleChange}
-                          error={actionData?.errors?.vendor_id}
-                          value={formData.vendor_id}
-                        />
-                      ) : (
-                        <h6 className="text-sm text-gray-800 dark:text-gray-200 font-medium">
-                          Vendor:
-                        </h6>
-                      )}
-                      {selectedVendor && (
-                        <div>
-                          <p className="text-sm font-light text-gray-500 dark:text-gray-400">
-                            {selectedVendor.name}
-                          </p>
-                          <p className="text-sm font-light text-gray-500 dark:text-gray-400">
-                            {selectedVendor.street}
-                          </p>
-                          <p className="text-sm font-light text-gray-500 dark:text-gray-400">
-                            {selectedVendor.zip && `${selectedVendor.zip},`}
-                            {selectedVendor.city}, {selectedVendor.state}
-                          </p>
-                          <p className="text-sm font-light text-gray-500 dark:text-gray-400">
-                            {selectedVendor.phone}
-                          </p>
-                          <p className="text-sm font-light text-gray-500 dark:text-gray-400">
-                            {selectedVendor.email}
-                          </p>
+                    {page === "bills" ? (
+                      <div className="w-1/2 space-y-4">
+                        {formData.state < 2 ? (
+                          <SearchInput
+                            name="vendor_id"
+                            data={vendors}
+                            label="Vendor:"
+                            placeholder="Select Vendor"
+                            valueKey="id"
+                            displayKey="name"
+                            onChange={handleChange}
+                            error={actionData?.errors?.vendor_id}
+                            value={formData.vendor_id}
+                          />
+                        ) : (
+                          <h6 className="text-sm text-gray-800 dark:text-gray-200 font-medium">
+                            Vendor:
+                          </h6>
+                        )}
+                        {selectedVendor && (
+                          <div>
+                            <p className="text-sm font-light text-gray-500 dark:text-gray-400">
+                              {selectedVendor.name}
+                            </p>
+                            <p className="text-sm font-light text-gray-500 dark:text-gray-400">
+                              {selectedVendor.street}
+                            </p>
+                            <p className="text-sm font-light text-gray-500 dark:text-gray-400">
+                              {selectedVendor.zip && `${selectedVendor.zip},`}
+                              {selectedVendor.city}, {selectedVendor.state}
+                            </p>
+                            <p className="text-sm font-light text-gray-500 dark:text-gray-400">
+                              {selectedVendor.phone}
+                            </p>
+                            <p className="text-sm font-light text-gray-500 dark:text-gray-400">
+                              {selectedVendor.email}
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      page === "invoices" && (
+                        <div className="w-1/2 space-y-4">
+                          {formData.state < 2 ? (
+                            <SearchInput
+                              name="customer_id"
+                              data={customers}
+                              label="Customer:"
+                              placeholder="Select Customer"
+                              valueKey="id"
+                              displayKey="name"
+                              getDisplayString={formatCustomerName}
+                              onChange={handleChange}
+                              error={actionData?.errors?.customer_id}
+                              value={formData.customer_id}
+                            />
+                          ) : (
+                            <h6 className="text-sm text-gray-800 dark:text-gray-200 font-medium">
+                              Customer:
+                            </h6>
+                          )}
+                          {selectedeCustomer && (
+                            <div>
+                              <p className="text-sm font-light text-gray-500 dark:text-gray-400">
+                                {selectedeCustomer.name}
+                              </p>
+                              <p className="text-sm font-light text-gray-500 dark:text-gray-400">
+                                {selectedeCustomer.street}
+                              </p>
+                              <p className="text-sm font-light text-gray-500 dark:text-gray-400">
+                                {selectedeCustomer.zip &&
+                                  `${selectedeCustomer.zip},`}
+                                {selectedeCustomer.city},{" "}
+                                {selectedeCustomer.state}
+                              </p>
+                              <p className="text-sm font-light text-gray-500 dark:text-gray-400">
+                                {selectedeCustomer.phone}
+                              </p>
+                              <p className="text-sm font-light text-gray-500 dark:text-gray-400">
+                                {selectedeCustomer.email}
+                              </p>
+                            </div>
+                          )}
                         </div>
-                      )}
-                    </div>
+                      )
+                    )}
                     <div className="w-1/2 space-y-4">
                       {formData.state < 2 ? (
                         <>
@@ -918,9 +1142,9 @@ export default function BillRequestForQuotation() {
                     endpoint={API_URL}
                     currentState={formData.state}
                     actionData={actionData}
-                    materialsArr={materialsArr}
-                    setMaterialsArr={setMaterialsArr}
-                    bill={bill}
+                    dataArr={dataArr}
+                    setDataArr={setDataArr}
+                    invoice={invoice}
                   />
                   <div className="flex justify-end relative">
                     {formData.payment_status === 2 && formData.state === 2 && (
@@ -989,7 +1213,9 @@ export default function BillRequestForQuotation() {
                         ) : (
                           <Check size={16} weight="bold" />
                         )}
-                        Confirm Bill
+                        {page === "bills"
+                          ? "Confirm Bill"
+                          : page === "invoices" && "Confirm"}
                       </button>
                       <button
                         onClick={handleCancel}
@@ -1032,31 +1258,41 @@ export default function BillRequestForQuotation() {
                         Print
                       </button>
                     </>
+                  ) : formData.state === 2 && formData.payment_status < 2 ? (
+                    <>
+                      <button
+                        type="button"
+                        onClick={handleRegisterPayment}
+                        className="inline-flex items-center justify-center gap-2 text-white w-full bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-md text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+                      >
+                        {loadingConfirm ? (
+                          <Spinner />
+                        ) : (
+                          <CurrencyDollarSimple size={16} weight="bold" />
+                        )}
+                        Register Payment
+                      </button>
+                      <button
+                        type="button"
+                        onClick={handleResetToDraft}
+                        className="text-gray-900 w-full bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium rounded-md text-sm px-5 py-2.5 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"
+                      >
+                        {loadingReset ? <Spinner /> : "Reset to Draft"}
+                      </button>
+                    </>
                   ) : (
-                    formData.state === 2 &&
-                    formData.payment_status < 2 && (
-                      <>
-                        <button
-                          type="button"
-                          onClick={handleRegisterPayment}
-                          className="inline-flex items-center justify-center gap-2 text-white w-full bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-md text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
-                        >
-                          {loadingConfirm ? (
-                            <Spinner />
-                          ) : (
-                            <CurrencyDollarSimple size={16} weight="bold" />
-                          )}
-                          Register Payment
-                        </button>
-                        <button
-                          type="button"
-                          onClick={handleResetToDraft}
-                          className="text-gray-900 w-full bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium rounded-md text-sm px-5 py-2.5 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"
-                        >
-                          {loadingReset ? <Spinner /> : "Reset to Draft"}
-                        </button>
-                      </>
-                    )
+                    <button
+                      type="button"
+                      onClick={handleResetToDraft}
+                      className="inline-flex items-center justify-center gap-2 text-gray-900 w-full bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium rounded-md text-sm px-5 py-2.5 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"
+                    >
+                      {loadingReset ? (
+                        <Spinner />
+                      ) : (
+                        <ClockClockwise size={16} weight="bold" />
+                      )}
+                      Reset to Draft
+                    </button>
                   )}
                 </div>
               </div>

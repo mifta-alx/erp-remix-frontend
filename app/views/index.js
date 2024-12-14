@@ -11,3 +11,5 @@ export { default as TableRFQ } from "./TableRFQ";
 export { default as TableRFQValidate } from "./TableRFQValidate";
 export { default as TableVendorBill } from "./TableVendorBill";
 export { default as CustomersView } from "./CustomersView";
+export { default as TableQuotation } from "./TableQuotation";
+export { default as TableDelivery } from "./TableDelivery";
