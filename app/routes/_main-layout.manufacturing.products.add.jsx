@@ -420,7 +420,9 @@ export default function AddProduct() {
                       apiUrl={API_URL}
                       selectedTags={selectedTags}
                       setSelectedTags={setSelectedTags}
-                      error={actionData?.errors?.product_tag}
+                      error={actionData?.errors?.tags}
+                      name="product_tag"
+                      type="product"
                     />
                   </div>
                 </div>
