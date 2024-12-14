@@ -94,7 +94,7 @@ const MaterialView = ({ materials }) => {
                   </td>
                   <td className="px-3 py-4">{material.internal_reference}</td>
                   <td className="px-3 py-4 flex items-center gap-2">
-                    {material.tags.map((tag) => (
+                    {material.tags.slice(0, 3).map((tag) => (
                       <span
                         className="rounded bg-primary-100 px-2.5 py-0.5 text-xs font-medium text-primary-800 dark:bg-primary-900 dark:text-primary-300"
                         key={tag.id}
@@ -102,12 +102,19 @@ const MaterialView = ({ materials }) => {
                         {tag.name}
                       </span>
                     ))}
+                    {material.tags.length > 3 && (
+                      <span className="rounded bg-primary-100 px-2.5 py-0.5 text-xs font-medium text-primary-800 dark:bg-primary-900 dark:text-primary-300">
+                        ...
+                      </span>
+                    )}
                   </td>
                   <td className="px-3 py-4">
                     {formatPrice(material.sales_price)}
                   </td>
                   <td className="px-3 py-4">{formatPrice(material.cost)}</td>
-                  <td className="px-3 py-4">{formatToDecimal(material.stock)}</td>
+                  <td className="px-3 py-4">
+                    {formatToDecimal(material.stock)}
+                  </td>
                 </tr>
               ))
             ) : (
