@@ -94,7 +94,7 @@ const ProductView = ({ products }) => {
                   </td>
                   <td className="px-3 py-4">{product.internal_reference}</td>
                   <td className="px-3 py-4 flex items-center gap-2">
-                    {product.tags.map((tag) => (
+                    {product.tags.slice(0, 3).map((tag) => (
                       <span
                         className="rounded bg-primary-100 px-2.5 py-0.5 text-xs font-medium text-primary-800 dark:bg-primary-900 dark:text-primary-300"
                         key={tag.id}
@@ -102,6 +102,11 @@ const ProductView = ({ products }) => {
                         {tag.name}
                       </span>
                     ))}
+                    {product.tags.length > 3 && (
+                      <span className="rounded bg-primary-100 px-2.5 py-0.5 text-xs font-medium text-primary-800 dark:bg-primary-900 dark:text-primary-300">
+                        ...
+                      </span>
+                    )}
                   </td>
                   <td className="px-3 py-4">
                     {formatPrice(product.sales_price)}
