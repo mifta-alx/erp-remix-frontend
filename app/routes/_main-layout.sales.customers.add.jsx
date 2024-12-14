@@ -86,7 +86,7 @@ export default function AddCustomers() {
 
     const [formData, setFormData] = useState({
         name: "",
-        company_id: "",
+        company: "",
         type: null,
         street: "",
         city: "",
@@ -116,7 +116,7 @@ export default function AddCustomers() {
                 },
                 body: JSON.stringify({
                     name: formData.name,
-                    company: formData.company_id,
+                    company: formData.company,
                     type: formData.type,
                     street: formData.street,
                     city: formData.city,
@@ -142,7 +142,7 @@ export default function AddCustomers() {
                 localStorage.removeItem("image");
                 setFormData({
                     name: "",
-                    company_id: "",
+                    company: "",
                     type: null,
                     street: "",
                     city: "",
@@ -280,7 +280,11 @@ export default function AddCustomers() {
                                                         type="radio"
                                                         name="bordered-radio"
                                                         onChange={() => handleCheckboxChange(1)}
-                                                        className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-0 dark:bg-gray-700 dark:border-gray-600"
+                                                        className={`w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 ${actionData?.errors?.type
+                                                            ? "border-red-500 dark:border-red-500"
+                                                            : "border-gray-300 dark:border-gray-600"}
+                                                                focus:ring-blue-500 dark:focus:ring-blue-600
+                                                                focus:ring-0 dark:bg-gray-700 dark:border-gray-600`}
                                                     />
                                                     <label
                                                         htmlFor="bordered-radio-1"
@@ -296,7 +300,12 @@ export default function AddCustomers() {
                                                         type="radio"
                                                         name="bordered-radio"
                                                         onChange={() => handleCheckboxChange(2)}
-                                                        className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-0 dark:bg-gray-700 dark:border-gray-600"
+                                                        className={`w-4 h-4 text-blue-600 bg-gray-100 border-gray-300
+                                                                ${actionData?.errors?.type
+                                                                ? "border-red-500 dark:border-red-500"
+                                                                : "border-gray-300 dark:border-gray-600"}
+                                                                focus:ring-blue-500 dark:focus:ring-blue-600
+                                                                focus:ring-0 dark:bg-gray-700 dark:border-gray-600`}
                                                     />
                                                     <label
                                                         htmlFor="bordered-radio-2"
@@ -311,18 +320,21 @@ export default function AddCustomers() {
                                             selected === 1 && (
                                                 <div className="sm:col-span-2">
                                                     <SearchInput
-                                                        name="company_id"
+                                                        name="company"
                                                         data={customers}
                                                         label="Company Name"
                                                         placeholder="Select Company Name"
                                                         valueKey="id"
                                                         displayKey="name"
                                                         onChange={handleChange}
-                                                        error={actionData?.errors?.company_id}
-                                                        value={formData.company_id}
+                                                        error={actionData?.errors?.company}
+                                                        value={formData.company}
+                                                        disabled={selected !== 1}
                                                     />
                                                 </div>
+
                                             )
+
                                         }
                                         <div className="sm:col-span-2">
                                             <MultiSelect
