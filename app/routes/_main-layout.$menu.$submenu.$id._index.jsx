@@ -10,7 +10,7 @@ import {
 } from "@phosphor-icons/react/dist/ssr";
 import { useEffect, useState } from "react";
 import { Link, useLoaderData, useNavigate, useParams } from "@remix-run/react";
-import { DateInput, SearchInput, Spinner } from "@components/index.js";
+import { DateInput, Menu, SearchInput, Spinner } from "@components/index.js";
 import { ErrorView, TableQuotation, TableRFQ } from "@views/index.js";
 import { formatToDecimal, unformatToDecimal } from "@utils/formatDecimal.js";
 import {
@@ -778,6 +778,12 @@ export default function DetailedRequestForQuotation() {
     }
   };
 
+  const handleSendEmail = () => alert("Send Email clicked!");
+  const handleExport = () => alert("Export clicked!");
+  const menuItems = [
+    { label: "Send by Email", onClick: handleSendEmail, disabled: true },
+    { label: "Export", onClick: handleExport },
+  ];
   return (
     <section>
       <div className="mx-auto max-w-screen-xl px-4 2xl:px-0">
@@ -908,9 +914,7 @@ export default function DetailedRequestForQuotation() {
                     </span>
                   )}
                 </div>
-                {/*<div className="w-8 h-8 rounded-full bg-transparent flex hover:bg-gray-100 items-center justify-center">*/}
-                {/*  <DotsThreeVertical weight="bold" size={24} />*/}
-                {/*</div>*/}
+                <Menu menuItems={menuItems} />
               </div>
               {menu === "purchase" && formData.state >= 3 ? (
                 <>
