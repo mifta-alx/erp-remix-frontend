@@ -8,3 +8,4 @@ export { default as Spinner } from "./Spinner.jsx";
 export { default as Drawer } from "./Drawer.jsx";
 export { default as ImageUpload } from "./ImageUpload.jsx";
 export { default as MultiSelect } from "./MultiSelect.jsx";
+export { default as Menu } from "./Menu.jsx";
