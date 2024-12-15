@@ -19,7 +19,7 @@ import {
   unformatPriceBase,
 } from "@utils/formatPrice.js";
 import { formatToDecimal, unformatToDecimal } from "@utils/formatDecimal.js";
-import { ErrorView, TableVendorBill } from "@views/index.js";
+import { ErrorView, TableVendorBill, ExportBillPo } from "@views/index.js";
 import { formatBasicDate } from "@utils/formatDate.js";
 import paid from "/paid.svg";
 import { json } from "@remix-run/node";
@@ -30,8 +30,8 @@ export const meta = ({ data }) => {
     data.invoice.state > 1
       ? data.invoice.reference
       : data.page === "bills"
-      ? `Draft bill (* ${data.invoice.id})`
-      : `Draft invoice (* ${data.invoice.id})`;
+        ? `Draft bill (* ${data.invoice.id})`
+        : `Draft invoice (* ${data.invoice.id})`;
 
   return [
     { title: `F&F - ${reference}` },
@@ -787,6 +787,28 @@ export default function BillsAndInvoices() {
       [name]: updatedValue,
     }));
   };
+  const handleDownload = () => {
+    ExportBillPo({
+      vendorName: selectedVendor.name,
+      vendorstreet: selectedVendor.street,
+      VendorZip: selectedVendor.zip,
+      vendorCity: selectedVendor.city,
+      vendorState: selectedVendor.state,
+      vendorPhone: selectedVendor.phone,
+      vendorEmail: selectedVendor.email,
+      due_date: formData.due_date,
+      transactionType: invoice.transaction_type,
+      invReference: invoice.reference,
+      invDate: formData.invoice_date,
+      accountingDate: formData.accounting_date,
+      dataArr: dataArr,
+      dataTotal: dataTotal.total,
+      payment_date: formData.payment_date,
+      payment_amount: formData.payment_amount,
+      amount_due : formData.amount_due
+    })
+  }
+  console.log(dataArr)
 
   return (
     <section>
@@ -822,10 +844,10 @@ export default function BillsAndInvoices() {
                             ? "Request for Quotations"
                             : "Purchase Orders"
                           : menu === "sales"
-                          ? submenu === "quotation"
-                            ? "Quotations"
-                            : "Sales Orders"
-                          : null}
+                            ? submenu === "quotation"
+                              ? "Quotations"
+                              : "Sales Orders"
+                            : null}
                       </Link>
                     </div>
                   </li>
@@ -847,8 +869,8 @@ export default function BillsAndInvoices() {
                         {formData.state > 1
                           ? invoice.reference
                           : page === "bills"
-                          ? `Draft bill (* ${invoice.id})`
-                          : `Draft invoice (* ${invoice.id})`}
+                            ? `Draft bill (* ${invoice.id})`
+                            : `Draft invoice (* ${invoice.id})`}
                       </span>
                     </div>
                   </li>
@@ -862,10 +884,10 @@ export default function BillsAndInvoices() {
                       ? "Request for Quotations"
                       : "Purchase Orders"
                     : menu === "sales"
-                    ? submenu === "quotation"
-                      ? "Quotations"
-                      : "Sales Orders"
-                    : null}
+                      ? submenu === "quotation"
+                        ? "Quotations"
+                        : "Sales Orders"
+                      : null}
                 </h2>
                 {formData.state === 1 ? (
                   <span className="inline-flex gap-1 justify-center items-center bg-gray-100 border border-gray-500 text-gray-800 text-xs font-medium px-3 py-0.5 rounded dark:bg-gray-800 dark:text-gray-300">
@@ -918,11 +940,10 @@ export default function BillsAndInvoices() {
                             disabled
                             name="reference"
                             id="reference"
-                            className={`bg-gray-50 disabled:bg-gray-100 disabled:cursor-not-allowed disabled:text-gray-400 border ${
-                              actionData?.errors?.reference
-                                ? "border-red-500 dark:border-red-500"
-                                : "border-gray-300 dark:border-gray-600"
-                            }
+                            className={`bg-gray-50 disabled:bg-gray-100 disabled:cursor-not-allowed disabled:text-gray-400 border ${actionData?.errors?.reference
+                              ? "border-red-500 dark:border-red-500"
+                              : "border-gray-300 dark:border-gray-600"
+                              }
                       border-gray-300 dark:border-gray-600 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-1/2 p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
                             value={invoice.reference}
                             autoComplete="off"
@@ -1236,6 +1257,7 @@ export default function BillsAndInvoices() {
                   ) : formData.state === 2 && formData.payment_status === 2 ? (
                     <>
                       <button
+                        onClick={handleDownload}
                         type="button"
                         className="inline-flex items-center justify-center gap-2 text-white w-full bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-md text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
                       >
