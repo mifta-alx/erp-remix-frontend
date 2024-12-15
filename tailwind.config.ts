@@ -20,7 +20,7 @@ export default {
       },
       fontFamily: {
         sans: [
-          '"Inter"',
+          '"Public Sans"',
           "ui-sans-serif",
           "system-ui",
           "sans-serif",
