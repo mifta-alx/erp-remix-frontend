@@ -5,10 +5,10 @@ const EmptyView = ({ section = "Empty", icon, link = "" }) => {
   return (
     <div className="border-dashed border-2 text-5xl border-gray-300 dark:border-gray-500 text-gray-300 dark:text-gray-500 flex rounded-lg h-full w-full items-center flex-col py-40 md:py-32">
       {icon}
-      <p className="font-semibold text-sm text-gray-600 dark:text-white mt-4 capitalize">
+      <p className="font-semibold text-sm text-gray-600 dark:text-white mt-4 capitalize text-center">
         No {section}
       </p>
-      <p className="font-normal text-sm text-gray-400 dark:text-gray-500 mt-1">
+      <p className="font-normal text-sm text-gray-400 dark:text-gray-500 mt-1 text-center">
         Get started by creating a new {section}
       </p>
       <Link
