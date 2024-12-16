@@ -340,17 +340,19 @@ export default function Index() {
                                 className="w-9 h-9 rounded-full"
                               />
                               <div>
-                                <p className="text-[15px] text-gray-700">
+                                <p className="text-[15px] text-gray-700 dark:text-gray-300">
                                   {customer.name}
                                 </p>
                                 {customer.company_name && (
-                                  <p className="text-[13px] text-gray-500">
+                                  <p className="text-[13px] text-gray-400 dark:text-gray-500">
                                     {customer.company_name}
                                   </p>
                                 )}
                               </div>
                             </div>
-                            <h6 className={`text-[15px]`}>
+                            <h6
+                              className={`text-[15px] text-gray-700 dark:text-gray-400`}
+                            >
                               {formatPrice(customer.total_purchases)}
                             </h6>
                           </div>
