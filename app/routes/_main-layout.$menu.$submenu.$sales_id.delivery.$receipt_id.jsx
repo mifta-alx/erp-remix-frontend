@@ -119,7 +119,7 @@ export default function DeliveryQuotation() {
         tax: product.tax,
         subtotal: product.subtotal,
         qty_received: formatToDecimal(
-          formData.state >= 3 ? product.qty_received : product.qty
+          formData.state >= 4 ? product.qty_received : product.qty
         ),
         qty_to_invoice: product.qty_to_invoice,
         qty_invoiced: product.qty_invoiced,
