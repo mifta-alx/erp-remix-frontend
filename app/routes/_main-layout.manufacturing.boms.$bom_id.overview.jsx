@@ -1,10 +1,4 @@
-import {
-  CaretRight,
-  FilePdf,
-  House,
-  Minus,
-  Plus,
-} from "@phosphor-icons/react/dist/ssr";
+import { ChevronRight, FileText, House, Minus, Plus } from "lucide-react";
 import { Link, useLoaderData, useLocation, useParams } from "@remix-run/react";
 import { ErrorView } from "@views/index.js";
 import { formatToDecimal } from "@utils/formatDecimal.js";
@@ -147,14 +141,14 @@ export default function BomOverview() {
                       to={"/"}
                       className="inline-flex items-center text-sm font-medium text-gray-700 hover:text-primary-600 dark:text-gray-400 dark:hover:text-white"
                     >
-                      <House weight="fill" />
+                      <House size={14} strokeWidth={1.8} />
                     </Link>
                   </li>
                   {state ? (
                     state.map((nav) => (
                       <li>
                         <div className="flex items-center text-gray-400">
-                          <CaretRight size={18} weight="bold" />
+                          <ChevronRight size={18} strokeWidth={2} />
                           <Link
                             to={nav.url}
                             className="ms-1 text-sm font-medium text-gray-700 hover:text-primary-600 dark:text-gray-400 dark:hover:text-white md:ms-2"
@@ -167,7 +161,7 @@ export default function BomOverview() {
                   ) : (
                     <li>
                       <div className="flex items-center text-gray-400">
-                        <CaretRight size={18} weight="bold" />
+                        <ChevronRight size={18} strokeWidth={2} />
                         <Link
                           to="/manufacturing/boms"
                           className="ms-1 text-sm font-medium text-gray-700 hover:text-primary-600 dark:text-gray-400 dark:hover:text-white md:ms-2"
@@ -179,7 +173,7 @@ export default function BomOverview() {
                   )}
                   <li>
                     <div className="flex items-center text-gray-400">
-                      <CaretRight size={18} weight="bold" />
+                      <ChevronRight size={18} strokeWidth={2} />
                       <Link
                         to={`/manufacturing/boms/${params.bom_id}`}
                         className="ms-1 text-sm font-medium text-gray-700 hover:text-primary-600 dark:text-gray-400 dark:hover:text-white md:ms-2"
@@ -190,7 +184,7 @@ export default function BomOverview() {
                   </li>
                   <li aria-current="page">
                     <div className="flex items-center text-gray-400">
-                      <CaretRight size={18} weight="bold" />
+                      <ChevronRight size={18} strokeWidth={2} />
                       <span className="ms-1 text-sm font-medium text-gray-500 dark:text-gray-400 md:ms-2">
                         Overview
                       </span>
@@ -208,7 +202,7 @@ export default function BomOverview() {
                     type="button"
                     className="text-gray-900 bg-white gap-2 w-full md:w-fit hover:bg-gray-100 border border-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2 text-center inline-flex items-center justify-center dark:focus:ring-gray-600 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:bg-gray-700"
                   >
-                    <FilePdf size={16} />
+                    <FileText size={16} />
                     Export
                   </button>
                   <div className="inline-flex " role="group">
@@ -217,7 +211,7 @@ export default function BomOverview() {
                       onClick={handleSubtractQuantity}
                       className="inline-flex items-center px-4 py-2 gap-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-s-lg hover:bg-gray-100 hover:text-red-600 focus:z-10 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:text-red-500 dark:hover:bg-gray-700"
                     >
-                      <Minus size={16} weight="bold" />
+                      <Minus size={16} />
                     </button>
                     <button
                       type="button"
@@ -230,7 +224,7 @@ export default function BomOverview() {
                       onClick={handleAddQuantity}
                       className="inline-flex items-center px-4 py-2 gap-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-e-lg hover:bg-gray-100 hover:text-primary-700 focus:z-10 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:text-primary-500 dark:hover:bg-gray-700"
                     >
-                      <Plus size={16} weight="bold" />
+                      <Plus size={16} />
                     </button>
                   </div>
                 </div>
@@ -261,7 +255,7 @@ export default function BomOverview() {
                   </p>
                 </div>
               </div>
-              <div className="overflow-x-scroll">
+              <div className="overflow-x-auto lg:overflow-hidden">
                 <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
                   <thead className="text-sm text-gray-900 capitalize dark:text-gray-400 border-b border-gray-200 dark:border-gray-600">
                     <tr>

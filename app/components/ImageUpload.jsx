@@ -1,4 +1,4 @@
-import { Camera, TrashSimple } from "@phosphor-icons/react/dist/ssr";
+import { Camera, Trash } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 const ImageUpload = ({
@@ -101,7 +101,7 @@ const ImageUpload = ({
                 className="bg-white dark:bg-gray-800 z-10 hover:dark:bg-gray-900 hover:bg-gray-100 text-gray-700 dark:text-gray-400 hover:dark:text-gray-500 hover:text-gray-600 text-2xl p-4 rounded-full"
                 onClick={() => handleDeleteImage(image)}
               >
-                <TrashSimple weight="bold" />
+                <Trash />
               </button>
             </div>
           )}
@@ -116,7 +116,7 @@ const ImageUpload = ({
           onClick={handleFilePickerClick}
         >
           <div className="flex flex-col items-center justify-center pt-5 pb-6 text-gray-300 dark:text-gray-400 text-5xl">
-            <Camera />
+            <Camera size={56} strokeWidth={1.5} />
             <p className="text-xs text-center mt-2 text-gray-300 dark:text-gray-400">
               {label}
             </p>

@@ -1,16 +1,16 @@
 import { Link, useLoaderData, useParams } from "@remix-run/react";
 import {
-  CaretRight,
   Check,
-  CheckCircle,
+  ChevronRight,
+  CircleCheckBig,
+  CircleX,
   Clock,
-  ClockClockwise,
-  CurrencyDollarSimple,
-  FileArrowDown,
+  DollarSign,
+  FileDown,
+  History,
   House,
   Printer,
-  XCircle,
-} from "@phosphor-icons/react/dist/ssr";
+} from "lucide-react";
 import { useEffect, useState } from "react";
 import { DateInput, Drawer, SearchInput, Spinner } from "@components/index.js";
 import {
@@ -19,7 +19,7 @@ import {
   unformatPriceBase,
 } from "@utils/formatPrice.js";
 import { formatToDecimal, unformatToDecimal } from "@utils/formatDecimal.js";
-import { ErrorView, TableVendorBill, ExportBillPo } from "@views/index.js";
+import { ErrorView, ExportBillPo, TableVendorBill } from "@views/index.js";
 import { formatBasicDate } from "@utils/formatDate.js";
 import paid from "/paid.svg";
 import { json } from "@remix-run/node";
@@ -30,8 +30,8 @@ export const meta = ({ data }) => {
     data.invoice.state > 1
       ? data.invoice.reference
       : data.page === "bills"
-        ? `Draft bill (* ${data.invoice.id})`
-        : `Draft invoice (* ${data.invoice.id})`;
+      ? `Draft bill (* ${data.invoice.id})`
+      : `Draft invoice (* ${data.invoice.id})`;
 
   return [
     { title: `F&F - ${reference}` },
@@ -805,10 +805,10 @@ export default function BillsAndInvoices() {
       dataTotal: dataTotal.total,
       payment_date: formData.payment_date,
       payment_amount: formData.payment_amount,
-      amount_due : formData.amount_due
-    })
-  }
-  console.log(dataArr)
+      amount_due: formData.amount_due,
+    });
+  };
+  console.log(dataArr);
 
   return (
     <section>
@@ -829,12 +829,12 @@ export default function BillsAndInvoices() {
                       to={"/"}
                       className="inline-flex items-center text-sm font-medium text-gray-700 hover:text-primary-600 dark:text-gray-400 dark:hover:text-white"
                     >
-                      <House weight="fill" />
+                      <House size={14} strokeWidth={1.8} />
                     </Link>
                   </li>
                   <li>
                     <div className="flex items-center text-gray-400">
-                      <CaretRight size={18} weight="bold" />
+                      <ChevronRight size={18} strokeWidth={2} />
                       <Link
                         to={`/${menu}/${submenu}`}
                         className="ms-1 text-sm font-medium text-gray-700 hover:text-primary-600 dark:text-gray-400 dark:hover:text-white md:ms-2"
@@ -844,16 +844,16 @@ export default function BillsAndInvoices() {
                             ? "Request for Quotations"
                             : "Purchase Orders"
                           : menu === "sales"
-                            ? submenu === "quotation"
-                              ? "Quotations"
-                              : "Sales Orders"
-                            : null}
+                          ? submenu === "quotation"
+                            ? "Quotations"
+                            : "Sales Orders"
+                          : null}
                       </Link>
                     </div>
                   </li>
                   <li>
                     <div className="flex items-center text-gray-400">
-                      <CaretRight size={18} weight="bold" />
+                      <ChevronRight size={18} strokeWidth={2} />
                       <Link
                         to={`/${menu}/${submenu}/${id}`}
                         className="ms-1 text-sm font-medium text-gray-700 hover:text-primary-600 dark:text-gray-400 dark:hover:text-white md:ms-2"
@@ -864,13 +864,13 @@ export default function BillsAndInvoices() {
                   </li>
                   <li aria-current="page">
                     <div className="flex items-center text-gray-400">
-                      <CaretRight size={18} weight="bold" />
+                      <ChevronRight size={18} strokeWidth={2} />
                       <span className="ms-1 text-sm font-medium text-gray-500 dark:text-gray-400 md:ms-2">
                         {formData.state > 1
                           ? invoice.reference
                           : page === "bills"
-                            ? `Draft bill (* ${invoice.id})`
-                            : `Draft invoice (* ${invoice.id})`}
+                          ? `Draft bill (* ${invoice.id})`
+                          : `Draft invoice (* ${invoice.id})`}
                       </span>
                     </div>
                   </li>
@@ -884,23 +884,23 @@ export default function BillsAndInvoices() {
                       ? "Request for Quotations"
                       : "Purchase Orders"
                     : menu === "sales"
-                      ? submenu === "quotation"
-                        ? "Quotations"
-                        : "Sales Orders"
-                      : null}
+                    ? submenu === "quotation"
+                      ? "Quotations"
+                      : "Sales Orders"
+                    : null}
                 </h2>
                 {formData.state === 1 ? (
                   <span className="inline-flex gap-1 justify-center items-center bg-gray-100 border border-gray-500 text-gray-800 text-xs font-medium px-3 py-0.5 rounded dark:bg-gray-800 dark:text-gray-300">
-                    <Clock weight="fill" /> Draft
+                    <Clock size={12} /> Draft
                   </span>
                 ) : formData.state === 2 ? (
                   <span className="inline-flex gap-1 justify-center items-center bg-primary-100 border border-primary-500 text-primary-800 text-xs font-medium px-3 py-0.5 rounded dark:bg-primary-900 dark:text-primary-300">
-                    <CheckCircle weight="fill" /> Posted
+                    <CircleCheckBig size={12} /> Posted
                   </span>
                 ) : (
                   formData.state === 3 && (
                     <span className="inline-flex gap-1 justify-center items-center bg-red-100 border border-red-500 text-red-800 text-xs font-medium px-3 py-0.5 rounded dark:bg-red-900 dark:text-red-300">
-                      <XCircle weight="fill" /> Cancelled
+                      <CircleX size={12} /> Cancelled
                     </span>
                   )
                 )}
@@ -940,10 +940,11 @@ export default function BillsAndInvoices() {
                             disabled
                             name="reference"
                             id="reference"
-                            className={`bg-gray-50 disabled:bg-gray-100 disabled:cursor-not-allowed disabled:text-gray-400 border ${actionData?.errors?.reference
-                              ? "border-red-500 dark:border-red-500"
-                              : "border-gray-300 dark:border-gray-600"
-                              }
+                            className={`bg-gray-50 disabled:bg-gray-100 disabled:cursor-not-allowed disabled:text-gray-400 border ${
+                              actionData?.errors?.reference
+                                ? "border-red-500 dark:border-red-500"
+                                : "border-gray-300 dark:border-gray-600"
+                            }
                       border-gray-300 dark:border-gray-600 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-1/2 p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
                             value={invoice.reference}
                             autoComplete="off"
@@ -1229,11 +1230,7 @@ export default function BillsAndInvoices() {
                         onClick={handleConfirm}
                         className="inline-flex items-center justify-center gap-2 text-white w-full bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-md text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
                       >
-                        {loadingConfirm ? (
-                          <Spinner />
-                        ) : (
-                          <Check size={16} weight="bold" />
-                        )}
+                        {loadingConfirm ? <Spinner /> : <Check size={16} />}
                         {page === "bills"
                           ? "Confirm Bill"
                           : page === "invoices" && "Confirm"}
@@ -1261,22 +1258,14 @@ export default function BillsAndInvoices() {
                         type="button"
                         className="inline-flex items-center justify-center gap-2 text-white w-full bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-md text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
                       >
-                        {loadingConfirm ? (
-                          <Spinner />
-                        ) : (
-                          <FileArrowDown size={16} weight="bold" />
-                        )}
+                        {loadingConfirm ? <Spinner /> : <FileDown size={16} />}
                         Download
                       </button>
                       <button
                         type="button"
                         className="inline-flex items-center justify-center gap-2 text-gray-900 w-full bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium rounded-md text-sm px-5 py-2.5 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"
                       >
-                        {loadingConfirm ? (
-                          <Spinner />
-                        ) : (
-                          <Printer size={16} weight="bold" />
-                        )}
+                        {loadingConfirm ? <Spinner /> : <Printer size={16} />}
                         Print
                       </button>
                     </>
@@ -1290,7 +1279,7 @@ export default function BillsAndInvoices() {
                         {loadingConfirm ? (
                           <Spinner />
                         ) : (
-                          <CurrencyDollarSimple size={16} weight="bold" />
+                          <DollarSign size={16} />
                         )}
                         Register Payment
                       </button>
@@ -1308,11 +1297,7 @@ export default function BillsAndInvoices() {
                       onClick={handleResetToDraft}
                       className="inline-flex items-center justify-center gap-2 text-gray-900 w-full bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium rounded-md text-sm px-5 py-2.5 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"
                     >
-                      {loadingReset ? (
-                        <Spinner />
-                      ) : (
-                        <ClockClockwise size={16} weight="bold" />
-                      )}
+                      {loadingReset ? <Spinner /> : <History size={16} />}
                       Reset to Draft
                     </button>
                   )}
@@ -1406,7 +1391,7 @@ export default function BillsAndInvoices() {
               onClick={handleCreatePayment}
               className="inline-flex items-center justify-center gap-2 text-white w-fit bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-md text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
             >
-              {loadingCreate ? <Spinner /> : <Check size={16} weight="bold" />}
+              {loadingCreate ? <Spinner /> : <Check size={16} />}
               Create Payment
             </button>
             <button

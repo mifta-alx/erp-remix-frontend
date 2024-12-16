@@ -1,6 +1,6 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { twMerge } from "tailwind-merge";
-import { X } from "@phosphor-icons/react/dist/ssr";
+import { X } from "lucide-react";
 
 const Drawer = ({
   activateClickOutside = true,

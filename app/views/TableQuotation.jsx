@@ -1,6 +1,6 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { TableSearchInput } from "@components/index.js";
-import { XCircle } from "@phosphor-icons/react/dist/ssr";
+import { CircleX } from "lucide-react";
 import {
   formatPrice,
   formatPriceBase,
@@ -456,7 +456,7 @@ const TableQuotation = ({
                         className="items-center flex justify-end"
                         onClick={() => removeRow(index)}
                       >
-                        <XCircle weight="bold" />
+                        <CircleX size={16} />
                       </button>
                     </td>
                   </tr>
@@ -496,7 +496,7 @@ const TableQuotation = ({
                         className="items-center flex justify-end"
                         onClick={() => removeRow(index)}
                       >
-                        <XCircle weight="bold" />
+                        <CircleX size={16} />
                       </button>
                     </td>
                   </tr>

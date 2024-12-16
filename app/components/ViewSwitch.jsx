@@ -1,4 +1,4 @@
-import { Rows, SquaresFour } from "@phosphor-icons/react/dist/ssr";
+import { LayoutGrid, Rows2 } from "lucide-react";
 import { useViewContext } from "@context/ViewScheme.jsx";
 
 const ViewSwitch = () => {
@@ -18,17 +18,14 @@ const ViewSwitch = () => {
         onClick={() => changeView("gallery")}
         className={`${buttonClass(view === "gallery")} rounded-s-lg`}
       >
-        <SquaresFour
-          weight={view === "gallery" ? "fill" : "regular"}
-          size={20}
-        />
+        <LayoutGrid size={16} strokeWidth={2} />
       </button>
       <button
         type="button"
         onClick={() => changeView("list")}
         className={`${buttonClass(view === "list")} rounded-e-lg`}
       >
-        <Rows weight={view === "list" ? "fill" : "regular"} size={20} />
+        <Rows2 size={16} strokeWidth={2} />
       </button>
     </div>
   );

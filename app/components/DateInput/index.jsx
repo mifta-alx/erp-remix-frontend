@@ -5,7 +5,7 @@ import { formatDate } from "@utils/formatDate.js";
 import useClickOutside from "@/hooks/useClickOutside";
 import DateInputPopup from "./DateInputPopup";
 import DateItem from "./DateItem";
-import { CalendarBlank } from "@phosphor-icons/react/dist/ssr";
+import { Calendar } from "lucide-react";
 
 function getDateSlots(currentMonth, currentYear) {
   const dateArray = getDaysInMonth(currentMonth, currentYear);
@@ -121,7 +121,7 @@ const DateInput = ({
     <span ref={popupRef}>
       <div className="relative">
         <div className="absolute inset-y-0 start-0 flex items-center ps-3.5 pointer-events-none text-gray-500 dark:text-gray-400">
-          <CalendarBlank size={16} weight="bold" />
+          <Calendar size={16} />
         </div>
         <input
           value={selectedDate}

@@ -1,9 +1,4 @@
-import {
-  CaretRight,
-  Check,
-  House,
-  TrashSimple,
-} from "@phosphor-icons/react/dist/ssr";
+import { Check, ChevronRight, House, Trash } from "lucide-react";
 import { useState } from "react";
 import {
   Link,
@@ -236,14 +231,14 @@ export default function EditProduct() {
                       to={"/"}
                       className="inline-flex items-center text-sm font-medium text-gray-700 hover:text-primary-600 dark:text-gray-400 dark:hover:text-white"
                     >
-                      <House weight="fill" />
+                      <House size={14} strokeWidth={1.8} />
                     </Link>
                   </li>
                   {state ? (
                     state.map((nav, index) => (
                       <li key={index}>
                         <div className="flex items-center text-gray-400">
-                          <CaretRight size={18} weight="bold" />
+                          <ChevronRight size={18} strokeWidth={2} />
                           <Link
                             to={nav.url}
                             className="ms-1 text-sm font-medium text-gray-700 hover:text-primary-600 dark:text-gray-400 dark:hover:text-white md:ms-2"
@@ -256,7 +251,7 @@ export default function EditProduct() {
                   ) : (
                     <li>
                       <div className="flex items-center text-gray-400">
-                        <CaretRight size={18} weight="bold" />
+                        <ChevronRight size={18} strokeWidth={2} />
                         <Link
                           to="/manufacturing/products"
                           className="ms-1 text-sm font-medium text-gray-700 hover:text-primary-600 dark:text-gray-400 dark:hover:text-white md:ms-2"
@@ -268,7 +263,7 @@ export default function EditProduct() {
                   )}
                   <li aria-current="page">
                     <div className="flex items-center text-gray-400">
-                      <CaretRight size={18} weight="bold" />
+                      <ChevronRight size={18} strokeWidth={2} />
                       <span className="ms-1 text-sm font-medium text-gray-500 dark:text-gray-400 md:ms-2">
                         {formatProductName(product)}
                       </span>
@@ -296,7 +291,7 @@ export default function EditProduct() {
                       onClick={handleDeleteProduct}
                       className="inline-flex items-center w-full sm:w-fit px-4 py-2 gap-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-e-lg hover:bg-gray-100 hover:text-red-600 focus:z-10 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:text-red-500 dark:hover:bg-gray-700"
                     >
-                      {loadingDelete ? <Spinner /> : <TrashSimple size={16} />}
+                      {loadingDelete ? <Spinner /> : <Trash size={14} />}
                       Delete
                     </button>
                   </div>

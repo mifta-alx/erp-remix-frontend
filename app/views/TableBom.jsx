@@ -1,6 +1,6 @@
-import { XCircle } from "@phosphor-icons/react/dist/ssr";
+import { CircleX } from "lucide-react";
 import { TableSearchInput } from "@components/index.js";
-import { useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import { formatToDecimal } from "@utils/formatDecimal.js";
 import { formatProductName } from "@utils/formatName.js";
 
@@ -139,7 +139,7 @@ const TableBom = ({
                   className="items-center flex"
                   onClick={() => removeMaterialRow(index)}
                 >
-                  <XCircle weight="bold" />
+                  <CircleX size={16} />
                 </button>
               </td>
             </tr>

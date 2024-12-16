@@ -1,4 +1,4 @@
-import { CaretDown, List, Moon, Sun } from "@phosphor-icons/react/dist/ssr";
+import { AlignJustify, ChevronDown, Moon, Sun } from "lucide-react";
 import { NavLink, Outlet, useLocation } from "@remix-run/react";
 import { useEffect, useRef, useState } from "react";
 import { useColorScheme } from "../context/ColorScheme";
@@ -60,7 +60,7 @@ export default function _mainLayout() {
                     onClick={() => toggleDropdown("manufacturing")}
                   >
                     Manufacturing
-                    <CaretDown size={12} weight="bold" />
+                    <ChevronDown size={18} strokeWidth={2} />
                   </button>
                 </li>
                 <li>
@@ -71,7 +71,7 @@ export default function _mainLayout() {
                     onClick={() => toggleDropdown("purchase")}
                   >
                     Purchase
-                    <CaretDown size={12} weight="bold" />
+                    <ChevronDown size={18} strokeWidth={2} />
                   </button>
                 </li>
                 <li>
@@ -82,7 +82,7 @@ export default function _mainLayout() {
                     onClick={() => toggleDropdown("sales")}
                   >
                     Sales
-                    <CaretDown size={12} weight="bold" />
+                    <ChevronDown size={18} strokeWidth={2} />
                   </button>
                 </li>
               </ul>
@@ -101,7 +101,7 @@ export default function _mainLayout() {
                 className="inline-flex lg:hidden items-center justify-center hover:bg-gray-100 rounded-md dark:hover:bg-gray-700 p-2 text-gray-900 dark:text-white"
               >
                 <span className="sr-only">Open Menu</span>
-                <List size={18} weight="bold" />
+                <AlignJustify size={18} />
               </button>
             </div>
           </div>
@@ -130,7 +130,7 @@ export default function _mainLayout() {
                   onClick={() => toggleDropdown("manufacturing")}
                 >
                   Manufacturing
-                  <CaretDown size={12} weight="bold" />
+                  <ChevronDown size={18} strokeWidth={2} />
                 </button>
               </li>
               <li>
@@ -141,7 +141,7 @@ export default function _mainLayout() {
                   onClick={() => toggleDropdown("purchase")}
                 >
                   Purchase
-                  <CaretDown size={12} weight="bold" />
+                  <ChevronDown size={18} strokeWidth={2} />
                 </button>
               </li>
             </ul>

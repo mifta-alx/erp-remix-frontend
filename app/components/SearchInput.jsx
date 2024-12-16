@@ -1,6 +1,6 @@
-import { CaretDown } from "@phosphor-icons/react/dist/ssr";
 import { useEffect, useRef, useState } from "react";
 import useClickOutside from "@hooks/useClickOutside.js";
+import { ChevronDown } from "lucide-react";
 
 const SearchInput = ({
   name,
@@ -83,7 +83,7 @@ const SearchInput = ({
       )}
       <div ref={dropdownRef} className="relative w-full">
         <div className="absolute inset-y-0 end-0 flex items-center pe-3 pointer-events-none text-gray-500 dark:text-gray-400">
-          <CaretDown weight="bold" size={16} />
+          <ChevronDown weight="bold" size={16} />
         </div>
         <input
           disabled={disabled}

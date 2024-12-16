@@ -1,4 +1,4 @@
-import { ArrowLeft, ArrowRight } from "@phosphor-icons/react/dist/ssr";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 const monthNames = [
   "January",
@@ -29,7 +29,7 @@ const DateInputControl = ({
         onClick={navigateToPrevMonth}
         aria-label="Previous Month"
       >
-        <ArrowLeft size={20} weight="bold" />
+        <ChevronLeft size={20} />
       </button>
       <span className="text-center font-semibold text-gray-900 dark:text-white text-sm">
         {`${monthNames[currentMonth]} ${currentYear}`}
@@ -40,7 +40,7 @@ const DateInputControl = ({
         onClick={navigateToNextMonth}
         aria-label="Next Month"
       >
-        <ArrowRight size={20} weight="bold" />
+        <ChevronRight size={20} />
       </button>
     </div>
   );

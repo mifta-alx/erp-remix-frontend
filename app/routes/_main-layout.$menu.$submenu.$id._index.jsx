@@ -1,13 +1,13 @@
 import {
-  ArrowLineUp,
-  CaretRight,
+  ArrowUpToLine,
   Check,
-  ClockClockwise,
+  ChevronRight,
+  History,
   House,
-  Invoice,
+  Receipt,
   Truck,
   X,
-} from "@phosphor-icons/react/dist/ssr";
+} from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, useLoaderData, useNavigate, useParams } from "@remix-run/react";
 import { DateInput, Menu, SearchInput, Spinner } from "@components/index.js";
@@ -711,7 +711,7 @@ export default function DetailedRequestForQuotation() {
         <ActionButton
           onClick={handleSetToDraft}
           loading={loadingConfirm}
-          icon={<ClockClockwise size={16} />}
+          icon={<History size={16} />}
           className={result.receipt.length === 0 && "rounded-lg"}
         >
           {menu === "purchase" ? "Set to Draft" : "Set to Quotation"}
@@ -727,7 +727,7 @@ export default function DetailedRequestForQuotation() {
         <ActionLink
           to={`/${menu}/${submenu}/${id}/${page}/${formData?.invoices[0]?.id}`}
           count={formData.invoices.length}
-          icon={<Invoice size={16} weight="fill" />}
+          icon={<Receipt size={16} />}
         >
           {menu === "purchase" ? "Vendor Bills" : "Invoices"}
         </ActionLink>
@@ -743,7 +743,7 @@ export default function DetailedRequestForQuotation() {
         <ActionButtonCount
           onClick={handleOpenDelivery}
           loading={loadingConfirm}
-          icon={<Truck size={16} weight="fill" />}
+          icon={<Truck size={16} />}
           count={formData.receipt.length}
         >
           Delivery
@@ -803,12 +803,12 @@ export default function DetailedRequestForQuotation() {
                       to={"/"}
                       className="inline-flex items-center text-sm font-medium text-gray-700 hover:text-primary-600 dark:text-gray-400 dark:hover:text-white"
                     >
-                      <House weight="fill" />
+                      <House size={14} strokeWidth={1.8} />
                     </Link>
                   </li>
                   <li>
                     <div className="flex items-center text-gray-400">
-                      <CaretRight size={18} weight="bold" />
+                      <ChevronRight size={18} strokeWidth={2} />
                       <Link
                         to={`/${menu}/${submenu}`}
                         className="ms-1 text-sm font-medium text-gray-700 hover:text-primary-600 dark:text-gray-400 dark:hover:text-white md:ms-2"
@@ -827,7 +827,7 @@ export default function DetailedRequestForQuotation() {
                   </li>
                   <li aria-current="page">
                     <div className="flex items-center text-gray-400">
-                      <CaretRight size={18} weight="bold" />
+                      <ChevronRight size={18} strokeWidth={2} />
                       <span className="ms-1 text-sm font-medium text-gray-500 dark:text-gray-400 md:ms-2">
                         {result.reference}
                       </span>
@@ -856,7 +856,11 @@ export default function DetailedRequestForQuotation() {
                       disabled={submitted}
                       className="disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-300 disabled:dark:bg-gray-900 disabled:dark:text-gray-700 inline-flex items-center w-full sm:w-fit px-4 py-2 gap-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 hover:bg-gray-100 hover:text-primary-700 focus:z-10 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:text-primary-500 dark:hover:bg-gray-700"
                     >
-                      {loadingUpdate ? <Spinner /> : <ArrowLineUp size={16} />}
+                      {loadingUpdate ? (
+                        <Spinner />
+                      ) : (
+                        <ArrowUpToLine size={16} />
+                      )}
                       Update
                     </button>
                   )}
@@ -876,7 +880,7 @@ export default function DetailedRequestForQuotation() {
                           ? handleReceiveProduct
                           : handleOpenDelivery
                       }
-                      icon={<Truck size={16} weight="fill" />}
+                      icon={<Truck size={16} />}
                       count={formData.receipt.length}
                       className="rounded-e-lg rounded-s-none"
                     >

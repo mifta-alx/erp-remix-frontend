@@ -1,11 +1,4 @@
-import {
-  CaretRight,
-  FilePdf,
-  House,
-  MagnifyingGlass,
-  Plus,
-  Stack,
-} from "@phosphor-icons/react/dist/ssr";
+import { Blocks, ChevronRight, House, Plus, Search } from "lucide-react";
 import { Link, useLoaderData, useNavigate } from "@remix-run/react";
 import { EmptyView, ErrorView } from "@views/index.js";
 import { useEffect, useState } from "react";
@@ -99,12 +92,12 @@ export default function Bom() {
                   to={"/"}
                   className="inline-flex items-center text-sm font-medium text-gray-700 hover:text-primary-600 dark:text-gray-400 dark:hover:text-white"
                 >
-                  <House weight="fill" />
+                  <House size={14} strokeWidth={1.8} />
                 </Link>
               </li>
               <li aria-current="page">
                 <div className="flex items-center text-gray-400">
-                  <CaretRight size={18} weight="bold" />
+                  <ChevronRight size={18} strokeWidth={2} />
                   <span className="ms-1 text-sm font-medium text-gray-500 dark:text-gray-400 md:ms-2">
                     Bills of Materials
                   </span>
@@ -118,9 +111,9 @@ export default function Bom() {
               Bills of Materials
             </h2>
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full sm:w-fit justify-end">
-              <div className="relative w-full md:w-1/2">
+              <div className="relative w-full">
                 <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-500 dark:text-gray-400">
-                  <MagnifyingGlass size={16} weight="bold" />
+                  <Search size={16} strokeWidth={1.8} />
                 </div>
                 <input
                   type="text"
@@ -131,24 +124,15 @@ export default function Bom() {
                   onChange={handleSearch}
                 />
               </div>
-              <div className="flex flex-row gap-3 sm:gap-4">
-                {boms.length > 0 && (
-                  <Link
-                    to="/manufacturing/boms/add"
-                    className="text-gray-900 bg-white gap-2 w-full md:w-fit hover:bg-gray-100 border border-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2 text-center inline-flex items-center justify-center dark:focus:ring-gray-600 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:bg-gray-700"
-                  >
-                    <Plus size={16} weight="bold" />
-                    New
-                  </Link>
-                )}
-                <button
-                  type="button"
+              {boms.length > 0 && (
+                <Link
+                  to="/manufacturing/boms/add"
                   className="text-gray-900 bg-white gap-2 w-full md:w-fit hover:bg-gray-100 border border-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2 text-center inline-flex items-center justify-center dark:focus:ring-gray-600 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:bg-gray-700"
                 >
-                  <FilePdf size={16} />
-                  Export
-                </button>
-              </div>
+                  <Plus size={16} />
+                  New
+                </Link>
+              )}
             </div>
           </div>
         </div>
@@ -220,7 +204,7 @@ export default function Bom() {
               <EmptyView
                 section="bills of material"
                 link="/manufacturing/boms/add"
-                icon={<Stack />}
+                icon={<Blocks />}
               />
             )}
           </>

@@ -1,6 +1,6 @@
 import { forwardRef, useEffect, useRef, useState } from "react";
 import useClickOutside from "@hooks/useClickOutside.js";
-import { CaretDown } from "@phosphor-icons/react/dist/ssr";
+import { ChevronDown } from "lucide-react";
 import { twMerge } from "tailwind-merge";
 
 const TableSearchInput = forwardRef(
@@ -76,7 +76,7 @@ const TableSearchInput = forwardRef(
         className={twMerge("relative w-full sm:w-1/2", parentClassName)}
       >
         <div className="absolute inset-y-0 end-0 flex items-center pe-3 pointer-events-none text-gray-500 dark:text-gray-400">
-          {isFocused && <CaretDown weight="bold" size={16} />}
+          {isFocused && <ChevronDown size={16} />}
         </div>
         <input
           ref={ref}

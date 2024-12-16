@@ -1,4 +1,4 @@
-import { XCircle } from "@phosphor-icons/react/dist/ssr";
+import { CircleX } from "lucide-react";
 import { useRef, useState } from "react";
 import useClickOutside from "@hooks/useClickOutside.js";
 import useDebounce from "@hooks/useDebounce.js";
@@ -93,7 +93,7 @@ const MultiSelect = ({
                 onClick={() => handleRemoveTag(tag.id)}
                 className="cursor-pointer"
               >
-                <XCircle weight="fill" />
+                <CircleX size={12} />
               </button>
             </div>
           ))}

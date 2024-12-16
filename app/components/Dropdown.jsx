@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { DotsThreeVertical } from "@phosphor-icons/react/dist/ssr";
+import { ChevronDown } from "lucide-react";
 
 const ActionDropdown = ({ title = "Dropdown", items = [] }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -33,9 +33,8 @@ const ActionDropdown = ({ title = "Dropdown", items = [] }) => {
         className="text-gray-900 bg-white border border-gray-200 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2 gap-2 text-center inline-flex items-center dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"
         type="button"
       >
-        {/*{title}*/}
-        {/*<CaretDown size={12} weight="bold" />*/}
-        <DotsThreeVertical weight="bold" size={20} />
+        {title}
+        <ChevronDown size={12} />
       </button>
 
       {isOpen && (

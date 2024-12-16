@@ -1,9 +1,4 @@
-import {
-  CaretRight,
-  House,
-  MagnifyingGlass,
-  Receipt,
-} from "@phosphor-icons/react/dist/ssr";
+import { ChevronRight, House, Receipt, Search } from "lucide-react";
 import { Link, useLoaderData, useNavigate, useParams } from "@remix-run/react";
 import { EmptyView, ErrorView } from "@views/index.js";
 import { useEffect, useState } from "react";
@@ -101,12 +96,12 @@ export default function Transfers() {
                   to={"/"}
                   className="inline-flex items-center text-sm font-medium text-gray-700 hover:text-primary-600 dark:text-gray-400 dark:hover:text-white"
                 >
-                  <House weight="fill" />
+                  <House size={14} strokeWidth={1.8} />
                 </Link>
               </li>
               <li>
                 <div className="flex items-center text-gray-400">
-                  <CaretRight size={18} weight="bold" />
+                  <ChevronRight size={18} strokeWidth={2} />
                   <Link
                     to={`/${menu}/${submenu}`}
                     className="ms-1 text-sm font-medium text-gray-700 hover:text-primary-600 dark:text-gray-400 dark:hover:text-white md:ms-2"
@@ -119,7 +114,7 @@ export default function Transfers() {
               </li>
               <li>
                 <div className="flex items-center text-gray-400">
-                  <CaretRight size={18} weight="bold" />
+                  <ChevronRight size={18} strokeWidth={2} />
                   <Link
                     to={`/${menu}/${submenu}/${rfq_id}`}
                     className="ms-1 text-sm font-medium text-gray-700 hover:text-primary-600 dark:text-gray-400 dark:hover:text-white md:ms-2"
@@ -130,7 +125,7 @@ export default function Transfers() {
               </li>
               <li aria-current="page">
                 <div className="flex items-center text-gray-400">
-                  <CaretRight size={18} weight="bold" />
+                  <ChevronRight size={18} strokeWidth={2} />
                   <span className="ms-1 text-sm font-medium text-gray-500 dark:text-gray-400 md:ms-2">
                     Transfers
                   </span>
@@ -146,7 +141,7 @@ export default function Transfers() {
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full sm:w-fit justify-end">
               <div className="relative w-full">
                 <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-500 dark:text-gray-400">
-                  <MagnifyingGlass size={16} weight="bold" />
+                  <Search size={16} strokeWidth={1.8} />
                 </div>
                 <input
                   type="text"
