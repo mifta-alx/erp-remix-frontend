@@ -1,6 +1,11 @@
 import { Check, ChevronRight, House, X } from "lucide-react";
-import { useState } from "react";
-import { Link, useLoaderData, useNavigate } from "@remix-run/react";
+import { useEffect, useState } from "react";
+import {
+  Link,
+  useLoaderData,
+  useNavigate,
+  useNavigation,
+} from "@remix-run/react";
 import { ErrorView } from "@views/index.js";
 import { formatPriceBase, unformatPriceBase } from "@utils/formatPrice.js";
 import {
@@ -122,13 +127,21 @@ export default function AddProduct() {
         localStorage.removeItem("image_url");
         localStorage.removeItem("image");
         navigate("/manufacturing/products");
-        setLoading(false);
       }
     } catch (error) {
       console.error(error);
       setLoading(false);
     }
   };
+  const navigation = useNavigation();
+
+  useEffect(() => {
+    if (navigation.state === "loading") {
+      setLoading(true);
+    } else {
+      setLoading(false);
+    }
+  }, [navigation.state]);
 
   const handleDiscard = () => {
     navigate("/manufacturing/products");
