@@ -225,7 +225,7 @@ export default function ManufacturingOrders() {
               <EmptyView
                 section="manufacturing order"
                 link="/manufacturing/mo/add"
-                icon={<FileStack />}
+                icon={<FileStack size={40} />}
               />
             )}
           </>

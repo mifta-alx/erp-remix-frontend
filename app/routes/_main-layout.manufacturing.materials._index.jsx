@@ -1,4 +1,4 @@
-import { ChevronRight, House, Plus, Search } from "lucide-react";
+import { ChevronRight, House, Package2, Plus, Search } from "lucide-react";
 import { Link, useLoaderData } from "@remix-run/react";
 import { EmptyView, ErrorView, MaterialView } from "@views/index.js";
 import { ViewSwitch } from "@components/index.js";
@@ -145,7 +145,7 @@ export default function Materials() {
               <EmptyView
                 section="material"
                 link="/manufacturing/materials/add"
-                icon={<CirclesFour />}
+                icon={<Package2 size={40} />}
               />
             )}
           </>

@@ -297,7 +297,7 @@ export default function SalesOrder() {
               <EmptyView
                 section="sales orders"
                 link="/sales/sales-order/add"
-                icon={<ReceiptText />}
+                icon={<ReceiptText size={40} />}
               />
             )}
           </>

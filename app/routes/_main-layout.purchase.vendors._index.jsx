@@ -144,7 +144,7 @@ export default function Vendors() {
               <EmptyView
                 section="vendor"
                 link="/purchase/vendors/add"
-                icon={<Factory />}
+                icon={<Factory size={40} />}
               />
             )}
           </>

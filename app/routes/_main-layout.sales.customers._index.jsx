@@ -1,5 +1,5 @@
 import { Link, useLoaderData } from "@remix-run/react";
-import { ChevronRight, Factory, House, Plus, Search } from "lucide-react";
+import { ChevronRight, House, Plus, Search, UserRound } from "lucide-react";
 import { CustomersView, EmptyView, ErrorView } from "@views/index.js";
 import { ViewSwitch } from "@components/index.js";
 import { useEffect, useState } from "react";
@@ -144,7 +144,7 @@ export default function Customers() {
               <EmptyView
                 section="customer"
                 link="/sales/customers/add"
-                icon={<Factory />}
+                icon={<UserRound size={40} />}
               />
             )}
           </>

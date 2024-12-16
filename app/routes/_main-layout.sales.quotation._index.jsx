@@ -236,7 +236,7 @@ export default function Quotation() {
               <EmptyView
                 section="quotation"
                 link="/sales/quotation/add"
-                icon={<ReceiptText />}
+                icon={<ReceiptText size={40} />}
               />
             )}
           </>

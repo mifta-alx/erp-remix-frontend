@@ -230,7 +230,7 @@ export default function RequestForQuotation() {
               <EmptyView
                 section="request for quotation"
                 link="/purchase/rfq/add"
-                icon={<ReceiptText />}
+                icon={<ReceiptText size={40} />}
               />
             )}
           </>

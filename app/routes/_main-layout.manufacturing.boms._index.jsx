@@ -204,7 +204,7 @@ export default function Bom() {
               <EmptyView
                 section="bills of material"
                 link="/manufacturing/boms/add"
-                icon={<Blocks />}
+                icon={<Blocks size={40} />}
               />
             )}
           </>

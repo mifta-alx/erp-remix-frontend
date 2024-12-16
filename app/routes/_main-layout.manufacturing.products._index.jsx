@@ -148,7 +148,7 @@ export default function Products() {
               <EmptyView
                 section="product"
                 link="/manufacturing/products/add"
-                icon={<Package />}
+                icon={<Package size={40} />}
               />
             )}
           </>
