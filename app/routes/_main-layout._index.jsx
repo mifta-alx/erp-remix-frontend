@@ -438,7 +438,7 @@ export default function Index() {
                           <tr>
                             <td
                               colSpan="4"
-                              className="px-6 py-4 text-center text-gray-500"
+                              className="px-6 py-4 text-center text-gray-300 dark:text-gray-500"
                             >
                               No recent manufacturing orders to display.
                             </td>
