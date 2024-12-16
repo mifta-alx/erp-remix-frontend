@@ -165,8 +165,8 @@ const TableQuotation = ({
               ...updatedProductsArr[index],
               description: formatProductName(data),
               qty: formatToDecimal(1),
-              unit_price: formatPriceBase(data.cost || 0),
-              subtotal: 1 * data.cost,
+              unit_price: formatPriceBase(data.sales_price || 0),
+              subtotal: 1 * data.sales_price,
             };
             return updatedProductsArr;
           });
