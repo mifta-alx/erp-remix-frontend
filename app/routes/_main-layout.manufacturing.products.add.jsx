@@ -122,10 +122,10 @@ export default function AddProduct() {
         localStorage.removeItem("image_url");
         localStorage.removeItem("image");
         navigate("/manufacturing/products");
+        setLoading(false);
       }
     } catch (error) {
       console.error(error);
-    } finally {
       setLoading(false);
     }
   };
