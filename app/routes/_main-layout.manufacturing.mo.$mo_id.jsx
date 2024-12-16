@@ -244,12 +244,14 @@ const DetailedMo = () => {
 
   const handleUpdate = async (e) => {
     e.preventDefault();
-    if (formData.status !== "failed" || formData.state < 5) {
+    const state =
+      formData.status === "failed" ? 3 : parseInt(formData.state) + 1;
+    if (formData.state < 5) {
       setLoadingUpdate(true);
       //updating state form data
       const updatedFormData = {
         ...formData,
-        state: parseInt(formData.state) + 1,
+        state,
       };
 
       try {
@@ -358,7 +360,8 @@ const DetailedMo = () => {
                 <h2 className="text-xl font-semibold text-gray-900 dark:text-white sm:text-2xl">
                   Manufacturing Orders
                 </h2>
-                {formData.state < 5 && formData.status !== "failed" && (
+                {(formData.state < 5 ||
+                  (formData.state === 3 && formData.status === "failed")) && (
                   <div className="inline-flex w-full sm:w-fit" role="group">
                     <button
                       type="button"
@@ -366,7 +369,10 @@ const DetailedMo = () => {
                       className="inline-flex items-center w-full sm:w-fit px-4 py-2 gap-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-s-lg hover:bg-gray-100 hover:text-primary-700 focus:z-10 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:text-primary-500 dark:hover:bg-gray-700"
                     >
                       {loadingUpdate ? <Spinner /> : <Check size={16} />}
-                      {getStringButton[formData.state]}
+                      {formData.state === 2 ||
+                      (formData.state === 3 && formData.status === "failed")
+                        ? "Check Availability"
+                        : getStringButton[formData.state]}
                     </button>
                     <button
                       type="button"
