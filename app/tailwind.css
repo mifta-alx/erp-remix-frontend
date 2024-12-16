@@ -17,3 +17,44 @@ body {
       0px 0px 0px 4px rgba(239, 68, 68, 0.24) !important
   }
 }
+
+.skeleton-box {
+  -webkit-animation: skeleton-loading 1s linear infinite alternate;
+  animation: skeleton-loading 1s linear infinite alternate;
+}
+
+.dark .skeleton-box {
+  -webkit-animation: skeleton-loading-dark 1s linear infinite alternate;
+  animation: skeleton-loading-dark 1s linear infinite alternate;
+}
+
+
+.skeleton-img {
+  height: 10rem;
+  -webkit-animation: skeleton-loading 1s linear infinite alternate;
+  animation: skeleton-loading 1s linear infinite alternate;
+}
+
+@keyframes skeleton-loading {
+  0% {
+    background-color: hsl(200, 20%, 80%);
+    color: hsl(200, 20%, 80%);
+  }
+
+  100% {
+    background-color: hsl(200, 20%, 95%);
+    color: hsl(200, 20%, 95%);
+  }
+}
+
+@keyframes skeleton-loading-dark {
+  0% {
+    background-color: hsl(200, 15%, 20%);
+    color: hsl(200, 20%, 80%);
+  }
+
+  100% {
+    background-color: hsl(200, 15%, 25%);
+    color: hsl(200, 20%, 95%);
+  }
+}

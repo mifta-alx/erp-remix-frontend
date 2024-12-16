@@ -294,7 +294,7 @@ export default function PurchaseOrder() {
               </div>
             ) : (
               <EmptyView
-                section="request for quotation"
+                section="purchase orders"
                 link="/purchase/po/add"
                 icon={<ReceiptText size={40} />}
               />
