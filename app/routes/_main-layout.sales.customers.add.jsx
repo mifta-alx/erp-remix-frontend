@@ -8,6 +8,7 @@ import {
   SearchInput,
   Spinner,
 } from "@components/index.js";
+import { useToast } from "@context/ToastContext.jsx";
 
 export const meta = () => {
   return [
@@ -59,6 +60,7 @@ export const loader = async () => {
 export default function AddCustomers() {
   const { API_URL, tags, customers, error, message, description, status } =
     useLoaderData();
+  const showToast = useToast();
   const navigate = useNavigate();
   const [actionData, setActionData] = useState();
   const [loading, setLoading] = useState(false);
@@ -124,14 +126,15 @@ export default function AddCustomers() {
           tag_id: selectedTags.map((tag) => tag.id),
         }),
       });
+      const result = await response.json();
       if (!response.ok) {
-        const result = await response.json();
-        console.error("Server Error Response:", result);
-        setActionData({ errors: result.errors || {} });
+        if (result.errors) {
+          setActionData({ errors: result.errors || {} });
+        } else {
+          showToast(result.message, "danger");
+        }
         return;
       }
-
-      const result = await response.json();
       if (result.success) {
         localStorage.removeItem("image_url");
         localStorage.removeItem("image");
@@ -149,6 +152,7 @@ export default function AddCustomers() {
           image_uuid: "",
         });
         navigate("/sales/customers");
+        showToast(result.message, "success");
       }
     } catch (error) {
       console.error(error);

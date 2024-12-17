@@ -60,11 +60,11 @@ const TableRFQValidate = ({
   return (
     <div className="bg-white border-gray-200 dark:border-gray-700 border dark:bg-gray-800 rounded-lg mt-6 pt-6 overflow-x-auto">
       <table
-        className={`w-full text-sm text-left ${
+        className={`w-max sm:w-full text-sm text-left ${
           currentState >= 4
             ? "text-gray-400 dark:text-gray-300"
             : "text-gray-500 dark:text-gray-400"
-        } table-auto`}
+        } table-fixed`}
       >
         <thead className="text-sm text-gray-900 capitalize dark:text-gray-400 border-b border-gray-200 dark:border-gray-600">
           <tr>

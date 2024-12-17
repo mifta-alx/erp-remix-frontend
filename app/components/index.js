@@ -11,3 +11,4 @@ export { default as MultiSelect } from "./MultiSelect.jsx";
 export { default as Menu } from "./Menu.jsx";
 export { default as ProgressBar } from "./ProgressBar.jsx";
 export { default as StateBar } from "./StateBar.jsx";
+export { default as Toast } from "./Toast.jsx";

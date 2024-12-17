@@ -13,6 +13,7 @@ import { SearchInput, Spinner } from "@components/index.js";
 import TableBom from "@views/TableBom.jsx";
 import { formatToDecimal } from "@utils/formatDecimal.js";
 import { formatBomName, formatProductName } from "@utils/formatName.js";
+import { useToast } from "@context/ToastContext.jsx";
 
 export const meta = ({ data }) => {
   const formattedName = `${
@@ -84,6 +85,7 @@ export const loader = async ({ params }) => {
 
 export default function DetailedBoM() {
   const location = useLocation();
+  const showToast = useToast();
   const { state } = location;
   const navigate = useNavigate();
   const params = useParams();
@@ -206,13 +208,18 @@ export default function DetailedBoM() {
         },
         body: JSON.stringify(formattedData),
       });
+      const result = await response.json();
       if (!response.ok) {
-        const result = await response.json();
-        setActionData({ errors: result.errors || {} });
+        if (result.errors) {
+          setActionData({ errors: result.errors || {} });
+        } else {
+          showToast(result.message, "danger");
+        }
         return;
       }
       setSubmitted(true);
       setActionData(null);
+      showToast(result.message, "success");
     } catch (error) {
       console.error(error);
     } finally {
@@ -228,11 +235,13 @@ export default function DetailedBoM() {
       const response = await fetch(`${API_URL}/boms/${params.bom_id}`, {
         method: "DELETE",
       });
+
+      const result = await response.json();
       if (response.ok) {
         navigate("/manufacturing/boms");
+        showToast(result.message, "success");
       } else {
-        const errorData = await response.json();
-        console.error("Failed to delete bom:", errorData);
+        showToast(result.message, "danger");
       }
     } catch (error) {
       console.error("Error deleting bom:", error);

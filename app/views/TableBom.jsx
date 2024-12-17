@@ -83,17 +83,20 @@ const TableBom = ({
   };
 
   return (
-    <div className="bg-white border-gray-200 dark:border-gray-700 border dark:bg-gray-800 rounded-lg mt-6 pt-6">
-      <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400 table-auto">
+    <div className="bg-white border-gray-200 dark:border-gray-700 border dark:bg-gray-800 rounded-lg mt-6 pt-6  overflow-x-auto">
+      <table className="w-max sm:w-full text-sm text-left text-gray-500 dark:text-gray-400 table-fixed">
         <thead className="text-sm text-gray-900 capitalize dark:text-gray-400 border-b border-gray-200 dark:border-gray-600">
           <tr>
-            <th scope="col" className="px-6 py-3 sm:w-4/5 w-auto">
+            <th scope="col" className="px-6 py-3 w-64 sm:w-full">
               Component
             </th>
-            <th scope="col" className="px-6 py-3 text-center">
+            <th
+              scope="col"
+              className="ps-6 pe-[34px] py-3 text-end w-36 sm:w-2/5"
+            >
               Quantity
             </th>
-            <th scope="col" className="px-6 py-3"></th>
+            <th scope="col" className="px-6 py-3 w-16"></th>
           </tr>
         </thead>
         <tbody className="divide-y divide-gray-200 dark:divide-gray-600">

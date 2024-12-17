@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { Link, useLoaderData, useNavigate } from "@remix-run/react";
 import { ErrorView } from "@views/index.js";
 import { ImageUpload, Spinner } from "@components/index.js";
+import { useToast } from "@context/ToastContext.jsx";
 
 export const meta = () => {
   return [
@@ -53,6 +54,7 @@ export const loader = async () => {
 
 export default function AddVendors() {
   const { API_URL, error, message, description, status } = useLoaderData();
+  const showToast = useToast();
   const navigate = useNavigate();
   const [actionData, setActionData] = useState();
   const [loading, setLoading] = useState(false);
@@ -116,16 +118,20 @@ export default function AddVendors() {
           image_url: preview,
         }),
       });
+      const result = await response.json();
       if (!response.ok) {
-        const result = await response.json();
-        setActionData({ errors: result.errors || {} });
+        if (result.errors) {
+          setActionData({ errors: result.errors || {} });
+        } else {
+          showToast(result.message, "danger");
+        }
         return;
       }
-      const result = await response.json();
       if (result.success) {
         localStorage.removeItem("image_url");
         localStorage.removeItem("image");
         navigate("/purchase/vendors");
+        showToast(result.message, "success");
       }
     } catch (error) {
       console.error(error);

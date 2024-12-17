@@ -359,7 +359,7 @@ export default function Index() {
                         ))}
                       </div>
                     ) : (
-                      <div className="px-6 flex flex-col justify-center gap-4 text-gray-300 dark:text-gray-500 h-1/2 items-center">
+                      <div className="px-6 flex flex-col justify-center gap-4 text-gray-300 dark:text-gray-500 min-h-40 items-center">
                         <h4 className="text-base font-light">
                           There are no top customers at the moment.
                         </h4>

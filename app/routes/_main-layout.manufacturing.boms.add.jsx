@@ -6,6 +6,7 @@ import { SearchInput, Spinner } from "@components/index.js";
 import TableBom from "@views/TableBom.jsx";
 import { formatToDecimal } from "@utils/formatDecimal.js";
 import { formatProductName } from "@utils/formatName.js";
+import { useToast } from "@context/ToastContext.jsx";
 
 export const meta = () => {
   return [
@@ -58,6 +59,7 @@ export const loader = async () => {
 
 export default function AddBom() {
   const navigate = useNavigate();
+  const showToast = useToast();
   const { API_URL, products, materials, error, message, description, status } =
     useLoaderData();
   const [loading, setLoading] = useState(false);
@@ -98,13 +100,18 @@ export default function AddBom() {
         },
         body: JSON.stringify(formattedData),
       });
+      const result = await response.json();
       if (!response.ok) {
-        const result = await response.json();
-        setActionData({ errors: result.errors || {} });
+        if (result.errors) {
+          setActionData({ errors: result.errors || {} });
+        } else {
+          showToast(result.message, "danger");
+        }
         return;
       }
       setLoading(false);
       navigate(`/manufacturing/boms`);
+      showToast(result.message, "success");
     } catch (error) {
       console.error(error);
     } finally {

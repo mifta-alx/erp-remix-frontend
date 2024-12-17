@@ -907,10 +907,10 @@ export default function BillsAndInvoices() {
               </div>
             </div>
             <div className="flex flex-col lg:flex-row gap-4">
-              <div className="lg:w-9/12 gap-4 flex flex-col">
-                <div className="sm:col-span-2 flex flex-col gap-6 relative bg-white border-gray-200 dark:border-gray-700 border dark:bg-gray-800 rounded-lg p-10">
-                  <div className="bg-gray-100 dark:bg-gray-700 p-6 rounded-md flex flex-row justify-between">
-                    <div className="w-1/2 flex flex-col">
+              <div className="lg:w-9/12 w-full gap-4 flex flex-col">
+                <div className="flex flex-col gap-6 relative bg-white border-gray-200 dark:border-gray-700 border dark:bg-gray-800 rounded-lg p-10">
+                  <div className="bg-gray-100 dark:bg-gray-700 p-6 rounded-md flex sm:flex-row flex-col sm:gap-0 gap-8 justify-between">
+                    <div className="sm:w-1/2 w-full flex flex-col">
                       <h6 className="text-2xl font-semibold text-gray-800 dark:text-gray-200 mb-6">
                         F&F
                       </h6>
@@ -925,8 +925,8 @@ export default function BillsAndInvoices() {
                       </h6>
                     </div>
                     {formData.state < 2 ? (
-                      <div className="w-1/2 flex flex-col gap-2">
-                        <div className="flex flex-row gap-2 items-center justify-end">
+                      <div className="sm:w-1/2 w-full flex flex-col gap-2">
+                        <div className="flex sm:flex-row flex-col gap-2 items-start sm:items-center sm:justify-end justify-start">
                           <label
                             htmlFor="order_date"
                             className="block text-sm font-medium text-gray-900 dark:text-white"
@@ -945,12 +945,12 @@ export default function BillsAndInvoices() {
                                 ? "border-red-500 dark:border-red-500"
                                 : "border-gray-300 dark:border-gray-600"
                             }
-                      border-gray-300 dark:border-gray-600 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-1/2 p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
+                      border-gray-300 dark:border-gray-600 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block sm:w-1/2 w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
                             value={invoice.reference}
                             autoComplete="off"
                           />
                         </div>
-                        <div className="flex flex-row gap-2 items-center justify-end">
+                        <div className="flex sm:flex-row flex-col gap-2 items-start sm:items-center sm:justify-end justify-start">
                           <label
                             htmlFor="order_date"
                             className="block text-sm font-medium text-gray-900 dark:text-white"
@@ -959,7 +959,7 @@ export default function BillsAndInvoices() {
                               ? "Bill Date:"
                               : page === "invoices" && "Invoice Date:"}
                           </label>
-                          <div className="w-1/2">
+                          <div className="sm:w-1/2 w-full">
                             <DateInput
                               error={actionData?.errors?.invoice_date}
                               onChange={handleChange}
@@ -968,7 +968,7 @@ export default function BillsAndInvoices() {
                             />
                           </div>
                         </div>
-                        <div className="flex flex-row gap-2 items-center justify-end">
+                        <div className="flex sm:flex-row flex-col gap-2 items-start sm:items-center sm:justify-end justify-start">
                           <label
                             htmlFor="order_date"
                             className="block text-sm font-medium text-gray-900 dark:text-white"
@@ -977,7 +977,7 @@ export default function BillsAndInvoices() {
                               ? "Accounting Date:"
                               : page === "invoices" && "Delivery Date:"}
                           </label>
-                          <div className="w-1/2">
+                          <div className="sm:w-1/2 w-full">
                             <DateInput
                               error={
                                 page === "bills"
@@ -1000,7 +1000,7 @@ export default function BillsAndInvoices() {
                         </div>
                       </div>
                     ) : (
-                      <div className="w-fit">
+                      <div className="sm:w-fit w-max">
                         <h6 className="text-lg font-medium text-gray-800 dark:text-gray-200 mb-6">
                           {invoice.transaction_type}/{invoice.reference}
                         </h6>
@@ -1012,7 +1012,7 @@ export default function BillsAndInvoices() {
                           </span>
                           <span>{formatBasicDate(formData.invoice_date)}</span>
                         </h6>
-                        <h6 className="text-sm font-normal text-gray-700 dark:text-gray-400">
+                        <h6 className="text-sm font-normal text-end text-gray-700 dark:text-gray-400">
                           <span>
                             {page === "bills"
                               ? "Accounting Date:"
@@ -1029,9 +1029,9 @@ export default function BillsAndInvoices() {
                       </div>
                     )}
                   </div>
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid sm:grid-cols-2 grid-cols-1 gap-4">
                     {page === "bills" ? (
-                      <div className="w-1/2 space-y-4">
+                      <div className="sm:w-1/2 w-full space-y-4">
                         {formData.state < 2 ? (
                           <SearchInput
                             name="vendor_id"
@@ -1072,7 +1072,7 @@ export default function BillsAndInvoices() {
                       </div>
                     ) : (
                       page === "invoices" && (
-                        <div className="w-1/2 space-y-4">
+                        <div className="sm:w-1/2 w-full space-y-4">
                           {formData.state < 2 ? (
                             <SearchInput
                               name="customer_id"
@@ -1116,7 +1116,7 @@ export default function BillsAndInvoices() {
                         </div>
                       )
                     )}
-                    <div className="w-1/2 space-y-4">
+                    <div className="sm:w-1/2 w-full space-y-4">
                       {formData.state < 2 ? (
                         <>
                           {!usePaymentTerm && (

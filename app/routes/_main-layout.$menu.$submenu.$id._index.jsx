@@ -22,6 +22,7 @@ import { formatDisplayDatetime } from "@utils/formatDate.js";
 import { json } from "@remix-run/node";
 import { twMerge } from "tailwind-merge";
 import { formatCustomerName } from "@utils/formatName.js";
+import { useToast } from "@context/ToastContext.jsx";
 
 export const meta = ({ data }) => {
   const { menu, result } = data;
@@ -125,6 +126,7 @@ export const loader = async ({ params }) => {
 export default function DetailedRequestForQuotation() {
   const params = useParams();
   const { menu, submenu, id } = params;
+  const showToast = useToast();
   const navigate = useNavigate();
   const {
     API_URL,
@@ -459,12 +461,17 @@ export default function DetailedRequestForQuotation() {
         },
         body: JSON.stringify(formattedData),
       });
+      const result = await response.json();
       if (!response.ok) {
-        const result = await response.json();
-        setActionData({ errors: result.errors || {} });
+        if (result.errors) {
+          setActionData({ errors: result.errors || {} });
+        } else {
+          showToast(result.message, "danger");
+        }
         return;
       }
       navigate(`/${menu}/${submenu}`);
+      showToast(result.message, "success");
     } catch (error) {
       console.error(error);
     } finally {

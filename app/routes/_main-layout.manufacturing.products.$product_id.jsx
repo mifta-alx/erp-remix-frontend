@@ -16,6 +16,7 @@ import {
   SearchInput,
   Spinner,
 } from "@components/index.js";
+import { useToast } from "@context/ToastContext.jsx";
 
 export const meta = ({ data }) => {
   return [
@@ -85,6 +86,7 @@ export const loader = async ({ params, request }) => {
 
 export default function EditProduct() {
   const location = useLocation();
+  const showToast = useToast();
   const { state } = location;
   const {
     API_URL,
@@ -148,13 +150,16 @@ export default function EditProduct() {
           tags: selectedTags.map((tag) => tag.id),
         }),
       });
+      const result = await response.json();
       if (!response.ok) {
-        const result = await response.json();
-        setActionData({ errors: result.errors || {} });
+        if (result.errors) {
+          setActionData({ errors: result.errors || {} });
+        } else {
+          showToast(result.message, "danger");
+        }
         return;
       }
 
-      const result = await response.json();
       if (result.success) {
         localStorage.removeItem("image_url");
         localStorage.removeItem("image");
@@ -169,6 +174,7 @@ export default function EditProduct() {
           image_uuid: "",
         });
         navigate("/manufacturing/products");
+        showToast(result.message, "success");
       }
     } catch (error) {
       console.error(error);
@@ -183,14 +189,14 @@ export default function EditProduct() {
       const response = await fetch(`${API_URL}/products/${params.product_id}`, {
         method: "DELETE",
       });
-
+      const result = await response.json();
       if (response.ok) {
         localStorage.removeItem("image_url");
         localStorage.removeItem("image");
         navigate("/manufacturing/products");
+        showToast(result.message, "success");
       } else {
-        const errorData = await response.json();
-        console.error("Failed to delete product:", errorData);
+        showToast(result.message, "danger");
       }
     } catch (error) {
       console.error("Error deleting product:", error);

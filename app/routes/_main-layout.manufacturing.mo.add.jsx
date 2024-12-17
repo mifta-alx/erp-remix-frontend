@@ -5,6 +5,7 @@ import { ErrorView, StepperMO, TableMO } from "@views/index.js";
 import { SearchInput, Spinner } from "@components/index.js";
 import { formatToDecimal } from "@utils/formatDecimal.js";
 import { formatBomName, formatProductName } from "@utils/formatName.js";
+import { useToast } from "@context/ToastContext.jsx";
 
 export const meta = () => {
   return [
@@ -55,6 +56,7 @@ export const loader = async () => {
 
 export default function AddMo() {
   const navigate = useNavigate();
+  const showToast = useToast();
   const { API_URL, products, boms, error, message, description, status } =
     useLoaderData();
   const [loading, setLoading] = useState(false);
@@ -172,7 +174,6 @@ export default function AddMo() {
   };
 
   const handleSubmit = async (e) => {
-    console.log(formData);
     setLoading(true);
     e.preventDefault();
     try {
@@ -183,13 +184,18 @@ export default function AddMo() {
         },
         body: JSON.stringify(formData),
       });
+      const result = await response.json();
       if (!response.ok) {
-        const result = await response.json();
-        setActionData({ errors: result.errors || {} });
+        if (result.errors) {
+          setActionData({ errors: result.errors || {} });
+        } else {
+          showToast(result.message, "danger");
+        }
         return;
       }
       setLoading(false);
       navigate(`/manufacturing/mo`);
+      showToast(result.message, "success");
     } catch (error) {
       console.error(error);
     } finally {

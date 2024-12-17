@@ -15,6 +15,7 @@ import {
   SearchInput,
   Spinner,
 } from "@components/index.js";
+import { useToast } from "@context/ToastContext.jsx";
 
 export const meta = ({ data }) => {
   const formattedName = `${
@@ -100,7 +101,7 @@ export default function EditMaterial() {
     description,
     status,
   } = useLoaderData();
-
+  const showToast = useToast();
   const params = useParams();
   const navigate = useNavigate();
   const [actionData, setActionData] = useState();
@@ -116,7 +117,7 @@ export default function EditMaterial() {
   const [selectedTags, setSelectedTags] = useState(material?.tags || []);
   //
   const [formData, setFormData] = useState({
-    name: material?.name || "",
+    material_name: material?.name || "",
     category_id: material?.category_id || "",
     sales_price: formatPriceBase(material.sales_price),
     cost: formatPriceBase(material.cost),
@@ -145,7 +146,7 @@ export default function EditMaterial() {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            material_name: formData.name,
+            material_name: formData.material_name,
             category_id: formData.category_id,
             sales_price: unformatPriceBase(formData.sales_price),
             cost: unformatPriceBase(formData.cost),
@@ -158,18 +159,20 @@ export default function EditMaterial() {
           }),
         }
       );
-
+      const result = await response.json();
       if (!response.ok) {
-        const result = await response.json();
-        setActionData({ errors: result.errors || {} });
+        if (result.errors) {
+          setActionData({ errors: result.errors || {} });
+        } else {
+          showToast(result.message, "danger");
+        }
         return;
       }
-      const result = await response.json();
       if (result.success) {
         localStorage.removeItem("image_url");
         localStorage.removeItem("image");
         setFormData({
-          name: "",
+          material_name: "",
           category_id: "",
           sales_price: 0,
           cost: 0,
@@ -179,6 +182,7 @@ export default function EditMaterial() {
           image_uuid: "",
         });
         navigate("/manufacturing/materials");
+        showToast(result.message, "success");
       }
     } catch (error) {
       console.error(error);
@@ -210,14 +214,14 @@ export default function EditMaterial() {
           method: "DELETE",
         }
       );
-
+      const result = await response.json();
       if (response.ok) {
         localStorage.removeItem("image_url");
         localStorage.removeItem("image");
         navigate("/manufacturing/materials");
+        showToast(result.message, "success");
       } else {
-        const errorData = await response.json();
-        console.error("Failed to delete material:", errorData);
+        showToast(result.message, "danger");
       }
     } catch (error) {
       console.error("Error deleting material:", error);
@@ -327,21 +331,21 @@ export default function EditMaterial() {
                       </label>
                       <input
                         type="text"
-                        name="name"
+                        name="material_name"
                         id="name"
                         autoComplete="off"
                         className={`bg-gray-50 border ${
-                          actionData?.errors?.name
+                          actionData?.errors?.material_name
                             ? "border-red-500 dark:border-red-500"
                             : "border-gray-300 dark:border-gray-600"
                         } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
                         placeholder="Type material name"
-                        value={formData.name}
+                        value={formData.material_name}
                         onChange={handleChange}
                       />
-                      {actionData?.errors?.name && (
+                      {actionData?.errors?.material_name && (
                         <p className="mt-2 text-sm text-red-600">
-                          {actionData?.errors.name}
+                          {actionData?.errors.material_name}
                         </p>
                       )}
                     </div>

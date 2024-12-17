@@ -5,6 +5,7 @@ import { ErrorView } from "@views/index.js";
 import { ImageUpload, Spinner } from "@components/index.js";
 import { json } from "@remix-run/node";
 import { formatProductName } from "@utils/formatName.js";
+import { useToast } from "@context/ToastContext.jsx";
 
 export const meta = ({ data }) => {
   return [
@@ -72,6 +73,7 @@ export default function EditVendor() {
   const { API_URL, vendor, error, message, description, status } =
     useLoaderData();
   const params = useParams();
+  const showToast = useToast();
   const { menu, submenu, vendor_id } = params;
   const navigate = useNavigate();
   const [actionData, setActionData] = useState();
@@ -136,13 +138,16 @@ export default function EditVendor() {
           image_url: preview,
         }),
       });
+      const result = await response.json();
       if (!response.ok) {
-        const result = await response.json();
-        setActionData({ errors: result.errors || {} });
+        if (result.errors) {
+          setActionData({ errors: result.errors || {} });
+        } else {
+          showToast(result.message, "danger");
+        }
         return;
       }
 
-      const result = await response.json();
       if (result.success) {
         localStorage.removeItem("image_url");
         localStorage.removeItem("image");
@@ -158,6 +163,7 @@ export default function EditVendor() {
           email: "",
         });
         navigate("/purchase/vendors");
+        showToast(result.message, "success");
       }
     } catch (error) {
       console.error(error);
@@ -173,13 +179,14 @@ export default function EditVendor() {
         method: "DELETE",
       });
 
+      const result = await response.json();
       if (response.ok) {
         localStorage.removeItem("image_url");
         localStorage.removeItem("image");
         navigate("/purchase/vendors");
+        showToast(result.message, "success");
       } else {
-        const errorData = await response.json();
-        console.error("Failed to delete vendor:", errorData);
+        showToast(result.message, "danger");
       }
     } catch (error) {
       console.error("Error deleting vendor:", error);

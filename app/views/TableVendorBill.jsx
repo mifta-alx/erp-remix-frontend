@@ -49,13 +49,13 @@ const TableVendorBill = ({
 
   return (
     <div className="bg-white border-gray-200 dark:border-gray-700 border dark:bg-gray-800 rounded-lg mt-6 pt-6 overflow-x-auto">
-      <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400 table-fixed sm:overflow-hidden">
+      <table className="w-max sm:w-full text-sm text-left text-gray-500 dark:text-gray-400 table-fixed sm:overflow-hidden">
         <thead className="text-sm text-gray-900 capitalize dark:text-gray-400 border-b border-gray-200 dark:border-gray-600">
           <tr>
             <th scope="col" className="ps-6 pe-3 py-3 w-60 sm:w-60">
               Product
             </th>
-            <th scope="col" className="p-3 w-36 sm:w-auto">
+            <th scope="col" className="p-3 w-36 sm:w-40">
               Description
             </th>
             <th scope="col" className="p-3 text-end w-20 sm:w-24">
@@ -67,10 +67,7 @@ const TableVendorBill = ({
             <th scope="col" className="p-3 text-end w-20 sm:w-24">
               Tax (%)
             </th>
-            <th
-              scope="col"
-              className="ps-3 pe-6 text-end w-36 sm:w-auto sm:min-w-24"
-            >
+            <th scope="col" className="ps-3 pe-6 text-end w-36 sm:w-40">
               Subtotal
             </th>
           </tr>

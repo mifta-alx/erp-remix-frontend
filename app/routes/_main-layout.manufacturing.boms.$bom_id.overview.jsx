@@ -96,7 +96,7 @@ export default function BomOverview() {
       return total + component.material_qty * component.material.cost;
     }, 0),
   };
-  console.log(formattedBoM);
+
   const handleAddQuantity = () => {
     setQuantity(quantity + 1);
   };

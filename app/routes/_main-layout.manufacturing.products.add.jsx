@@ -14,6 +14,7 @@ import {
   SearchInput,
   Spinner,
 } from "@components/index.js";
+import { useToast } from "@context/ToastContext.jsx";
 
 export const meta = () => {
   return [
@@ -68,6 +69,7 @@ export default function AddProduct() {
   const { API_URL, categories, tags, error, message, description, status } =
     useLoaderData();
   const navigate = useNavigate();
+  const showToast = useToast();
   const [actionData, setActionData] = useState();
   const [loading, setLoading] = useState(false);
   //image
@@ -116,20 +118,24 @@ export default function AddProduct() {
           tags: selectedTags.map((tag) => tag.id),
         }),
       });
+      const result = await response.json();
       if (!response.ok) {
-        const result = await response.json();
-        setActionData({ errors: result.errors || {} });
+        if (result.errors) {
+          setActionData({ errors: result.errors || {} });
+        } else {
+          showToast(result.message, "danger");
+        }
         return;
       }
-
-      const result = await response.json();
       if (result.success) {
         localStorage.removeItem("image_url");
         localStorage.removeItem("image");
         navigate("/manufacturing/products");
+        showToast(result.message, "success");
       }
     } catch (error) {
       console.error(error);
+    } finally {
       setLoading(false);
     }
   };

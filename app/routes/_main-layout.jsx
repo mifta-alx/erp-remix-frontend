@@ -1,4 +1,4 @@
-import { AlignJustify, ChevronDown, Moon, Sun } from "lucide-react";
+import { AlignJustify, ChevronDown, Moon, Snowflake, Sun } from "lucide-react";
 import { NavLink, Outlet, useLocation } from "@remix-run/react";
 import { useEffect, useRef, useState } from "react";
 import { useColorScheme } from "../context/ColorScheme";
@@ -36,8 +36,11 @@ export default function _mainLayout() {
             <div className="flex items-center space-x-8">
               <div className="shrink-0">
                 <NavLink to="/" title="" className="">
-                  <span className="self-center text-lg md:text-xl font-bold whitespace-nowrap dark:text-white text-gray-900">
-                    FrozenFood<sup>ERP</sup>
+                  <span className="items-center inline-flex gap-1 text-lg md:text-xl font-bold whitespace-nowrap text-sky-400 dark:text-sky-300">
+                    <Snowflake size={24} />
+                    <span className="dark:text-white text-gray-700">
+                      FrozenFood
+                    </span>
                   </span>
                 </NavLink>
               </div>
@@ -141,6 +144,17 @@ export default function _mainLayout() {
                   onClick={() => toggleDropdown("purchase")}
                 >
                   Purchase
+                  <ChevronDown size={18} strokeWidth={2} />
+                </button>
+              </li>
+              <li>
+                <button
+                  data-toggle="dropdown"
+                  className={`
+                    flex items-center gap-1.5 text-sm font-medium text-gray-900 hover:text-primary-700 dark:text-white dark:hover:text-primary-500`}
+                  onClick={() => toggleDropdown("sales")}
+                >
+                  Sales
                   <ChevronDown size={18} strokeWidth={2} />
                 </button>
               </li>

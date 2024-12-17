@@ -9,6 +9,7 @@ import {
   SearchInput,
   Spinner,
 } from "@components/index.js";
+import { useToast } from "@context/ToastContext.jsx";
 
 export const meta = ({ data }) => {
   const formattedName = `${
@@ -93,6 +94,7 @@ export default function EditCustomer() {
     description,
     status,
   } = useLoaderData();
+  const showToast = useToast();
   const params = useParams();
   const navigate = useNavigate();
   const [actionData, setActionData] = useState();
@@ -167,13 +169,15 @@ export default function EditCustomer() {
           }),
         }
       );
+      const result = await response.json();
       if (!response.ok) {
-        const result = await response.json();
-        setActionData({ errors: result.errors || {} });
+        if (result.errors) {
+          setActionData({ errors: result.errors || {} });
+        } else {
+          showToast(result.message, "danger");
+        }
         return;
       }
-
-      const result = await response.json();
       if (result.success) {
         localStorage.removeItem("image_url");
         localStorage.removeItem("image");
@@ -190,6 +194,7 @@ export default function EditCustomer() {
           email: "",
         });
         navigate("/sales/customers");
+        showToast(result.message, "success");
       }
     } catch (error) {
       console.error(error);
@@ -209,16 +214,17 @@ export default function EditCustomer() {
         }
       );
 
+      const result = await response.json();
       if (response.ok) {
         localStorage.removeItem("image_url");
         localStorage.removeItem("image");
         navigate("/sales/customers");
+        showToast(result.message, "success");
       } else {
-        const errorData = await response.json();
-        console.error("Failed to delete vendor:", errorData);
+        showToast(result.message, "danger");
       }
     } catch (error) {
-      console.error("Error deleting vendor:", error);
+      console.error("Error deleting customer:", error);
     } finally {
       setLoadingDelete(false);
     }
@@ -315,7 +321,7 @@ export default function EditCustomer() {
                             ? "border-red-500 dark:border-red-500"
                             : "border-gray-300 dark:border-gray-600"
                         } text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
-                        placeholder="Type vendor name"
+                        placeholder="Type customer name"
                         value={formData.name}
                         onChange={handleChange}
                       />

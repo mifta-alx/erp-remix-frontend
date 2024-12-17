@@ -15,6 +15,7 @@ import { ViewProvider } from "@context/ViewScheme.jsx";
 import { getThemeFromRequest } from "./utils/theme.server";
 import "./tailwind.css";
 import { ErrorView } from "~/views";
+import { ToastProvider } from "@context/ToastContext.jsx";
 
 type LoaderData = {
   theme: string;
@@ -53,7 +54,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
       </head>
       <body>
         <ColorSchemeProvider initialTheme={currentTheme}>
-          <ViewProvider>{children}</ViewProvider>
+          <ViewProvider>
+            <ToastProvider>{children}</ToastProvider>
+          </ViewProvider>
         </ColorSchemeProvider>
         <ScrollRestoration />
         <Scripts />

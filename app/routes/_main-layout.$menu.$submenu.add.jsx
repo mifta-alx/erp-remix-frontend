@@ -7,6 +7,7 @@ import { formatPrice, unformatPriceBase } from "@utils/formatPrice.js";
 import { unformatToDecimal } from "@utils/formatDecimal.js";
 import { json } from "@remix-run/node";
 import { formatCustomerName } from "@utils/formatName.js";
+import { useToast } from "@context/ToastContext.jsx";
 
 export const meta = ({ data }) => {
   const { menu } = data;
@@ -84,6 +85,7 @@ export const loader = async ({ params }) => {
 export default function AddPageQuotation() {
   const params = useParams();
   const { menu, submenu } = params;
+  const showToast = useToast();
   const navigate = useNavigate();
   const {
     API_URL,
@@ -207,12 +209,17 @@ export default function AddPageQuotation() {
         },
         body: JSON.stringify(formattedData),
       });
+      const result = await response.json();
       if (!response.ok) {
-        const result = await response.json();
-        setActionData({ errors: result.errors || {} });
+        if (result.errors) {
+          setActionData({ errors: result.errors || {} });
+        } else {
+          showToast(result.message, "danger");
+        }
         return;
       }
       navigate(`/${menu}/${submenu}`);
+      showToast(result.message, "success");
     } catch (error) {
       console.error(error);
     } finally {
@@ -250,12 +257,17 @@ export default function AddPageQuotation() {
         },
         body: JSON.stringify(formattedData),
       });
+      const result = await response.json();
       if (!response.ok) {
-        const result = await response.json();
-        setActionData({ errors: result.errors || {} });
+        if (result.errors) {
+          setActionData({ errors: result.errors || {} });
+        } else {
+          showToast(result.message, "danger");
+        }
         return;
       }
       navigate(`/${menu}/${submenu}`);
+      showToast(result.message, "success");
     } catch (error) {
       console.error(error);
     } finally {
