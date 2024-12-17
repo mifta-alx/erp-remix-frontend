@@ -25,6 +25,7 @@ export const meta = ({ data }) => {
 
 export const loader = async ({ params, request }) => {
   const referer = request.headers.get("Referer");
+  let node_env = process.env.MODE;
   const showActionButton = referer && referer.includes("/customers");
   let apiEndpoint = process.env.API_URL;
   try {
@@ -69,7 +70,7 @@ export const loader = async ({ params, request }) => {
       tags: init.data.tags,
       customers: init.data.customers,
       customer: customer.data,
-
+      node_env,
       showActionButton,
     };
   } catch (error) {
@@ -93,6 +94,7 @@ export default function EditCustomer() {
     message,
     description,
     status,
+    node_env,
   } = useLoaderData();
   const showToast = useToast();
   const params = useParams();
@@ -277,24 +279,26 @@ export default function EditCustomer() {
                 <h2 className="text-xl font-semibold text-gray-900 dark:text-white sm:text-2xl">
                   Customer
                 </h2>
-                <div className="inline-flex w-full sm:w-fit" role="group">
-                  <button
-                    type="button"
-                    onClick={handleUpdate}
-                    className="inline-flex items-center w-full sm:w-fit px-4 py-2 gap-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-s-lg hover:bg-gray-100 hover:text-primary-700 focus:z-10 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:text-primary-500 dark:hover:bg-gray-700"
-                  >
-                    {loadingUpdate ? <Spinner /> : <Check size={16} />}
-                    Save
-                  </button>
-                  <button
-                    type="button"
-                    onClick={handleDeleteCustomer}
-                    className="inline-flex items-center w-full sm:w-fit px-4 py-2 gap-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-e-lg hover:bg-gray-100 hover:text-red-600 focus:z-10 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:text-red-500 dark:hover:bg-gray-700"
-                  >
-                    {loadingDelete ? <Spinner /> : <Trash size={14} />}
-                    Delete
-                  </button>
-                </div>
+                {node_env === "production" && (
+                  <div className="inline-flex w-full sm:w-fit" role="group">
+                    <button
+                      type="button"
+                      onClick={handleUpdate}
+                      className="inline-flex items-center w-full sm:w-fit px-4 py-2 gap-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-s-lg hover:bg-gray-100 hover:text-primary-700 focus:z-10 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:text-primary-500 dark:hover:bg-gray-700"
+                    >
+                      {loadingUpdate ? <Spinner /> : <Check size={16} />}
+                      Save
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleDeleteCustomer}
+                      className="inline-flex items-center w-full sm:w-fit px-4 py-2 gap-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-e-lg hover:bg-gray-100 hover:text-red-600 focus:z-10 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:text-red-500 dark:hover:bg-gray-700"
+                    >
+                      {loadingDelete ? <Spinner /> : <Trash size={14} />}
+                      Delete
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
             <div className="flex flex-col lg:flex-row gap-4">
@@ -529,6 +533,7 @@ export default function EditCustomer() {
                     setImage={setImage}
                     preview={preview}
                     setPreview={setPreview}
+                    node_env={node_env}
                   />
                 </div>
                 <div className="relative bg-white border-gray-200 dark:border-gray-700 border dark:bg-gray-800 rounded-lg p-8">

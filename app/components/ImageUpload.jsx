@@ -11,6 +11,7 @@ const ImageUpload = ({
   preview,
   setPreview,
   error,
+  node_env,
 }) => {
   const [isHovered, setIsHovered] = useState(false);
   const fileInputRef = useRef(null);
@@ -93,7 +94,7 @@ const ImageUpload = ({
             alt="Image Preview"
             className="h-full w-full object-cover rounded-lg"
           />
-          {isHovered && (
+          {isHovered && node_env === "production" && (
             <div className="absolute top-0 right-0 left-0 bottom-0 rounded-lg flex items-center justify-center">
               <div className="absolute dark:bg-gray-800 bg-gray-600 rounded-lg opacity-40 w-full h-full" />
               <button

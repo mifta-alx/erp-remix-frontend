@@ -22,6 +22,7 @@ export const meta = () => {
 };
 
 export const loader = async () => {
+  let node_env = process.env.MODE;
   try {
     const response = await fetch(
       `${process.env.API_URL}/rfqs?purchase_order=true`
@@ -49,7 +50,7 @@ export const loader = async () => {
       };
     }
     const { data: purchase_orders } = await response.json();
-    return { error: false, purchase_orders };
+    return { error: false, purchase_orders, node_env };
   } catch (error) {
     return {
       error: true,
@@ -62,7 +63,7 @@ export const loader = async () => {
 };
 
 export default function PurchaseOrder() {
-  const { error, purchase_orders, message, description, status } =
+  const { error, purchase_orders, message, description, status, node_env } =
     useLoaderData();
   const navigate = useNavigate();
   const [keyword, setKeyword] = useState("");
@@ -297,6 +298,7 @@ export default function PurchaseOrder() {
                 section="purchase orders"
                 link="/purchase/po/add"
                 icon={<ReceiptText size={40} />}
+                node_env={node_env}
               />
             )}
           </>

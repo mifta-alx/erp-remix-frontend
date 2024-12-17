@@ -22,6 +22,7 @@ export const meta = () => {
 };
 
 export const loader = async () => {
+  let node_env = process.env.MODE;
   try {
     const response = await fetch(
       `${process.env.API_URL}/sales?sales_order=true`
@@ -49,7 +50,7 @@ export const loader = async () => {
       };
     }
     const { data: sales_orders } = await response.json();
-    return { error: false, sales_orders };
+    return { error: false, sales_orders, node_env };
   } catch (error) {
     return {
       error: true,
@@ -62,7 +63,8 @@ export const loader = async () => {
 };
 
 export default function SalesOrder() {
-  const { error, sales_orders, message, description, status } = useLoaderData();
+  const { error, sales_orders, message, description, status, node_env } =
+    useLoaderData();
   const navigate = useNavigate();
   const [keyword, setKeyword] = useState("");
   const [filteredData, setFilteredData] = useState([]);
@@ -298,6 +300,7 @@ export default function SalesOrder() {
                 section="sales orders"
                 link="/sales/sales-order/add"
                 icon={<ReceiptText size={40} />}
+                node_env={node_env}
               />
             )}
           </>

@@ -15,6 +15,7 @@ import {
   Spinner,
 } from "@components/index.js";
 import { useToast } from "@context/ToastContext.jsx";
+import { json } from "@remix-run/node";
 
 export const meta = () => {
   return [
@@ -24,6 +25,13 @@ export const meta = () => {
 };
 
 export const loader = async () => {
+  let node_env = process.env.MODE;
+  if (node_env !== "production") {
+    throw json(
+      { description: `The page you're looking for doesn't exist.` },
+      { status: 404, statusText: "Page Not Found" }
+    );
+  }
   let apiEndpoint = process.env.API_URL;
   try {
     const response = await fetch(

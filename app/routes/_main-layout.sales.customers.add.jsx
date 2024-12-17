@@ -9,6 +9,7 @@ import {
   Spinner,
 } from "@components/index.js";
 import { useToast } from "@context/ToastContext.jsx";
+import { json } from "@remix-run/node";
 
 export const meta = () => {
   return [
@@ -19,6 +20,13 @@ export const meta = () => {
 
 export const loader = async () => {
   let apiEndpoint = process.env.API_URL;
+  let node_env = process.env.MODE;
+  if (node_env !== "production") {
+    throw json(
+      { description: `The page you're looking for doesn't exist.` },
+      { status: 404, statusText: "Page Not Found" }
+    );
+  }
   try {
     const response = await fetch(
       `${process.env.API_URL}/init?tags&type=customer&customers&category=company`
@@ -45,6 +53,7 @@ export const loader = async () => {
       API_URL: apiEndpoint,
       tags: data.tags,
       customers: data.customers,
+      node_env,
     };
   } catch (error) {
     return {
@@ -58,8 +67,16 @@ export const loader = async () => {
 };
 
 export default function AddCustomers() {
-  const { API_URL, tags, customers, error, message, description, status } =
-    useLoaderData();
+  const {
+    API_URL,
+    tags,
+    customers,
+    error,
+    message,
+    description,
+    status,
+    node_env,
+  } = useLoaderData();
   const showToast = useToast();
   const navigate = useNavigate();
   const [actionData, setActionData] = useState();

@@ -13,6 +13,7 @@ export const meta = () => {
 };
 
 export const loader = async () => {
+  let node_env = process.env.MODE;
   try {
     const response = await fetch(`${process.env.API_URL}/sales`);
 
@@ -37,7 +38,7 @@ export const loader = async () => {
       };
     }
     const { data: quotations } = await response.json();
-    return { error: false, quotations };
+    return { error: false, quotations, node_env };
   } catch (error) {
     return {
       error: true,
@@ -50,7 +51,8 @@ export const loader = async () => {
 };
 
 export default function Quotation() {
-  const { error, quotations, message, description, status } = useLoaderData();
+  const { error, quotations, message, description, status, node_env } =
+    useLoaderData();
   const navigate = useNavigate();
   const [keyword, setKeyword] = useState("");
   const [filteredData, setFilteredData] = useState([]);
@@ -237,6 +239,7 @@ export default function Quotation() {
                 section="quotation"
                 link="/sales/quotation/add"
                 icon={<ReceiptText size={40} />}
+                node_env={node_env}
               />
             )}
           </>

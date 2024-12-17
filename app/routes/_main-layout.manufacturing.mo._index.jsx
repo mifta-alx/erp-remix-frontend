@@ -14,6 +14,7 @@ export const meta = () => {
 };
 
 export const loader = async () => {
+  let node_env = process.env.MODE;
   try {
     const response = await fetch(`${process.env.API_URL}/manufacturing-orders`);
 
@@ -39,7 +40,7 @@ export const loader = async () => {
       };
     }
     const { data: mo } = await response.json();
-    return { error: false, mo };
+    return { error: false, mo, node_env };
   } catch (error) {
     return {
       error: true,
@@ -52,7 +53,7 @@ export const loader = async () => {
 };
 
 export default function ManufacturingOrders() {
-  const { error, mo, message, description, status } = useLoaderData();
+  const { error, mo, message, description, status, node_env } = useLoaderData();
   const navigate = useNavigate();
   const [keyword, setKeyword] = useState("");
   const [filteredData, setFilteredData] = useState([]);
@@ -226,6 +227,7 @@ export default function ManufacturingOrders() {
                 section="manufacturing order"
                 link="/manufacturing/mo/add"
                 icon={<FileStack size={40} />}
+                node_env={node_env}
               />
             )}
           </>

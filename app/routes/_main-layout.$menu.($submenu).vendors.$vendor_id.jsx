@@ -16,6 +16,7 @@ export const meta = ({ data }) => {
 
 export const loader = async ({ params }) => {
   let apiEndpoint = process.env.API_URL;
+  let node_env = process.env.MODE;
   const { menu, submenu, vendor_id } = params;
   if (menu !== "purchase") {
     throw json(
@@ -57,6 +58,7 @@ export const loader = async ({ params }) => {
     return {
       API_URL: apiEndpoint,
       vendor: vendor.data,
+      node_env,
     };
   } catch (error) {
     return {
@@ -70,7 +72,7 @@ export const loader = async ({ params }) => {
 };
 
 export default function EditVendor() {
-  const { API_URL, vendor, error, message, description, status } =
+  const { API_URL, vendor, error, message, description, status, node_env } =
     useLoaderData();
   const params = useParams();
   const showToast = useToast();
@@ -258,7 +260,7 @@ export default function EditVendor() {
                 <h2 className="text-xl font-semibold text-gray-900 dark:text-white sm:text-2xl">
                   Vendor
                 </h2>
-                {!submenu && (
+                {!submenu && node_env === "production" && (
                   <div className="inline-flex w-full sm:w-fit" role="group">
                     <button
                       type="button"

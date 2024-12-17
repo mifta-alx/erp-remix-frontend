@@ -27,6 +27,7 @@ export const meta = ({ data }) => {
 
 export const loader = async ({ params, request }) => {
   const referer = request.headers.get("Referer");
+  let node_env = process.env.MODE;
   const showActionButton = referer && referer.includes("/products");
   let apiEndpoint = process.env.API_URL;
   try {
@@ -72,6 +73,7 @@ export const loader = async ({ params, request }) => {
       tags: init.data.tags,
       product: product.data,
       showActionButton,
+      node_env,
     };
   } catch (error) {
     return {
@@ -98,6 +100,7 @@ export default function EditProduct() {
     description,
     status,
     showActionButton,
+    node_env,
   } = useLoaderData();
   const params = useParams();
   const navigate = useNavigate();
@@ -282,7 +285,7 @@ export default function EditProduct() {
                 <h2 className="text-xl font-semibold text-gray-900 dark:text-white sm:text-2xl">
                   Product
                 </h2>
-                {showActionButton && (
+                {showActionButton && node_env === "production" && (
                   <div className="inline-flex w-full sm:w-fit" role="group">
                     <button
                       type="button"

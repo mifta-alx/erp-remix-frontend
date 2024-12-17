@@ -12,6 +12,7 @@ export const meta = () => {
 };
 
 export const loader = async () => {
+  let node_env = process.env.MODE;
   try {
     const response = await fetch(`${process.env.API_URL}/customers`);
     if (!response.ok) {
@@ -35,7 +36,7 @@ export const loader = async () => {
       };
     }
     const customers = await response.json();
-    return { error: false, customers: customers.data };
+    return { error: false, customers: customers.data, node_env };
   } catch (error) {
     return {
       error: true,
@@ -48,7 +49,8 @@ export const loader = async () => {
 };
 
 export default function Customers() {
-  const { error, customers, message, description, status } = useLoaderData();
+  const { error, customers, message, description, status, node_env } =
+    useLoaderData();
   const [keyword, setKeyword] = useState("");
   const [filteredData, setFilteredData] = useState([]);
 
@@ -72,7 +74,7 @@ export default function Customers() {
   const handleSearch = (e) => {
     setKeyword(e.target.value);
   };
-
+  console.log(node_env);
   return (
     <section>
       <div className="mx-auto max-w-screen-xl px-4 2xl:px-0">
@@ -116,7 +118,7 @@ export default function Customers() {
                 />
               </div>
               <div className="flex flex-row gap-4 w-full sm:w-fit">
-                {customers.length > 0 && (
+                {customers.length > 0 && node_env === "production" && (
                   <Link
                     to="/sales/customers/add"
                     className="text-gray-900 bg-white gap-2 w-full md:w-fit hover:bg-gray-100 border border-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2 text-center inline-flex items-center justify-center dark:focus:ring-gray-600 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:bg-gray-700"
@@ -145,6 +147,7 @@ export default function Customers() {
                 section="customer"
                 link="/sales/customers/add"
                 icon={<UsersRound size={40} />}
+                node_env={node_env}
               />
             )}
           </>

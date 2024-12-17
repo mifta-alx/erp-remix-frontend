@@ -13,6 +13,7 @@ export const meta = () => {
 };
 
 export const loader = async () => {
+  let node_env = process.env.MODE;
   try {
     const response = await fetch(`${process.env.API_URL}/boms`);
 
@@ -39,7 +40,7 @@ export const loader = async () => {
     }
 
     const boms = await response.json();
-    return { error: false, boms: boms.data };
+    return { error: false, boms: boms.data, node_env };
   } catch (error) {
     return {
       error: true,
@@ -52,7 +53,8 @@ export const loader = async () => {
 };
 
 export default function Bom() {
-  const { error, boms, message, description, status } = useLoaderData();
+  const { error, boms, message, description, status, node_env } =
+    useLoaderData();
   const navigate = useNavigate();
   const [keyword, setKeyword] = useState("");
   const [filteredData, setFilteredData] = useState([]);
@@ -205,6 +207,7 @@ export default function Bom() {
                 section="bills of material"
                 link="/manufacturing/boms/add"
                 icon={<Blocks size={40} />}
+                node_env={node_env}
               />
             )}
           </>
