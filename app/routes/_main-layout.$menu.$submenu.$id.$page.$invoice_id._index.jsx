@@ -11,7 +11,7 @@ import {
   House,
   Printer,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { DateInput, Drawer, SearchInput, Spinner } from "@components/index.js";
 import {
   formatPrice,
@@ -19,19 +19,21 @@ import {
   unformatPriceBase,
 } from "@utils/formatPrice.js";
 import { formatToDecimal, unformatToDecimal } from "@utils/formatDecimal.js";
-import { ErrorView, ExportBillPo, TableVendorBill } from "@views/index.js";
+import { ErrorView, TableVendorBill, TableBillsAndInvoice } from "@views/index.js";
 import { formatBasicDate } from "@utils/formatDate.js";
 import paid from "/paid.svg";
 import { json } from "@remix-run/node";
 import { formatCustomerName } from "@utils/formatName.js";
+import jsPDF from 'jspdf';
+import html2canvas from "html2canvas";
 
 export const meta = ({ data }) => {
   const reference =
     data.invoice.state > 1
       ? data.invoice.reference
       : data.page === "bills"
-      ? `Draft bill (* ${data.invoice.id})`
-      : `Draft invoice (* ${data.invoice.id})`;
+        ? `Draft bill (* ${data.invoice.id})`
+        : `Draft invoice (* ${data.invoice.id})`;
 
   return [
     { title: `F&F - ${reference}` },
@@ -787,28 +789,91 @@ export default function BillsAndInvoices() {
       [name]: updatedValue,
     }));
   };
-  const handleDownload = () => {
-    ExportBillPo({
-      vendorName: selectedVendor.name,
-      vendorstreet: selectedVendor.street,
-      VendorZip: selectedVendor.zip,
-      vendorCity: selectedVendor.city,
-      vendorState: selectedVendor.state,
-      vendorPhone: selectedVendor.phone,
-      vendorEmail: selectedVendor.email,
-      due_date: formData.due_date,
-      transactionType: invoice.transaction_type,
-      invReference: invoice.reference,
-      invDate: formData.invoice_date,
-      accountingDate: formData.accounting_date,
-      dataArr: dataArr,
-      dataTotal: dataTotal.total,
-      payment_date: formData.payment_date,
-      payment_amount: formData.payment_amount,
-      amount_due: formData.amount_due,
+  const printRef = useRef(null);
+  const [useAlternateTable, setUseAlternateTable] = useState(false);
+  const handleDownloadPdf = async () => {
+
+    // Gunakan tabel alternatif
+    setUseAlternateTable(true);
+    // Tunggu hingga DOM diperbarui
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    const element = printRef.current;
+    if (!element) {
+      return;
+    }
+
+    const canvas = await html2canvas(element, {
+      scale: 2,
     });
+    const data = canvas.toDataURL("image/png");
+
+    const pdf = new jsPDF({
+      orientation: "portrait",
+      unit: "px",
+      format: "a4",
+    });
+
+    const imgProperties = pdf.getImageProperties(data);
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+
+    const pdfHeight = (imgProperties.height * pdfWidth) / imgProperties.width;
+
+    pdf.addImage(data, "PNG", 0, 0, pdfWidth, pdfHeight);
+    pdf.save("examplepdf.pdf");
+    setUseAlternateTable(false);
   };
-  console.log(dataArr);
+  const handlePrintPDF = async () => {
+    setUseAlternateTable(true);
+
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    const element = printRef.current;
+    if (!element) return;
+
+    try {
+      const canvas = await html2canvas(element, { scale: 2 });
+      const data = canvas.toDataURL("image/png");
+
+      const pdf = new jsPDF({
+        orientation: "portrait",
+        unit: "px",
+        format: "a4",
+      });
+
+      const imgProperties = pdf.getImageProperties(data);
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (imgProperties.height * pdfWidth) / imgProperties.width;
+
+      pdf.addImage(data, "PNG", 0, 0, pdfWidth, pdfHeight);
+
+      const pdfBlob = pdf.output('blob');
+      const url = URL.createObjectURL(pdfBlob);
+
+      const iframe = document.createElement('iframe');
+      iframe.style.display = 'none';
+      iframe.src = url;
+
+      document.body.appendChild(iframe);
+
+      // Tunggu hingga iframe selesai memuat konten
+      iframe.onload = () => {
+        iframe.contentWindow.print();
+
+        // Menghapus iframe setelah mencetak selesai
+        iframe.contentWindow.onafterprint = () => {
+          document.body.removeChild(iframe);
+          URL.revokeObjectURL(url);
+          setUseAlternateTable(false);
+        };
+      };
+
+    } catch (error) {
+      console.error('Terjadi kesalahan saat mencetak PDF:', error);
+      setUseAlternateTable(false);
+    }
+  };
+
 
   return (
     <section>
@@ -844,10 +909,10 @@ export default function BillsAndInvoices() {
                             ? "Request for Quotations"
                             : "Purchase Orders"
                           : menu === "sales"
-                          ? submenu === "quotation"
-                            ? "Quotations"
-                            : "Sales Orders"
-                          : null}
+                            ? submenu === "quotation"
+                              ? "Quotations"
+                              : "Sales Orders"
+                            : null}
                       </Link>
                     </div>
                   </li>
@@ -869,14 +934,13 @@ export default function BillsAndInvoices() {
                         {formData.state > 1
                           ? invoice.reference
                           : page === "bills"
-                          ? `Draft bill (* ${invoice.id})`
-                          : `Draft invoice (* ${invoice.id})`}
+                            ? `Draft bill (* ${invoice.id})`
+                            : `Draft invoice (* ${invoice.id})`}
                       </span>
                     </div>
                   </li>
                 </ol>
               </nav>
-
               <div className="flex flex-col sm:flex-row gap-4 justify-between items-start w-full">
                 <h2 className="text-xl font-semibold text-gray-900 dark:text-white sm:text-2xl">
                   {menu === "purchase"
@@ -884,10 +948,10 @@ export default function BillsAndInvoices() {
                       ? "Request for Quotations"
                       : "Purchase Orders"
                     : menu === "sales"
-                    ? submenu === "quotation"
-                      ? "Quotations"
-                      : "Sales Orders"
-                    : null}
+                      ? submenu === "quotation"
+                        ? "Quotations"
+                        : "Sales Orders"
+                      : null}
                 </h2>
                 {formData.state === 1 ? (
                   <span className="inline-flex gap-1 justify-center items-center bg-gray-100 border border-gray-500 text-gray-800 text-xs font-medium px-3 py-0.5 rounded dark:bg-gray-800 dark:text-gray-300">
@@ -907,8 +971,8 @@ export default function BillsAndInvoices() {
               </div>
             </div>
             <div className="flex flex-col lg:flex-row gap-4">
-              <div className="lg:w-9/12 w-full gap-4 flex flex-col">
-                <div className="flex flex-col gap-6 relative bg-white border-gray-200 dark:border-gray-700 border dark:bg-gray-800 rounded-lg p-10">
+              <div className="lg:w-9/12 w-full gap-4 flex flex-col" ref={printRef}>
+                <div className={`flex flex-col gap-6 relative bg-white dark:bg-gray-800 rounded-lg p-10 ${setUseAlternateTable ? '' : 'border-gray-200 dark:border-gray-700 border'}`}>
                   <div className="bg-gray-100 dark:bg-gray-700 p-6 rounded-md flex sm:flex-row flex-col sm:gap-0 gap-8 justify-between">
                     <div className="sm:w-1/2 w-full flex flex-col">
                       <h6 className="text-2xl font-semibold text-gray-800 dark:text-gray-200 mb-6">
@@ -940,11 +1004,10 @@ export default function BillsAndInvoices() {
                             disabled
                             name="reference"
                             id="reference"
-                            className={`bg-gray-50 disabled:bg-gray-100 disabled:cursor-not-allowed disabled:text-gray-400 border ${
-                              actionData?.errors?.reference
-                                ? "border-red-500 dark:border-red-500"
-                                : "border-gray-300 dark:border-gray-600"
-                            }
+                            className={`bg-gray-50 disabled:bg-gray-100 disabled:cursor-not-allowed disabled:text-gray-400 border ${actionData?.errors?.reference
+                              ? "border-red-500 dark:border-red-500"
+                              : "border-gray-300 dark:border-gray-600"
+                              }
                       border-gray-300 dark:border-gray-600 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block sm:w-1/2 w-full p-2.5 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500`}
                             value={invoice.reference}
                             autoComplete="off"
@@ -1160,21 +1223,44 @@ export default function BillsAndInvoices() {
                     </div>
                   </div>
                   <hr className="border-dashed border-gray-200 dark:border-gray-500" />
-                  <TableVendorBill
-                    endpoint={API_URL}
-                    currentState={formData.state}
-                    actionData={actionData}
-                    dataArr={dataArr}
-                    setDataArr={setDataArr}
-                    invoice={invoice}
-                  />
+
+                  <div ref={printRef}>
+                    {useAlternateTable ? (
+                      <TableBillsAndInvoice
+                        endpoint={API_URL}
+                        currentState={formData.state}
+                        actionData={actionData}
+                        dataArr={dataArr}
+                        setDataArr={setDataArr}
+                        invoice={invoice}
+                        invoice_date={formData.invoice_date}
+                      />
+                    ) : (
+                      <TableVendorBill
+                        endpoint={API_URL}
+                        currentState={formData.state}
+                        actionData={actionData}
+                        dataArr={dataArr}
+                        setDataArr={setDataArr}
+                        invoice={invoice}
+                      />
+                    )}
+                  </div>
+
                   <div className="flex justify-end relative">
                     {formData.payment_status === 2 && formData.state === 2 && (
-                      <img
-                        src={paid}
-                        alt="paid-icon"
-                        className="max-w-24 absolute z-10 top-4 right-16"
-                      />
+                      useAlternateTable ? (
+                        <span className="absolute z-10 top-4 right-14 text-green-700 font-bold opacity-50 text-[70px] ">
+                          PAID
+                        </span>
+                      ) : (
+                        <img
+                          src={paid}
+                          alt="paid-icon"
+                          className="max-w-24 absolute z-10 top-4 right-16"
+                        />
+                      )
+
                     )}
                     <div className="flex flex-col gap-3 w-fit mt-2">
                       {dataTotal.taxes > 0 && (
@@ -1254,7 +1340,7 @@ export default function BillsAndInvoices() {
                   ) : formData.state === 2 && formData.payment_status === 2 ? (
                     <>
                       <button
-                        onClick={handleDownload}
+                        onClick={handleDownloadPdf}
                         type="button"
                         className="inline-flex items-center justify-center gap-2 text-white w-full bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-md text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
                       >
@@ -1263,6 +1349,7 @@ export default function BillsAndInvoices() {
                       </button>
                       <button
                         type="button"
+                        onClick={handlePrintPDF}
                         className="inline-flex items-center justify-center gap-2 text-gray-900 w-full bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium rounded-md text-sm px-5 py-2.5 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"
                       >
                         {loadingConfirm ? <Spinner /> : <Printer size={16} />}
